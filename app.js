@@ -13,6 +13,7 @@ var users = require('./routes/users');
 var app = express();
 
 // view engine setup
+app.engine("ejs", require("ejs-locals"));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -21,9 +22,6 @@ if (app.get('env') !== 'development') {
   require("./libs/createErrorsLogFile")(app);
 };
 logger.create(module, app);
-/*
-output format to the file is bad
- */
 
 //log out the requests
 app.use(function (req, res, next) {
