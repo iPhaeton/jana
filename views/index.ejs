@@ -14,13 +14,25 @@
 
     <div class="header">
       <div class="container">
+
         <div class="head-menu" role="navigation">
-          <ul class="nav nav-pills">
-            <% for (var menuTitle in headMenu) {%>
-              <li><a href=<%=headMenu[menuTitle]%> role="presentation"><%=menuTitle%></a></li>
-            <%}%>
+
+          <ul class="nav nav-pills head-menu__left head-menu__panel">
+            <% for (var menuTitle in headMenuLeft) {%>
+              <li><a href=<%= headMenuLeft[menuTitle] %> role="presentation"><%= menuTitle %></a></li>
+            <% } %>
           </ul>
+
+          <% if (headMenuRight) { %>
+            <ul class="nav nav-pills head-menu__right head-menu__panel">
+              <% for (var menuTitle in headMenuRight) {%>
+                <li><a href=<%= headMenuRight[menuTitle] %> role="presentation"><%= menuTitle %></a></li>
+              <% }; %>
+            </ul>
+          <% } %>
+
         </div>
+
       </div>
     </div>
 

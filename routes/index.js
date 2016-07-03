@@ -5,12 +5,14 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', {
     title: "Jana",
-    headMenuLinks: ["#","#","#","#"],
-    headMenu: {
+    headMenuLeft: {
       "Магазин": "/shop",
       "Контакты": "/contcts",
+    },
+    headMenuRight: {
       "Войти": "/signin",
-      "Регистрация": "signup"}
+      "Регистрация": "signup"
+    }
   });
 });
 
