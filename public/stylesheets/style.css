@@ -1,3 +1,8 @@
+body {
+  background-color: #000;
+}
+
+/*-------------------------------------------------------------------------------------*/
 .header {
   background: #000;
 }
@@ -17,4 +22,20 @@
 .head-menu__panel > li >a:hover {
   color: #fff;
   background-color: #337ab7;
+}
+
+/*-------------------------------------------------------------------------------------*/
+.showcase {
+  padding: 0px;
+}
+
+.showcase__image {
+  width: 100%;
+  background: #00b3ee;
+}
+
+.showcase__image > img {
+  width: 100%;
+  position: absolute;
+  z-index: -1;
 }
