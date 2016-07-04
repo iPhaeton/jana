@@ -4,7 +4,9 @@
     <title><%= title %></title>
 
     <link rel="stylesheet" href="/vendor/bower_components/bootstrap/dist/css/bootstrap.css"/>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href="/stylesheets/style.css" />
+    <link rel='stylesheet' href="/stylesheets/indexPageStyle.css" />
+    <link rel='stylesheet' href="/stylesheets/headMenuStyle.css" />
 
     <script src="/vendor/bower_components/jquery/dist/jquery.js"></script>
     <script src="/vendor/bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -15,23 +17,7 @@
     <div class="header">
       <div class="container">
 
-        <div class="head-menu" role="navigation">
-
-          <ul class="nav nav-pills head-menu__left head-menu__panel">
-            <% for (var menuTitle in headMenuLeft) {%>
-              <li><a href=<%= headMenuLeft[menuTitle] %> role="presentation"><%= menuTitle %></a></li>
-            <% } %>
-          </ul>
-
-          <% if (headMenuRight) { %>
-            <ul class="nav nav-pills head-menu__right head-menu__panel">
-              <% for (var menuTitle in headMenuRight) {%>
-                <li><a href=<%= headMenuRight[menuTitle] %> role="presentation"><%= menuTitle %></a></li>
-              <% }; %>
-            </ul>
-          <% } %>
-
-        </div>
+        <%- partial("./partials/headMenu.ejs")%>
 
       </div>
     </div>
