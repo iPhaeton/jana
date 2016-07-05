@@ -6,6 +6,8 @@
         <link rel="stylesheet" href="/vendor/bower_components/bootstrap/dist/css/bootstrap.css"/>
         <link rel='stylesheet' href="/stylesheets/style.css" />
         <link rel='stylesheet' href="/stylesheets/headMenuStyle.css" />
+        <link rel='stylesheet' href="/stylesheets/sideMenuStyle.css" />
+        <link rel='stylesheet' href="/stylesheets/shopPageStyle.css" />
 
         <script src="/vendor/bower_components/jquery/dist/jquery.js"></script>
         <script src="/vendor/bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -21,7 +23,20 @@
             </div>
         </div>
 
-        <h1>Here is going to be the shop</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-2 left-margin">
+                    <%- partial("./partials/sideMenu.ejs")%>
+                </div>
+                <div class="col-lg-10 main-content">
+                    <div id="commodity-list" class="thumbnails">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/javascripts/shopClient.js"></script>
 
     </body>
 </html>

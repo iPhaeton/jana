@@ -1,0 +1,7 @@
+<ul class="nav nav-tabs side-menu">
+    <% for(var menuTitle in sideMenu) { %>
+        <li>
+            <a role="presentation" href=<%= sideMenu[menuTitle] %>><%= menuTitle %></a>
+        </li>
+    <% } %>
+</ul>

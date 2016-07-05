@@ -1,17 +1,21 @@
 <div class="head-menu" role="navigation">
 
     <ul class="nav nav-pills head-menu__left head-menu__panel">
-    <% for (var menuTitle in headMenuLeft) {%>
-<li><a href=<%= headMenuLeft[menuTitle] %> role="presentation"><%= menuTitle %></a></li>
+        <% for (var menuTitle in headMenuLeft) {%>
+            <li>
+                <a role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
+            </li>
         <% } %>
-</ul>
+    </ul>
 
-<% if (headMenuRight) { %>
-<ul class="nav nav-pills head-menu__right head-menu__panel">
-        <% for (var menuTitle in headMenuRight) {%>
-    <li><a href=<%= headMenuRight[menuTitle] %> role="presentation"><%= menuTitle %></a></li>
+    <% if (headMenuRight) { %>
+        <ul class="nav nav-pills head-menu__right head-menu__panel">
+            <% for (var menuTitle in headMenuRight) {%>
+                <li>
+                    <a role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
+                </li>
             <% }; %>
-</ul>
+        </ul>
     <% } %>
 
 </div>
