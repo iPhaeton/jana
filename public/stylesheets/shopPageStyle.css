@@ -2,13 +2,12 @@
     padding: 0px;
 }
 
-.main-content {
-    padding: 0px;
+.jumbotron {
+    background: #fff;
 }
 
 .thumbnails {
     background: #fff;
     width: 100%;;
-    height: 500px;
     float: right;
 }
