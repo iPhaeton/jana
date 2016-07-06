@@ -72,8 +72,8 @@ if (app.get('env') === 'development') {
 };
 
 //server
-var server = app.listen(config.get("port"), function () {
-  logger.log("Server listening on port " + config.get("port"));
+var server = app.listen(process.env.PORT || 3000, function () {
+  logger.log("Server listening on port " + (process.env.PORT || 3000));
 });
 
 module.exports = app;
