@@ -9,7 +9,7 @@ $(document).ready(() => {
 });
 
 function Thumbnail () {
-    var col = $("<div class='col-md-3'></div>")
+    var col = $("<div class='col-sm-3'></div>")
     
     var div = $("<div class='thumbnail'></div>");
     div.css({
