@@ -1,31 +1,44 @@
+
 $(document).ready(() => {
     var commodityList = $("#commodity-list");
 
     var thumbnail = new Thumbnail();
-    commodityList.append(thumbnail);
+    var row = $("<div class='row'></div>");
+    row.append(thumbnail);
+    commodityList.append(row);
 });
 
 function Thumbnail () {
-    var div = $("<div></div>");
+    var col = $("<div class='col-md-3'></div>")
+    
+    var div = $("<div class='thumbnail'></div>");
     div.css({
-        width: "20%",
-        height: "30%",
         textAlign: "right"
     });
 
     var img = $("<img src='images/testPic.jpg'>");
-    img.css({
+    /*img.css({
         width: "80%",
         height: "80%"
-    });
+    });*/
 
     var price = $("<p>1000 р.</p>")
     price.css({
-        color: "#f00"
+        color: "#c00"
     });
+    
+    var avialability = $("<p>В наличии: 10</p>")
+    avialability.css({
+        color: "#0f0"
+    });
+    
+    var button = $("<button type='button' class='btn btn-default'>Подробнее>></button>")
 
     div.append(img);
     div.append(price);
+    div.append(avialability);
+    div.append(button);
+    col.append(div)
 
-    return div;
+    return col;
 };
