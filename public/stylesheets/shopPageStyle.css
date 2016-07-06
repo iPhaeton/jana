@@ -2,8 +2,9 @@
     padding: 0px;
 }
 
-.jumbotron {
+.main-content {
     background: #fff;
+    width: 80%;
 }
 
 .thumbnails {
