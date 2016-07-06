@@ -2,11 +2,15 @@ $(document).ready(() => {
     var commodityList = $("#commodity-list");
 
     var thumbnail = new Thumbnail();
-    commodityList.append(thumbnail);
+    var row = $(<div class="row"></div>);
+    row.append(thumbnail);
+    commodityList.append(row);
 });
 
 function Thumbnail () {
-    var div = $("<div></div>");
+    var col = $("<div class="col-md-3"></div>")
+    
+    var div = $("<div class="thumbnail"></div>");
     div.css({
         width: "20%",
         height: "30%",
@@ -26,6 +30,7 @@ function Thumbnail () {
 
     div.append(img);
     div.append(price);
+    col.append(div)
 
-    return div;
+    return col;
 };
