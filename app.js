@@ -11,6 +11,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+module.exports = app;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -74,5 +75,3 @@ if (app.get('env') === 'development') {
 var server = app.listen(config.get("port"), function () {
   logger.log("Server listening on port " + config.get("port"));
 });
-
-module.exports = app;

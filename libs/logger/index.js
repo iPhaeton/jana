@@ -1,8 +1,9 @@
 var fs = require("fs");
 var ENV = process.env.NODE_ENV;
-var app = require("app");
 
 exports.create = function (module) {
+    var app = require("app");
+
     var logger = require("./logger")(module, app);
 
     exports.log = function (message) {
