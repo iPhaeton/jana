@@ -7,7 +7,7 @@ module.exports = function (app) {
     var errorsLogFile = new fs.createWriteStream(app.get("errorsLogFilePath"), {flags: "w"});
 
     logger.create(module);
-    //logger.log("Logger");
+    logger.log("Logger");
     errorsLogFile.on("close", function () {
         logger.log("Errors log file has been closed");
     });
