@@ -38,6 +38,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//test of the database
+require("middleware/dbTest")();
+
 app.use('/', routes);
 app.use('/shop', shop);
 /*app.use('/shop', function (req, res, next) {
