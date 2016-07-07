@@ -1,7 +1,6 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('./libs/logger');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var errorhandler = require("errorhandler");
@@ -21,10 +20,8 @@ app.set('view engine', 'ejs');
 if (app.get('env') !== 'development') {
   require("./libs/createErrorsLogFile")(app);
 };
-logger.create(module);
-/*
-output format to the file is bad
- */
+
+var logger = new require('./libs/logger')(module);
 
 //log out the requests
 app.use(function (req, res, next) {
