@@ -21,7 +21,8 @@ app.set('view engine', 'ejs');
 if (app.get('env') !== 'development') {
   require("./libs/createErrorsLogFile")(app);
 };
-logger.create(module, app);
+
+logger.create(module);
 
 //log out the requests
 app.use(function (req, res, next) {
