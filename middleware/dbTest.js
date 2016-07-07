@@ -2,8 +2,7 @@ var mongoose = require("libs/mongoose");
 var Commodity = require("models/commodity");
 
 module.exports = function () {
-    var logger = require('../libs/logger');
-    logger.create(module);
+    var logger = new require('libs/logger')(module);
 
     mongoose.connection.on("open", () => {
         var db = mongoose.connection.db;
