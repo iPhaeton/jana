@@ -20,7 +20,7 @@ app.set('view engine', 'ejs');
 if (app.get('env') !== 'development') {
   require("./libs/createErrorsLogFile")(app);
 };
-logger.create(module, app);
+logger.create(module);
 /*
 output format to the file is bad
  */
