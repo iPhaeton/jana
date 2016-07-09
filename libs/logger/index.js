@@ -23,11 +23,11 @@ module.exports = function (module) {
                     require("../createErrorsLogFile")(app);
                     self.logger = require("./logger")(module, app);
                 };
-                self.logger.error(req.method + " " + req.originalUrl);
+                if (req) self.logger.error(req.method + " " + req.originalUrl);
                 self.logger.error(err);
             });
         };
-        //self.logger.error(err);
+        self.logger.error(err);
     };
 
     return self;

@@ -1,5 +1,15 @@
-
 $(document).ready(() => {
+    $(".side-menu").on("click", (event) => {
+        var target = $(event.target);
+        target = findTarget(target, "menu-button", "a");
+        if(!target.length) {
+            event.preventDefault();
+            return;
+        };
+        
+        event.preventDefault();
+    });
+
     var commodityList = $("#commodity-list");
 
     var thumbnail = new Thumbnail();
