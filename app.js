@@ -6,8 +6,9 @@ var bodyParser = require('body-parser');
 var errorhandler = require("errorhandler");
 var config = require("config");
 
-var routes = require("./routes/index");
-var shop = require("./routes/shop");
+var routes = require("./routes/indexRoute");
+var shop = require("./routes/shopRoute");
+var dbsearch = require("routes/dbSearchRoute");
 
 var app = express();
 module.exports = app;
@@ -40,11 +41,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //test of the database
 require("middleware/dbTest")();
 
-app.use('/', routes);
-app.use('/shop', shop);
-/*app.use('/shop', function (req, res, next) {
-  res.send("This is going to be a shop page");
-});*/
+app.use("/", routes);
+app.use("/shop", shop);
+app.use("/dbsearch*", dbsearch);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

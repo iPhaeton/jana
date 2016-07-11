@@ -7,28 +7,7 @@ var commoditySchema = new Schema ({
     type: String,
     unique: true
   },
-  category: {
-    type: String
-  },
-  name: {
-    type: String
-  },
-  manufacturer: {
-    type: String
-  },
-  price: {
-    type: String
-  },
-  currency: {
-    type: String
-  },
-  amount: {
-    type: String
-  },
-  unit: {
-    type: String
-  },
-  description: {
+  img: {
     type: String
   },
   specs: {
