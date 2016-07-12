@@ -1,7 +1,7 @@
 $(document).ready(() => {
     var thumbnails;
 
-    $(".side-menu").on("click", (event) => {
+    $(".side-menu").on("click", ".menu-button", (event) => {
         var target = $(event.target);
         target = findTarget(target, "menu-button", "a");
         if(!target.length) {
@@ -20,6 +20,7 @@ $(document).ready(() => {
     });
 });
 
+//Thumbnails-------------------------------------------------------------------------------------------------------
 function Thumbnails (elem, data) {
     this.elem = $(elem);
     this.data = data;
@@ -55,9 +56,11 @@ Thumbnails.prototype.unrender = function () {
     this.elem.html("");
 };
 
-
+////Thumbnail--------------------------------------------------------------------------------------------------------
 function Thumbnail (data, config) {
-    this.data = data
+    this.data = data;
+    this.details = new Details(this);
+    var self = this;
     
     if (!config) {
         config = {
@@ -72,7 +75,7 @@ function Thumbnail (data, config) {
             },
             "В наличии": {
                 withTitle: true,
-                css: (+data.specs["В наличии"] ? {
+                css: (+(data.specs["В наличии"].split(" ")[0]) ? {
                     color: "#0f0"
                 } : {
                     color: "#f00"
@@ -81,7 +84,7 @@ function Thumbnail (data, config) {
         }
     };
 
-    var col = $("<div class='col-sm-3'></div>")
+    var col = $("<div class='col-sm-3'></div>");
     
     var div = $("<div class='thumbnail'></div>");
     div.css({
@@ -90,7 +93,10 @@ function Thumbnail (data, config) {
 
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + ">");
     
-    var button = $("<button type='button' class='btn btn-default'>Подробнее>></button>")
+    var button = $("<button type='button' class='btn btn-default'>Подробнее>></button>");
+    button.on("click", function (event) {
+        self.details.render();
+    });
 
     div.append(img);
     for (var field in config) {
@@ -104,4 +110,91 @@ function Thumbnail (data, config) {
     col.append(div);
 
     return col;
+};
+
+//Details---------------------------------------------------------------------------------------------------------------
+function Details (parentElem) {
+    if (!parentElem.data) return;
+
+    this.parentElem = parentElem;
+
+    this.elem = $("<div></div>");
+    this.elem.css({
+        position: "absolute",
+        background: "#079",
+        padding: "0px"
+    });
+};
+
+Details.prototype.render = function () {
+    var self = this;
+
+    if (this.elem.html()) {
+        $(document.body).append(this.elem);
+        return;
+    };
+
+    var closeButton = $("<div></div>");
+    closeButton.css({
+        width: "20px",
+        height: "20px",
+        float: "right"
+    });
+    var closeImg = $("<img src='/images/gtk-close.png'>");
+    closeImg.css({
+        width: "100%",
+        height: "100%"
+    });
+    closeButton.append(closeImg);
+    closeButton.hover(function () {
+        $(this).css({
+            cursor: "pointer"
+        })
+    });
+
+    closeButton.on("click", function (event) {
+        self.close();
+    });
+
+    var clearFix = ($("<div class='clearfix'></div>"));
+    
+    var keyList = $("<ul class='list-group'></ul>");
+    var valueList = $("<ul class='list-group'></ul>");
+
+    keyList.css({
+        float: "left",
+        margin: "0px"
+    });
+    valueList.css({
+        float: "left",
+        margin: "0px"
+    });
+
+    //for some reason properties are read in the opposite order
+    var items = [];
+    for(var item in this.parentElem.data.specs){
+        items.push(item);
+    };
+
+    for(var i = items.length - 1; i >= 0; i--) {
+        keyList.append($("<li class='list-group-item'>" + items[i] + "</li>"));
+        valueList.append($("<li class='list-group-item'>" + this.parentElem.data.specs[items[i]] + "</li>"));
+    };
+
+    this.elem.append(closeButton);
+    this.elem.append(clearFix);
+    this.elem.append(keyList);
+    this.elem.append(valueList);
+
+    $(document.body).append(this.elem);
+
+    this.elem.css({
+        top: (window.pageYOffset || document.documentElement.scrollTop) + 20 + "px",
+        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
+    });
+};
+
+Details.prototype.close = function () {
+    //this.elem.html("");
+    this.elem.detach();
 };
