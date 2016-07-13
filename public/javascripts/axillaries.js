@@ -6,5 +6,5 @@ function findTarget(target, criterion, tag) {
             else return target;
         };
         target = target.parent();
-    } while (target);
+    } while (target.length);
 };

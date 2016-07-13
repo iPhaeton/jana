@@ -4,7 +4,7 @@ $(document).ready(() => {
     $(".side-menu").on("click", ".menu-button", (event) => {
         var target = $(event.target);
         target = findTarget(target, "menu-button", "a");
-        if(!target.length) {
+        if(!target) {
             event.preventDefault();
             return;
         };
@@ -118,9 +118,9 @@ function Details (parentElem) {
 
     this.parentElem = parentElem;
 
-    this.elem = $("<div></div>");
+    this.elem = $("<div id='details'></div>");
     this.elem.css({
-        position: "absolute",
+        position: "fixed",
         background: "#079",
         padding: "0px"
     });
@@ -128,6 +128,8 @@ function Details (parentElem) {
 
 Details.prototype.render = function () {
     var self = this;
+
+    $("#details").detach();
 
     if (this.elem.html()) {
         $(document.body).append(this.elem);
@@ -188,13 +190,19 @@ Details.prototype.render = function () {
 
     $(document.body).append(this.elem);
 
-    this.elem.css({
-        top: (window.pageYOffset || document.documentElement.scrollTop) + 20 + "px",
-        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
-    });
+    $(window).on("resize", this.position.bind(this));
+
+    this.position();
 };
 
 Details.prototype.close = function () {
-    //this.elem.html("");
     this.elem.detach();
+    $(window).off("resize", this.position.bind(this));
+};
+
+Details.prototype.position = function () {
+    this.elem.css({
+        top: "20px",//(window.pageYOffset || document.documentElement.scrollTop) + 20 + "px",
+        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
+    });
 };
