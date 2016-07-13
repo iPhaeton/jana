@@ -189,6 +189,10 @@ Details.prototype.render = function () {
     this.elem.append(valueList);
 
     $(document.body).append(this.elem);
+    this.elem.css({
+        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+        padding: "0 0 1px 1px"
+    });
 
     $(window).on("resize", this.position.bind(this));
 
@@ -202,7 +206,7 @@ Details.prototype.close = function () {
 
 Details.prototype.position = function () {
     this.elem.css({
-        top: "20px",//(window.pageYOffset || document.documentElement.scrollTop) + 20 + "px",
+        top: "10%",
         left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
     });
 };
