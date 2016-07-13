@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "async": "^2.0.0-rc.6",
     "body-parser": "~1.15.1",
     "bootstrap": "^3.3.6",
     "cookie-parser": "~1.4.3",
@@ -14,6 +15,7 @@
     "ejs-locals": "^1.0.2",
     "errorhandler": "^1.4.3",
     "express": "~4.13.4",
+    "mongoose": "^4.5.3",
     "morgan": "~1.7.0",
     "nconf": "^0.8.4",
     "serve-favicon": "~2.3.0",

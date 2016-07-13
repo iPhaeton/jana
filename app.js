@@ -1,16 +1,17 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('./libs/logger');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var errorhandler = require("errorhandler");
 var config = require("config");
 
-var routes = require("./routes/index");
-var shop = require("./routes/shop");
+var routes = require("./routes/indexRoute");
+var shop = require("./routes/shopRoute");
+var dbsearch = require("routes/dbSearchRoute");
 
 var app = express();
+module.exports = app;
 
 // view engine setup
 app.engine("ejs", require("ejs-locals"));
@@ -21,7 +22,8 @@ app.set('view engine', 'ejs');
 if (app.get('env') !== 'development') {
   require("./libs/createErrorsLogFile")(app);
 };
-logger.create(module, app);
+
+var logger = new require('./libs/logger')(module);
 
 //log out the requests
 app.use(function (req, res, next) {
@@ -36,11 +38,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/shop', shop);
-/*app.use('/shop', function (req, res, next) {
-  res.send("This is going to be a shop page");
-});*/
+//test of the database
+require("middleware/dbTest")();
+
+app.use("/", routes);
+app.use("/shop", shop);
+app.use("/dbsearch*", dbsearch);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
