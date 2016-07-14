@@ -14,6 +14,8 @@ $(document).ready(() => {
             thumbnails.clear();
             thumbnails.build();
             thumbnails.render();
+        }, function (xhr, status, err) {
+            alert("Извините, проблема с базой данных");
         });
 
         event.preventDefault();
@@ -65,7 +67,7 @@ function Thumbnail (data, config) {
     if (!config) {
         config = {
             "Название": {
-                withTitle: false,
+                withTitle: false
             },
             "Цена": {
                 withTitle: false,
