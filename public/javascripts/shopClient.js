@@ -1,5 +1,6 @@
 $(document).ready(() => {
     var thumbnails;
+    var config;
 
     $(".side-menu").on("click", ".menu-button", (event) => {
         var target = $(event.target);
@@ -8,30 +9,57 @@ $(document).ready(() => {
             event.preventDefault();
             return;
         };
-        
-        makeDBSearchRequest(target.attr("href"), function (json) {
-            thumbnails = new Thumbnails("#commodity-list", json);
+
+        async.parallel([
+            //get configuration
+            function (callback) {
+                if (!config) makeDBSearchRequest("/dbsearch?db=Config", callback);
+                else (callback(null, config));
+            },
+            function (callback) {
+                makeDBSearchRequest(target.attr("href"), callback);
+            }
+        ], function (err, results) {
+            var config = results[0][0],
+                data = results[1];
+
+            if (err) {
+                alert("Извините, проблема с базой данных");
+                return;
+            };
+
+            thumbnails = new Thumbnails("#commodity-list", data, parseConfig(config));
             thumbnails.clear();
             thumbnails.build();
             thumbnails.render();
-        }, function (xhr, status, err) {
-            alert("Извините, проблема с базой данных");
         });
 
         event.preventDefault();
     });
 });
 
+//parse the config object------------------------------------------------------------------------------------------
+function parseConfig(config) {
+    for (var field in config.showcase) {
+        if (config.showcase[field].css) {
+            config.showcase[field].css = new Function ("data", config.showcase[field].css);
+        };
+    };
+
+    return config;
+};
+
 //Thumbnails-------------------------------------------------------------------------------------------------------
-function Thumbnails (elem, data) {
+function Thumbnails (elem, data, config) {
     this.elem = $(elem);
     this.data = data;
+    this.config = config;
     this.tiles = new Set();
 };
 
 Thumbnails.prototype.build = function () {
     for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add(new Thumbnail(this.data[i]));
+        this.tiles.add(new Thumbnail(this.data[i], this.config));
     };
 };
 
@@ -58,30 +86,33 @@ Thumbnails.prototype.unrender = function () {
     this.elem.html("");
 };
 
-////Thumbnail--------------------------------------------------------------------------------------------------------
+//Thumbnail--------------------------------------------------------------------------------------------------------
 function Thumbnail (data, config) {
     this.data = data;
     this.details = new Details(this);
     var self = this;
-    
+
+    //config = undefined;
     if (!config) {
         config = {
-            "Название": {
-                withTitle: false
-            },
-            "Цена": {
-                withTitle: false,
-                css: {
-                    color: "#c00"
+            showcase: {
+                "Название": {
+                    withTitle: false
+                },
+                "Цена": {
+                    withTitle: false,
+                    css: {
+                        color: "#c00"
+                    }
+                },
+                "В наличии": {
+                    withTitle: true,
+                    css: (+(data.specs["В наличии"].split(" ")[0]) ? {
+                        color: "#0f0"
+                    } : {
+                        color: "#f00"
+                    })
                 }
-            },
-            "В наличии": {
-                withTitle: true,
-                css: (+(data.specs["В наличии"].split(" ")[0]) ? {
-                    color: "#0f0"
-                } : {
-                    color: "#f00"
-                })
             }
         }
     };
@@ -101,13 +132,16 @@ function Thumbnail (data, config) {
     });
 
     div.append(img);
-    for (var field in config) {
-        if (data.specs[field]) {
-            var p = $("<p>" + ((config[field].withTitle) ? (field + ": " + data.specs[field]) : (data.specs[field])) + "</p>");
-            if (config[field].css) p.css(config[field].css);
+
+    var fields = gatherItemsInOrder(config.showcase);
+    for (var i = fields.length-1; i >= 0; i--) {
+        if (data.specs[fields[i]]) {
+            var p = $("<p>" + ((config.showcase[fields[i]].withTitle) ? (fields[i] + ": " + data.specs[fields[i]]) : (data.specs[fields[i]])) + "</p>");
+            if (config.showcase[fields[i]].css) p.css(config.showcase[fields[i]].css(data));
             div.append(p);
         }
     };
+
     div.append(button);
     col.append(div);
 
@@ -175,10 +209,7 @@ Details.prototype.render = function () {
     });
 
     //for some reason properties are read in the opposite order
-    var items = [];
-    for(var item in this.parentElem.data.specs){
-        items.push(item);
-    };
+    var items = gatherItemsInOrder(this.parentElem.data.specs);
 
     for(var i = items.length - 1; i >= 0; i--) {
         keyList.append($("<li class='list-group-item'>" + items[i] + "</li>"));

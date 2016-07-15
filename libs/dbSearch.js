@@ -1,8 +1,7 @@
 var mongoose = require("libs/mongoose");
-var Commodity = require("models/commodity");
 
-module.exports = function (params, callback) {
-    Commodity.find(params, (err, commodities) => {
+module.exports = function (model, params, callback) {
+    mongoose.models[model].find(params, (err, commodities) => {
         if (err) return callback(err);
 
         var info = new Array (commodities.length);

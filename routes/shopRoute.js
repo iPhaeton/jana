@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
             "Регистрация": "signup"
         },
         sideMenu: {
-            "Самое вкусное": "/dbsearch?specs=specs.Категория:Лыжи",
+            "Самое вкусное": "/dbsearch?db=Commodity&specs=specs.Категория:Лыжи",
             //"Самое вкусное": "/dbsearch?category=Лыжи&name=Самые%20лучшие%20лыжи&specs=specs.Цвет:Жёлтенькие;specs.Длина:1,5%20м",
             "Лыжи": "#",
             "Сноуборды": "#",
