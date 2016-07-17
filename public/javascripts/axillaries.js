@@ -8,3 +8,12 @@ function findTarget(target, criterion, tag) {
         target = target.parent();
     } while (target.length);
 };
+
+//for some reason sometimes properties are read in the opposite order
+function gatherItemsInOrder(obj) {
+    var items = [];
+    for(var item in obj){
+        items.push(item);
+    };
+    return items;
+};

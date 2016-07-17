@@ -30,6 +30,7 @@ function dropDatabase (callback) {
 
 function requireModels (callback) {
     require("models/commodity");
+    require("models/config")
 
     async.each(Object.keys(mongoose.models), (model, callback) => {
         mongoose.models[model].ensureIndexes(callback);
@@ -111,8 +112,38 @@ function createTestDB(callback) {
         }
     ];
 
-    async.each(commodityData, (data, callback) => {
-        var commodity = new mongoose.models.Commodity(data);
-        commodity.save(callback);
-    }, callback);
+    var configData = {
+        showcase: {
+            "Название": {
+                withTitle: false
+            },
+            "Цена": {
+                withTitle: false,
+                css: "return {\
+                    color: '#c00'\
+                }"
+            },
+            "В наличии": {
+                withTitle: true,
+                css: "return (+(data.specs['В наличии'].split(' ')[0]) ? {\
+                    color: '#0f0'\
+                } : {\
+                    color: '#f00'\
+                })"
+            }
+        }
+    }
+
+    async.parallel([
+        function (callback) {
+            async.each(commodityData, (data, callback) => {
+                var commodity = new mongoose.models.Commodity(data);
+                commodity.save(callback);
+            }, callback);
+        },
+        function (callback) {
+            var config = new mongoose.models.Config(configData);
+            config.save(callback);
+        }
+    ], callback);
 };

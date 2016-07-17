@@ -27,7 +27,7 @@ module.exports = function (module) {
                 self.logger.error(err);
             });
         };
-        self.logger.error(err);
+        if (app.get("env") !== "development") self.logger.error(err);
     };
 
     return self;

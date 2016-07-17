@@ -1,5 +1,5 @@
 .left-margin {
-    padding: 0px;
+    padding: 0;
 }
 
 .main-content {
@@ -10,5 +10,9 @@
 .thumbnails {
     background: #fff;
     width: 100%;;
+    float: right;
+}
+
+.edit-button {
     float: right;
 }

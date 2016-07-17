@@ -12,6 +12,7 @@
 
         <script src="/vendor/bower_components/jquery/dist/jquery.js"></script>
         <script src="/vendor/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="/vendor/bower_components/async/dist/async.js"></script>
     </head>
 
     <body>
@@ -32,6 +33,11 @@
                 <div class="col-sm-10">
                     <div id="commodity-list" class="thumbnails">
 
+                    </div>
+                    <div class="edit-panel" hidden="true">
+                        <button type='button' class='btn btn-default edit-button' id="add-commodity">Добавить товар</button>
+                        <button type='button' class='btn btn-default edit-button' id="add-category">Добавить категрию</button>
+                        <div class="clearfix"></div>
                     </div>
                 </div>
             </div>
