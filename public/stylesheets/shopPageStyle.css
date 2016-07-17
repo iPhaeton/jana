@@ -1,5 +1,6 @@
 .left-margin {
-    padding: 0px;
+    padding: 0;
+    position: relative;
 }
 
 .main-content {
@@ -11,4 +12,9 @@
     background: #fff;
     width: 100%;;
     float: right;
+}
+
+.edit-button {
+    position: absolute;
+    top: 100%;
 }

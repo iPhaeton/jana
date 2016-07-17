@@ -9,6 +9,7 @@ var config = require("config");
 var routes = require("./routes/indexRoute");
 var shop = require("./routes/shopRoute");
 var dbsearch = require("routes/dbSearchRoute");
+var dbsave = require("routes/dbSaveRoute");
 
 var app = express();
 module.exports = app;
@@ -41,9 +42,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 //test of the database
 require("middleware/dbTest")();
 
+/*var router = express.Router();
+app.use(router.all("*", (req, res, next) => {
+  var url = require("url");
+  var reqParsed = url.parse(req.url, true);
+  next();
+}));*/
+
 app.use("/", routes);
 app.use("/shop", shop);
-app.use("/dbsearch*", dbsearch);
+app.use("/dbsearch", dbsearch);
+app.use("/dbsave", dbsave);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

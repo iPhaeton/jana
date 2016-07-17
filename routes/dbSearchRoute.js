@@ -6,12 +6,12 @@ var HttpError = require("errors").HttpError;
 var router = express.Router();
 
 router.get("*", (req, res , next) => {
-    var reqParsed = url.parse(req.url, true);
+    var query = url.parse(req.url, true).query;
 
-    var model = parseSpecs(reqParsed.query);
+    var model = parseSpecs(query);
     if (!model) return next(new HttpError(400, "No model has been passed"));
 
-    dbSearch(model, reqParsed.query, (err, commodities) => {
+    dbSearch(model, query, (err, commodities) => {
         if (err) return next(err);
         res.json(commodities);
     });

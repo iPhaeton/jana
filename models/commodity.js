@@ -15,4 +15,15 @@ var commoditySchema = new Schema ({
   }
 });
 
+commoditySchema.methods.writeData = function (data, next, callback) {
+  for (var property in data) {
+    this.set(property, data[property]);
+  };
+  
+  this.save(function (err) {
+    if (err) next(err);
+    callback();
+  })
+};
+
 module.exports = mongoose.model ("Commodity", commoditySchema);

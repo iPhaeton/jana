@@ -11,3 +11,19 @@ function makeDBSearchRequest (reqStr, callback) {
         callback(err);
     });
 };
+
+function makeDBSaveRequest (reqStr, form, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: form.serialize(),
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            403: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    })
+};

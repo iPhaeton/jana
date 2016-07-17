@@ -1,8 +1,10 @@
+var mode = "view";
+
 $(document).ready(() => {
     var thumbnails;
     var config;
 
-    $(".side-menu").on("click", ".menu-button", (event) => {
+    $(".side-menu").on("click", ".menu-button", function (event) {
         var target = $(event.target);
         target = findTarget(target, "menu-button", "a");
         if(!target) {
@@ -28,7 +30,7 @@ $(document).ready(() => {
                 return;
             };
 
-            thumbnails = new Thumbnails("#commodity-list", data, parseConfig(config));
+            if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, parseConfig(config));
             thumbnails.clear();
             thumbnails.build();
             thumbnails.render();
@@ -36,6 +38,21 @@ $(document).ready(() => {
 
         event.preventDefault();
     });
+
+    $(".edit-button").on("click", function (event) {
+        if (mode !== "edit") {
+            mode = "edit";
+            $(this).text("Просмотр");
+        } else {
+            mode = "view";
+            $(this).text("Редактирование");
+        }
+
+        if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, parseConfig(config));
+        thumbnails.clear();
+        thumbnails.build();
+        thumbnails.render();
+    })
 });
 
 //parse the config object------------------------------------------------------------------------------------------
@@ -126,7 +143,7 @@ function Thumbnail (data, config) {
 
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + ">");
     
-    var button = $("<button type='button' class='btn btn-default'>Подробнее>></button>");
+    var button = $("<button type='button' class='btn btn-default'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
     button.on("click", function (event) {
         self.details.render();
     });
@@ -190,12 +207,30 @@ Details.prototype.render = function () {
         })
     });
 
-    closeButton.on("click", function (event) {
-        self.close();
-    });
+    closeButton.on("click", this.close.bind(this));
 
     var clearFix = ($("<div class='clearfix'></div>"));
     
+    var content = this.createContent();
+
+    this.elem.append(closeButton);
+    this.elem.append(clearFix);
+    this.elem.append(content);
+
+    $(document.body).append(this.elem);
+    this.elem.css({
+        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+        padding: "0 0 1px 1px"
+    });
+
+    $(window).on("resize", this.position.bind(this));
+
+    this.position();
+};
+
+Details.prototype.createContent = function () {
+    var content = $("<form></form>");
+
     var keyList = $("<ul class='list-group'></ul>");
     var valueList = $("<ul class='list-group'></ul>");
 
@@ -211,25 +246,41 @@ Details.prototype.render = function () {
     //for some reason properties are read in the opposite order
     var items = gatherItemsInOrder(this.parentElem.data.specs);
 
-    for(var i = items.length - 1; i >= 0; i--) {
-        keyList.append($("<li class='list-group-item'>" + items[i] + "</li>"));
-        valueList.append($("<li class='list-group-item'>" + this.parentElem.data.specs[items[i]] + "</li>"));
+    if (mode !== "edit") {
+        for (var i = items.length - 1; i >= 0; i--) {
+            keyList.append($("<li class='list-group-item'>" + items[i] + "</li>"));
+            valueList.append($("<li class='list-group-item'>" + this.parentElem.data.specs[items[i]] + "</li>"));
+        };
+    } else {
+        for (var i = items.length - 1; i >= 0; i--) {
+            keyList.append($("<input class='list-group-item' name='key'" + " value='" + items[i] + "'>"));
+            valueList.append($("<input class='list-group-item' name='val'" + " value='" + this.parentElem.data.specs[items[i]] + "'>"));
+        };
+    }
+
+    content.append(keyList);
+    content.append(valueList);
+    content.append($("<div class='clearfix'></div>"));
+
+    if (mode === "edit") {
+        var saveButton = $("<button type='submit' class='btn btn-default'>Сохранить</button>");
+        saveButton.css({
+            float: "right"
+        });
+
+        var cancelButton = $("<button type='button' class='btn btn-default'>Отмена</button>");
+        cancelButton.css({
+            float: "right"
+        });
+        cancelButton.on("click", this.close.bind(this));
+
+        content.append(cancelButton);
+        content.append(saveButton);
     };
-
-    this.elem.append(closeButton);
-    this.elem.append(clearFix);
-    this.elem.append(keyList);
-    this.elem.append(valueList);
-
-    $(document.body).append(this.elem);
-    this.elem.css({
-        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-        padding: "0 0 1px 1px"
-    });
-
-    $(window).on("resize", this.position.bind(this));
-
-    this.position();
+    
+    content.on("submit", this.submit.bind(this));
+    
+    return content;
 };
 
 Details.prototype.close = function () {
@@ -237,9 +288,22 @@ Details.prototype.close = function () {
     $(window).off("resize", this.position.bind(this));
 };
 
+//set position when the window is resized
 Details.prototype.position = function () {
     this.elem.css({
         top: "10%",
         left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
     });
+};
+
+Details.prototype.submit = function (event) {
+    var form = $(event.target);
+    
+    makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parentElem.data._id, form, function (err) {
+        if (err) alert (err.message);
+    });
+
+    this.close();
+    
+    event.preventDefault();
 };
