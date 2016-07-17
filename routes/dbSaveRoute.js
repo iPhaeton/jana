@@ -20,7 +20,7 @@ function parseBody(body) {
     for (var i = 0; i < body.key.length; i++) {
         if (body.key[i] === "number" || body.key[i] === "img"){
             reqBody[body.key[i]] =  body.val[i];
-        } else {
+        } else if (body.key[i]) {
             reqBody.specs[body.key[i]] =  body.val[i];
         }
     };

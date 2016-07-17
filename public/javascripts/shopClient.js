@@ -1,8 +1,15 @@
 var mode = "view";
 
+var thumbnails,
+    config,
+    data;
+
 $(document).ready(() => {
-    var thumbnails;
-    var config;
+    var editPanel = new EditPanel();
+
+    $(document.body).css({
+        height: $(window).height()
+    });
 
     $(".side-menu").on("click", ".menu-button", function (event) {
         var target = $(event.target);
@@ -12,48 +19,43 @@ $(document).ready(() => {
             return;
         };
 
-        async.parallel([
-            //get configuration
-            function (callback) {
-                if (!config) makeDBSearchRequest("/dbsearch?db=Config", callback);
-                else (callback(null, config));
-            },
-            function (callback) {
-                makeDBSearchRequest(target.attr("href"), callback);
-            }
-        ], function (err, results) {
-            var config = results[0][0],
-                data = results[1];
-
-            if (err) {
-                alert("Извините, проблема с базой данных");
-                return;
-            };
-
-            if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, parseConfig(config));
-            thumbnails.clear();
-            thumbnails.build();
-            thumbnails.render();
-        });
+        getData(target.attr("href"), createContent);
 
         event.preventDefault();
     });
-
-    $(".edit-button").on("click", function (event) {
-        if (mode !== "edit") {
-            mode = "edit";
-            $(this).text("Просмотр");
-        } else {
-            mode = "view";
-            $(this).text("Редактирование");
-        }
-
-        if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, parseConfig(config));
-        thumbnails.clear();
-        thumbnails.build();
-        thumbnails.render();
-    })
 });
+
+function getData(url, callback) {
+    async.parallel([
+        //get configuration
+        function (callback) {
+            makeDBSearchRequest("/dbsearch?db=Config", callback);
+        },
+        function (callback) {
+            makeDBSearchRequest(url, callback);
+        }
+    ], function (err, results) {
+        config = parseConfig(results[0][0]);
+        data = results[1];
+        data.url = url;
+
+        if (err) {
+            alert("Извините, проблема с базой данных");
+            return;
+        };
+
+        callback();
+    });
+};
+
+function createContent () {
+    if (!data || !config) return;
+
+    if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, config);
+    thumbnails.clear();
+    thumbnails.build(data, config);
+    thumbnails.render();
+};
 
 //parse the config object------------------------------------------------------------------------------------------
 function parseConfig(config) {
@@ -67,16 +69,17 @@ function parseConfig(config) {
 };
 
 //Thumbnails-------------------------------------------------------------------------------------------------------
-function Thumbnails (elem, data, config) {
+function Thumbnails (elem, config) {
     this.elem = $(elem);
-    this.data = data;
-    this.config = config;
     this.tiles = new Set();
 };
 
-Thumbnails.prototype.build = function () {
+Thumbnails.prototype.build = function (data, config) {
+    this.data = data;
+    this.config = config;
+
     for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add(new Thumbnail(this.data[i], this.config));
+        this.tiles.add(new Thumbnail(this, this.data[i], this.config));
     };
 };
 
@@ -104,7 +107,8 @@ Thumbnails.prototype.unrender = function () {
 };
 
 //Thumbnail--------------------------------------------------------------------------------------------------------
-function Thumbnail (data, config) {
+function Thumbnail (parent, data, config) {
+    this.parent = parent;
     this.data = data;
     this.details = new Details(this);
     var self = this;
@@ -166,10 +170,10 @@ function Thumbnail (data, config) {
 };
 
 //Details---------------------------------------------------------------------------------------------------------------
-function Details (parentElem) {
-    if (!parentElem.data) return;
+function Details (parent) {
+    if (!parent.data) return;
 
-    this.parentElem = parentElem;
+    this.parent = parent;
 
     this.elem = $("<div id='details'></div>");
     this.elem.css({
@@ -231,56 +235,92 @@ Details.prototype.render = function () {
 Details.prototype.createContent = function () {
     var content = $("<form></form>");
 
-    var keyList = $("<ul class='list-group'></ul>");
-    var valueList = $("<ul class='list-group'></ul>");
+    this.keyList = $("<ul class='list-group'></ul>");
+    this.valueList = $("<ul class='list-group'></ul>");
+    this.removeList = $("<ul class='list-group'></ul>");
 
-    keyList.css({
+    this.keyList.css({
         float: "left",
         margin: "0px"
     });
-    valueList.css({
+    this.valueList.css({
+        float: "left",
+        margin: "0px"
+    });
+    this.removeList.css({
         float: "left",
         margin: "0px"
     });
 
     //for some reason properties are read in the opposite order
-    var items = gatherItemsInOrder(this.parentElem.data.specs);
+    var items = gatherItemsInOrder(this.parent.data.specs);
 
-    if (mode !== "edit") {
-        for (var i = items.length - 1; i >= 0; i--) {
-            keyList.append($("<li class='list-group-item'>" + items[i] + "</li>"));
-            valueList.append($("<li class='list-group-item'>" + this.parentElem.data.specs[items[i]] + "</li>"));
-        };
-    } else {
-        for (var i = items.length - 1; i >= 0; i--) {
-            keyList.append($("<input class='list-group-item' name='key'" + " value='" + items[i] + "'>"));
-            valueList.append($("<input class='list-group-item' name='val'" + " value='" + this.parentElem.data.specs[items[i]] + "'>"));
-        };
-    }
+    for (var i = items.length - 1; i >= 0; i--) {
+        this.addField({key: items[i], val: this.parent.data.specs[items[i]]});
+    };
 
-    content.append(keyList);
-    content.append(valueList);
+    content.append(this.keyList);
+    content.append(this.valueList);
+    content.append(this.removeList);
     content.append($("<div class='clearfix'></div>"));
 
     if (mode === "edit") {
-        var saveButton = $("<button type='submit' class='btn btn-default'>Сохранить</button>");
+        var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
         saveButton.css({
             float: "right"
         });
 
-        var cancelButton = $("<button type='button' class='btn btn-default'>Отмена</button>");
+        var addButton = $("<button type='button' class='btn btn-default' id='add-button'>Добавить</button>");
+
+        var cancelButton = $("<button type='button' class='btn btn-default' id='cancel-button'>Отмена</button>");
         cancelButton.css({
             float: "right"
         });
-        cancelButton.on("click", this.close.bind(this));
 
         content.append(cancelButton);
+        content.append(addButton);
         content.append(saveButton);
     };
     
     content.on("submit", this.submit.bind(this));
+    content.on("click", ".btn", this.editButtonClick.bind(this));
     
     return content;
+};
+
+Details.prototype.editButtonClick = function (event) {
+    var target = $(event.target);
+    target = findTarget(target, "btn");
+    if (!target) return;
+
+    switch (target.attr("id")) {
+        case "add-button":
+            this.addField();
+            return;
+        case "rm-button":
+            this.removeField(target.attr("num"));
+            return
+        case "cancel-button":
+            this.close();
+            return;
+    }
+};
+
+Details.prototype.addField = function (value) {
+    if (mode === "edit") {
+        this.keyList.append($("<input class='list-group-item' name='key' value='" + value.key + "'>"));
+        this.valueList.append($("<input class='list-group-item' name='val' value='" + value.val +"'>"));
+        this.removeList.append($("<input type='button' class='btn list-group-item' id='rm-button' num='" + this.removeList.children().length + "' value='Удалить'>"));
+    } else {
+        this.keyList.append($("<li class='list-group-item'>" + value.key + "</li>"));
+        this.valueList.append($("<li class='list-group-item'>" + value.val + "</li>"));
+    };
+};
+
+Details.prototype.removeField = function (num) {
+    this.keyList.children().eq(+num).remove();
+    this.valueList.children().eq(+num).remove();
+    this.removeList.children().eq(+num).remove();
 };
 
 Details.prototype.close = function () {
@@ -299,11 +339,59 @@ Details.prototype.position = function () {
 Details.prototype.submit = function (event) {
     var form = $(event.target);
     
-    makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parentElem.data._id, form, function (err) {
+    makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parent.data._id, form, function (err) {
         if (err) alert (err.message);
+        getData(data.url, createContent);
     });
 
     this.close();
-    
+
     event.preventDefault();
+};
+
+//Edit switch----------------------------------------------------------------------------------------------------------
+function EditSwitch(parent) {
+    this.parent = parent;
+
+    this.elem = $("<button type='button' class='btn btn-default'>Редактировать</button>");
+    this.elem.appendTo(document.body);
+
+    this.elem.css({
+        position: "absolute",
+        top: "95%",
+        left: "90%"
+    });
+
+    $(this.elem).on("click", this.switchMode.bind(this));
+};
+
+EditSwitch.prototype.switchMode = function () {
+    if (mode !== "edit") {
+        mode = "edit";
+        this.elem.text("Просмотр");
+    } else {
+        mode = "view";
+        this.elem.text("Редактирование");
+    }
+
+    createContent();
+
+    this.parent.toggle();
+};
+
+//Edit panel-----------------------------------------------------------------------------------------------------------
+function EditPanel () {
+    this.switch = new EditSwitch(this);
+
+    this.elem = $(".edit-panel");
+    this.elem.on("click", ".edit-button", this.buttonClick);
+};
+
+EditPanel.prototype.buttonClick = function (event) {
+    
+};
+
+EditPanel.prototype.toggle = function () {
+    if (this.elem.attr("hidden")) this.elem.removeAttr("hidden");
+    else this.elem.attr("hidden", "true");
 };
