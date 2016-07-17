@@ -308,12 +308,12 @@ Details.prototype.editButtonClick = function (event) {
 
 Details.prototype.addField = function (value) {
     if (mode === "edit") {
-        this.keyList.append($("<input class='list-group-item' name='key' value='" + value.key + "'>"));
-        this.valueList.append($("<input class='list-group-item' name='val' value='" + value.val +"'>"));
+        this.keyList.append($("<input class='list-group-item' name='key' value='" + (value ? value.key : "") + "'>"));
+        this.valueList.append($("<input class='list-group-item' name='val' value='" + (value ? value.val : "") +"'>"));
         this.removeList.append($("<input type='button' class='btn list-group-item' id='rm-button' num='" + this.removeList.children().length + "' value='Удалить'>"));
     } else {
-        this.keyList.append($("<li class='list-group-item'>" + value.key + "</li>"));
-        this.valueList.append($("<li class='list-group-item'>" + value.val + "</li>"));
+        this.keyList.append($("<li class='list-group-item'>" + (value ? value.key : "") + "</li>"));
+        this.valueList.append($("<li class='list-group-item'>" + (value ? value.val : "") + "</li>"));
     };
 };
 
