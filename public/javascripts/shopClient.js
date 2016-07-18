@@ -415,6 +415,7 @@ EditSwitch.prototype.createUploadInput = function () {
     uploadInput.on("change", function (event) {
         makeFileSaveRequest("/savefile?id=" + callerId, this.files[0], function (err) {
             if (err) alert (err.message);
+            else alert ("File has been successfully uploaded");
         });
     });
 };
