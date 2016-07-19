@@ -10,6 +10,7 @@ var routes = require("./routes/indexRoute");
 var shop = require("./routes/shopRoute");
 var dbsearch = require("routes/dbSearchRoute");
 var dbsave = require("routes/dbSaveRoute");
+var filesave = require("routes/fileSaveRoute");
 
 var app = express();
 module.exports = app;
@@ -53,6 +54,7 @@ app.use("/", routes);
 app.use("/shop", shop);
 app.use("/dbsearch", dbsearch);
 app.use("/dbsave", dbsave);
+app.use("/savefile", filesave);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -84,8 +86,6 @@ if (app.get('env') === 'development') {
 };
 
 //server
-var server = app.listen(process.env.PORT || 3000, function () {
-  logger.log("Server listening on port " + (process.env.PORT || 3000));
+var server = app.listen(process.env.PORT || config.get("port"), process.env.IP || "0.0.0.0", function () {
+  logger.log("Server listening on port " + process.env.PORT || config.get("port"));
 });
-
-module.exports = app;

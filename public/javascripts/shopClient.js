@@ -146,6 +146,15 @@ function Thumbnail (parent, data, config) {
     });
 
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + ">");
+    //make the image clickable
+    if (mode === "edit") {
+        img.hover(function () {
+            $(this).css({
+                cursor: "pointer"
+            })
+        });
+        img.on("click", this.chooseImage.bind(this));
+    };
     
     var button = $("<button type='button' class='btn btn-default'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
     button.on("click", function (event) {
@@ -164,9 +173,14 @@ function Thumbnail (parent, data, config) {
     };
 
     div.append(button);
+
     col.append(div);
 
     return col;
+};
+
+Thumbnail.prototype.chooseImage = function (event) {
+    $("#uploadInput").trigger("click", [this.data._id]);
 };
 
 //Details---------------------------------------------------------------------------------------------------------------
@@ -369,14 +383,41 @@ EditSwitch.prototype.switchMode = function () {
     if (mode !== "edit") {
         mode = "edit";
         this.elem.text("Просмотр");
+        //create an input for uploading an image for a thumbnail
+        if (!$("#uploadInput").length) this.createUploadInput();
     } else {
         mode = "view";
         this.elem.text("Редактирование");
-    }
+    };
 
     createContent();
 
     this.parent.toggle();
+};
+
+EditSwitch.prototype.createUploadInput = function () {
+    var uploadInput = $("<input type='file'>");
+    uploadInput.attr("id", "uploadInput");
+    uploadInput.css({
+        width: "0",
+        height: "0",
+        border: "0",
+        padding: "0"
+    });
+    $(document.body).append(uploadInput);
+
+    var callerId;
+
+    uploadInput.on("click", (event, id) => {
+        callerId = id;
+    });
+
+    uploadInput.on("change", function (event) {
+        makeFileSaveRequest("/savefile?id=" + callerId, this.files[0], function (err) {
+            if (err) alert (err.message);
+            else alert ("File has been successfully uploaded");
+        });
+    });
 };
 
 //Edit panel-----------------------------------------------------------------------------------------------------------

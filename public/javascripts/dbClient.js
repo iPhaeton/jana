@@ -25,5 +25,23 @@ function makeDBSaveRequest (reqStr, form, callback) {
                 callback(JSON.parse(jqXHR.responseText));
             }
         }
-    })
+    });
+};
+
+function makeFileSaveRequest(reqStr, file, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: file,
+        processData: false,
+        contentType: false,
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            403: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    });
 };
