@@ -10,7 +10,7 @@ router.post("*", (req, res, next) => {
     //find and save a doc
     dbSave(query.db, query.id, parseBody(req.body), next, function (err) {
         if (err) return next(err);
-        res.send(200);
+        res.sendStatus(200);
     })
 });
 

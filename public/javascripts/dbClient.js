@@ -33,6 +33,9 @@ function makeFileSaveRequest(reqStr, file, callback) {
         url: reqStr,
         type: "POST",
         data: file,
+        headers: {
+            "x-file-name": file.name
+        },
         processData: false,
         contentType: false,
         statusCode:{
