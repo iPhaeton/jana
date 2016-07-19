@@ -86,6 +86,6 @@ if (app.get('env') === 'development') {
 };
 
 //server
-var server = app.listen(config.get("port"), function () {
-  logger.log("Server listening on port " + config.get("port"));
+var server = app.listen(process.env.PORT || config.get("port"), process.env.IP || "0.0.0.0", function () {
+  logger.log("Server listening on port " + process.env.PORT || config.get("port"));
 });
