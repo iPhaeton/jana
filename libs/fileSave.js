@@ -9,7 +9,7 @@ module.exports = function (req, res, next) {
 
     var filePath = path.join(__dirname, "../public/images", req.header("x-file-name"));
     fs.access(filePath, (err) => {
-        if (!err) return next(new FileSaveError(400, "Файл с таким именем уже существует"));
+        //if (!err) return next(new FileSaveError(400, "Файл с таким именем уже существует"));
 
         var query = url.parse(req.url, true).query;
 
