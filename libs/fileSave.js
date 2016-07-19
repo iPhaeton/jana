@@ -18,8 +18,8 @@ module.exports = function (req, res, next) {
         req.pipe(fileStream);
 
         fileStream.on("close", () => {
-            filePath = pretifyFilePath(filePath);
-            dbSave("Commodity", query.id, {img: filePath}, next, (err) => {
+            //filePath = pretifyFilePath(filePath);
+            dbSave("Commodity", query.id, {img: "/images/" + req.header("x-file-name")}, next, (err) => {
                 if (err) return next(err);
                 res.sendStatus(200);
             });
