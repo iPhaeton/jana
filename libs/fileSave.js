@@ -9,24 +9,31 @@ module.exports = function (req, res, next) {
 
     var filePath = path.join(__dirname, "../public/images", req.header("x-file-name"));
     fs.access(filePath, (err) => {
-        //if (!err) return next(new FileSaveError(400, "Файл с таким именем уже существует"));
-
         var query = url.parse(req.url, true).query;
 
-        var fileStream = new fs.createWriteStream(filePath);
-
-        req.pipe(fileStream);
-
-        fileStream.on("close", () => {
+        //file exists
+        if (!err) {
             dbSave("Commodity", query.id, {img: "/images/" + req.header("x-file-name")}, next, (err) => {
                 if (err) return next(err);
                 res.sendStatus(200);
             });
-        });
+        //file is being uploaded
+        } else {
+            var fileStream = new fs.createWriteStream(filePath);
 
-        fileStream.on("error", (err) => {
-            next(err);
-        });
+            req.pipe(fileStream);
+
+            fileStream.on("close", () => {
+                dbSave("Commodity", query.id, {img: "/images/" + req.header("x-file-name")}, next, (err) => {
+                    if (err) return next(err);
+                    res.sendStatus(200);
+                });
+            });
+
+            fileStream.on("error", (err) => {
+                next(err);
+            });
+        };
     });
 };
 

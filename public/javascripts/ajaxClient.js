@@ -34,7 +34,7 @@ function makeFileSaveRequest(reqStr, file, callback) {
         type: "POST",
         data: file,
         headers: {
-            "x-file-name": file.name
+            "x-file-name": file.name || file //file may be a file or a string with a file name
         },
         processData: false,
         contentType: false,

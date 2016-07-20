@@ -145,7 +145,7 @@ function Thumbnail (parent, data, config) {
         textAlign: "right"
     });
 
-    var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + ">");
+    var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
     //make the image clickable
     if (mode === "edit") {
         img.hover(function () {
@@ -157,7 +157,7 @@ function Thumbnail (parent, data, config) {
         img.on("contextmenu", this.showPopupMenu.bind(this));
     };
     
-    var button = $("<button type='button' class='btn btn-default'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
+    var button = $("<button type='button' class='btn btn-default details-button'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
     button.on("click", function (event) {
         self.details.render();
     });
@@ -185,26 +185,47 @@ Thumbnail.prototype.chooseImage = function (event) {
     $("#uploadInput").trigger("click", [this.data._id]);
 };
 
-Thumbnail.prototype.findImage = function (event) {
+Thumbnail.prototype.chooseImageOnServer = function (event) {
+    var target = $(event.target);
+    target = findTarget(target, "popup-button");
+    if(!target) return;
+
+    makeFileSaveRequest("/savefile?id=" + this.data._id, target.text(), function (err) {
+        if (err) alert (err.message);
+        getData(data.url, createContent);
+    });
+};
+
+Thumbnail.prototype.showDirList = function (event) {
     makeListRequest("/list?dir=images" , (err, list) => {
         if (err) alert(err.messge);
         
         var files = {};
         for (var i = 0; i < list.length; i++) {
-            files[list[i]] = null;
+            files[list[i]] = [this.chooseImageOnServer.bind(this), this.showDirPopupMenu.bind(this)];
         };
         
-        this.popupMenu = new PopupMenu(this.elem, null, files); //??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+        var menu = new PopupMenu(this.elem, null, files);
+        menu.elem.addClass("dir-list");
     });
 };
 
+Thumbnail.prototype.showDirPopupMenu = function (event) {
+    var menu = new PopupMenu(this.elem, event, {
+        "Посмотреть": null,
+        "Удалить": null
+    })
+};
+
 Thumbnail.prototype.showPopupMenu = function (event) {
+    $(".popup-menu").detach();
+
     if (this.popupMenu) {
         this.popupMenu.render(event);
     } else {
         this.popupMenu = new PopupMenu(this.elem, event, {
-            "Загрузить новое изображение": this.chooseImage.bind(this),
-            "Выбрать изображение на сервере": this.findImage.bind(this)
+            "Загрузить новое изображение": [this.chooseImage.bind(this)],
+            "Выбрать изображение на сервере": [this.showDirList.bind(this)]
         });
     };
     event.preventDefault();
@@ -467,11 +488,11 @@ EditPanel.prototype.toggle = function () {
 //Popup menu-----------------------------------------------------------------------------------------------------------
 function PopupMenu(parent, invokingEvent, items) {
     this.parent = parent;
-    this.elem = $("<div></div>");
+    this.elem = $("<div class='popup-menu'></div>");
     this.list = $("<ul class='list-group'></ul>");
     
     for (var item in items) {
-        this.addField(item, items[item]);
+        this.addField(item, items[item] ? items[item][0] : null, items[item] ? items[item][1] : null);
     };
     
     this.elem.append(this.list);
@@ -479,20 +500,21 @@ function PopupMenu(parent, invokingEvent, items) {
     this.render(invokingEvent);
 };
 
-PopupMenu.prototype.addField = function (itemName, onclick) {
-    var item = $("<li class='btn list-group-item'>" + itemName + "</li>");
-    /*item.css ({
-        maxWidth: "200px"
-    })*/
+PopupMenu.prototype.addField = function (itemName, onclick, oncontextmenu) {
+    var item = $("<li class='btn list-group-item popup-button'>" + itemName + "</li>");
+
     this.list.append(item);
-    
-    if (onclick) {
-        item.on("click", (event) => {
-            onclick(event);
-            event.preventDefault();
-            this.close();
-        });
-    };
+
+    item.on("click", (function (event) {
+        if (onclick) onclick(event);
+        event.preventDefault();
+        this.close();
+    }).bind(this));
+
+    item.on("contextmenu", (function (event) {
+        if (oncontextmenu) oncontextmenu(event);
+        event.preventDefault();
+    }).bind(this));
 };
 
 PopupMenu.prototype.render = function (invokingEvent) {
@@ -510,3 +532,17 @@ PopupMenu.prototype.render = function (invokingEvent) {
 PopupMenu.prototype.close = function () {
     this.elem.detach();
 };
+
+//Close all popups and details, if there are any-------------------------------------------------------------------------------------------------------------------------------
+$(document.body).on("click keydown", function (event) {
+    if (event.keyCode && event.keyCode !== 27) return;
+
+    //close all popups
+    $(".popup-menu").detach();
+
+    //if click is not on a details button, close all details
+    if(!findTarget($(event.target), "details-button") || event.keyCode === 27) {
+        $("#details").detach();
+        $(window).off("resize");
+    };
+});
