@@ -79,7 +79,7 @@ Thumbnails.prototype.build = function (data, config) {
     this.config = config;
 
     for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add(new Thumbnail(this, this.data[i], this.config));
+        this.tiles.add((new Thumbnail(this, this.data[i], this.config)).elem);
     };
 };
 
@@ -154,6 +154,7 @@ function Thumbnail (parent, data, config) {
             })
         });
         img.on("click", this.chooseImage.bind(this));
+        img.on("contextmenu", this.showPopupMenu.bind(this));
     };
     
     var button = $("<button type='button' class='btn btn-default'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
@@ -176,11 +177,28 @@ function Thumbnail (parent, data, config) {
 
     col.append(div);
 
-    return col;
+    //return col;
+    this.elem = col;
 };
 
 Thumbnail.prototype.chooseImage = function (event) {
     $("#uploadInput").trigger("click", [this.data._id]);
+};
+
+Thumbnail.prototype.findImage = function (event) {
+    return;
+};
+
+Thumbnail.prototype.showPopupMenu = function (event) {
+    if (this.popupMenu) {
+        this.popupMenu.render(event);
+    } else {
+        this.popupMenu = new PopupMenu(this.elem, event, {
+            "Загрузить новое изображение": this.chooseImage.bind(this),
+            "Выбрать изображение на сервере": this.findImage.bind(this)
+        });
+    };
+    event.preventDefault();
 };
 
 //Details---------------------------------------------------------------------------------------------------------------
@@ -435,4 +453,43 @@ EditPanel.prototype.buttonClick = function (event) {
 EditPanel.prototype.toggle = function () {
     if (this.elem.attr("hidden")) this.elem.removeAttr("hidden");
     else this.elem.attr("hidden", "true");
+};
+
+//Popup menu-----------------------------------------------------------------------------------------------------------
+function PopupMenu(parent, invokingEvent, items) {
+    this.parent = parent;
+    this.elem = $("<div></div>");
+    this.list = $("<ul class='list-group'></ul>");
+    
+    for (var item in items) {
+        this.addField(item, items[item]);
+    };
+    
+    this.elem.append(this.list);
+    
+    this.render(invokingEvent);
+};
+
+PopupMenu.prototype.addField = function (itemName, onclick) {
+    var item = $("<li class='btn list-group-item'>" + itemName + "</li>");
+    /*item.css ({
+        maxWidth: "200px"
+    })*/
+    this.list.append(item);
+    item.on("click", onclick);
+};
+
+PopupMenu.prototype.render = function (invokingEvent) {
+    var offset = this.parent.offset()
+    this.parent.append(this.elem);
+    this.elem.css({
+        position: "absolute",
+        left: invokingEvent.clientX - offset.left + "px",
+        top: invokingEvent.clientY - offset.top + "px",
+        zIndex: "1"
+    });
+};
+
+PopupMenu.prototype.close = function () {
+    this.elem.detach();
 };

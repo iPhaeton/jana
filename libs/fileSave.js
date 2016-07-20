@@ -18,7 +18,6 @@ module.exports = function (req, res, next) {
         req.pipe(fileStream);
 
         fileStream.on("close", () => {
-            //filePath = pretifyFilePath(filePath);
             dbSave("Commodity", query.id, {img: "/images/" + req.header("x-file-name")}, next, (err) => {
                 if (err) return next(err);
                 res.sendStatus(200);
@@ -40,8 +39,3 @@ function checkFile(fileName) {
         return true;
     };
 };
-
-function pretifyFilePath(filePath) {
-    //return filePath.split("\\").join("/");
-    return filePath.split("\\").slice(-2).join("\\");
-}
