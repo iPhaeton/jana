@@ -186,7 +186,16 @@ Thumbnail.prototype.chooseImage = function (event) {
 };
 
 Thumbnail.prototype.findImage = function (event) {
-    return;
+    makeListRequest("/list?dir=images" , (err, list) => {
+        if (err) alert(err.messge);
+        
+        var files = {};
+        for (var i = 0; i < list.length; i++) {
+            files[list[i]] = null;
+        };
+        
+        this.popupMenu = new PopupMenu(this.elem, null, files); //??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+    });
 };
 
 Thumbnail.prototype.showPopupMenu = function (event) {
@@ -476,7 +485,14 @@ PopupMenu.prototype.addField = function (itemName, onclick) {
         maxWidth: "200px"
     })*/
     this.list.append(item);
-    item.on("click", onclick);
+    
+    if (onclick) {
+        item.on("click", (event) => {
+            onclick(event);
+            event.preventDefault();
+            this.close();
+        });
+    };
 };
 
 PopupMenu.prototype.render = function (invokingEvent) {
@@ -484,8 +500,9 @@ PopupMenu.prototype.render = function (invokingEvent) {
     this.parent.append(this.elem);
     this.elem.css({
         position: "absolute",
-        left: invokingEvent.clientX - offset.left + "px",
-        top: invokingEvent.clientY - offset.top + "px",
+        left: invokingEvent ? (invokingEvent.clientX - offset.left + "px") : 
+            ((window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) - offset.left + "px"),
+        top: invokingEvent ? (invokingEvent.clientY - offset.top + "px") : "10%",
         zIndex: "1"
     });
 };

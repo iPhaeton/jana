@@ -11,6 +11,7 @@ var shop = require("./routes/shopRoute");
 var dbsearch = require("routes/dbSearchRoute");
 var dbsave = require("routes/dbSaveRoute");
 var filesave = require("routes/fileSaveRoute");
+var list = require("routes/listRoute");
 
 var app = express();
 module.exports = app;
@@ -55,6 +56,7 @@ app.use("/shop", shop);
 app.use("/dbsearch", dbsearch);
 app.use("/dbsave", dbsave);
 app.use("/savefile", filesave);
+app.use("/list", list);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
