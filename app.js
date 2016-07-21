@@ -73,7 +73,7 @@ app.use(function(err, req, res, next) {
 
   if (app.get('env') === 'development') {
     return next(err);
-  }
+  };
 
   res.status(err.status || 500);
   res.render('error', {

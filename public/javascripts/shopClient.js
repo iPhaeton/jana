@@ -211,10 +211,15 @@ Thumbnail.prototype.showDirList = function (event) {
 };
 
 Thumbnail.prototype.showDirPopupMenu = function (event) {
+    var target = findTarget($(event.target), "popup-button");
+    if (!target) return;
+    
+    this.selectedImage = target.text();
+    
     var menu = new PopupMenu(this.elem, event, {
-        "Посмотреть": null,
+        "Посмотреть": [this.showImage.bind(this)],
         "Удалить": null
-    })
+    });
 };
 
 Thumbnail.prototype.showPopupMenu = function (event) {
@@ -229,6 +234,20 @@ Thumbnail.prototype.showPopupMenu = function (event) {
         });
     };
     event.preventDefault();
+};
+
+Thumbnail.prototype.showImage = function (event) {
+    var parentList = $(".dir-list");
+    
+    this.iframe = $("<iframe id='image-preview' src='images/" + this.selectedImage + "' scrolling='no'></iframe>");
+    this.iframe.appendTo(parentList.parent()); 
+    this.iframe.css({
+        position: "absolute",
+        top: parentList.position().top + "px",
+        left: parentList.position().left + parentList.width() + "px",  //(window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px",
+        background: "#fff",
+        zIndex: "1"
+    })
 };
 
 //Details---------------------------------------------------------------------------------------------------------------
@@ -522,9 +541,9 @@ PopupMenu.prototype.render = function (invokingEvent) {
     this.parent.append(this.elem);
     this.elem.css({
         position: "absolute",
-        left: invokingEvent ? (invokingEvent.clientX - offset.left + "px") : 
+        left: invokingEvent ? (invokingEvent.clientX - offset.left + $(window).scrollLeft() + "px") : 
             ((window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) - offset.left + "px"),
-        top: invokingEvent ? (invokingEvent.clientY - offset.top + "px") : "10%",
+        top: invokingEvent ? (invokingEvent.clientY - offset.top + $(window).scrollTop() + "px") : "10%",
         zIndex: "1"
     });
 };
@@ -538,7 +557,13 @@ $(document.body).on("click keydown", function (event) {
     if (event.keyCode && event.keyCode !== 27) return;
 
     //close all popups
-    $(".popup-menu").detach();
+    
+    
+    //close image preview
+    if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
+        $("#image-preview").remove();
+        $(".popup-menu").detach();
+    };
 
     //if click is not on a details button, close all details
     if(!findTarget($(event.target), "details-button") || event.keyCode === 27) {
