@@ -237,6 +237,7 @@ Thumbnail.prototype.showPopupMenu = function (event) {
 };
 
 Thumbnail.prototype.showImage = function (event) {
+    $("#image-preview").remove();
     var parentList = $(".dir-list");
     
     this.iframe = $("<iframe id='image-preview' src='images/" + this.selectedImage + "' scrolling='no'></iframe>");
@@ -244,10 +245,23 @@ Thumbnail.prototype.showImage = function (event) {
     this.iframe.css({
         position: "absolute",
         top: parentList.position().top + "px",
-        left: parentList.position().left + parentList.width() + "px",  //(window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px",
+        left: parentList.position().left + parentList.width() + "px",
         background: "#fff",
         zIndex: "1"
-    })
+    });
+
+    this.iframe.on("load", (function () {
+        var img = this.iframe.contents().find("img");
+        if ((img.width() > img.height()) && img.width() > this.iframe.width()) {
+            $(img).css({
+                width: "100%"
+            });
+        } else if (img.height() > this.iframe.height()) {
+            $(img).css({
+                height: "100%"
+            });
+        };
+    }).bind(this));
 };
 
 //Details---------------------------------------------------------------------------------------------------------------
@@ -556,10 +570,7 @@ PopupMenu.prototype.close = function () {
 $(document.body).on("click keydown", function (event) {
     if (event.keyCode && event.keyCode !== 27) return;
 
-    //close all popups
-    
-    
-    //close image preview
+    //close image preview and popups
     if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
         $("#image-preview").remove();
         $(".popup-menu").detach();
