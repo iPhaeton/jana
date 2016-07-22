@@ -49,6 +49,19 @@ function makeFileSaveRequest(reqStr, file, callback) {
     });
 };
 
+function makeFileDeleteRequest(reqStr, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "GET"
+    })
+    .done(function () {
+        callback();
+    })
+    .fail(function (xhr, status, err) {
+        callback(err);
+    });
+}
+
 function makeListRequest(reqStr, callback) {
     $.ajax({
         url: reqStr,

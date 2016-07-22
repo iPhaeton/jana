@@ -218,7 +218,7 @@ Thumbnail.prototype.showDirPopupMenu = function (event) {
     
     var menu = new PopupMenu(this.elem, event, {
         "Посмотреть": [this.showImage.bind(this)],
-        "Удалить": null
+        "Удалить": [this.deleteImage.bind(this)]
     });
 };
 
@@ -262,6 +262,13 @@ Thumbnail.prototype.showImage = function (event) {
             });
         };
     }).bind(this));
+};
+
+Thumbnail.prototype.deleteImage = function (event) {
+    makeFileDeleteRequest("/delfile?dir=images&file=" + this.selectedImage, function (err) {
+        if (err) alert(err.message);
+        getData(data.url, createContent);
+    });
 };
 
 //Details---------------------------------------------------------------------------------------------------------------
