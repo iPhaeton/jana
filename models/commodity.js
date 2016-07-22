@@ -3,10 +3,10 @@ var mongoose = require("libs/mongoose");
 var Schema = mongoose.Schema;
 
 var commoditySchema = new Schema ({
-  number: {
+  /*number: {
     type: String,
     unique: true
-  },
+  },*/
   img: {
     type: String
   },

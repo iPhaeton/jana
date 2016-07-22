@@ -1,9 +1,13 @@
 //findTarget(initial target from event.targe, class or id to define the target, element inside the target that will be returned instead of target - optional)
-function findTarget(target, criterion, tag) {
+function findTarget(target, criteria, tag) {
+    criteria = criteria.split(" ");
+
     do {
-        if ((target.hasClass(criterion)) || (target.attr("id") === criterion)) {
-            if (tag) return target.children(tag);
-            else return target;
+        for (var i = 0; i < criteria.length; i++) {
+            if ((target.hasClass(criteria[i])) || (target.attr("id") === criteria[i])) {
+                if (tag) return target.children(tag);
+                else return target;
+            };
         };
         target = target.parent();
     } while (target.length);

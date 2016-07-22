@@ -1,7 +1,7 @@
 var mongoose = require("libs/mongoose");
 
 module.exports = function (model, id, data, next, callback) {
-    if (id) {
+    if (id !== "null") {
         mongoose.models[model].findById(id, (err, commodity) => {
             if (err) return callback (err);
         
