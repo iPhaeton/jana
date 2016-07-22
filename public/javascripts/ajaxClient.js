@@ -16,7 +16,7 @@ function makeDBSaveRequest (reqStr, form, callback) {
     $.ajax({
         url: reqStr,
         type: "POST",
-        data: form.serialize(),
+        data: (form ? form.serialize() : null),
         statusCode:{
             200: function () {
                 callback(null)

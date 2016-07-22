@@ -15,6 +15,8 @@ router.post("*", (req, res, next) => {
 });
 
 function parseBody(body) {
+    if (!body.key) return body;
+    
     var reqBody = {specs:{}};
 
     for (var i = 0; i < body.key.length; i++) {
