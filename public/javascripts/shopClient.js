@@ -633,3 +633,22 @@ Dialog.prototype.submit = function () {
 
     event.preventDefault();
 };
+
+//Close all popups and details, if there are any-------------------------------------------------------------------------------------------------------------------------------
+$(document.body).on("click keydown", function (event) {
+    if (event.keyCode && event.keyCode !== 27) return;
+
+    if (findTarget($(event.target), "details")) return;
+
+    //close image preview and popups
+    if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
+        $("#image-preview").remove();
+        $(".popup-menu").detach();
+    };
+
+    //if click is not on a details button, close all details
+    if(!findTarget($(event.target), "details-button edit-button") || event.keyCode === 27) {
+        $("#details").detach();
+        $(window).off("resize");
+    };
+});
