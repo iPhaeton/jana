@@ -553,7 +553,12 @@ EditPanel.prototype.addCommodity = function () {
 
 EditPanel.prototype.addCategory = function () {
     var dialog = new Dialog({"Категория": ""}, function (form) {
-
+        var categoryName = form.find("input[name='val']").val();
+        $(".side-menu").append("\
+        <li class='menu-button'>\
+            <a role='presentation' href='/dbsearch?db=Commodity&amp;specs=specs.Категория:" + categoryName + "'>" + categoryName + "</a>\
+        </li>\
+        ")
     });
     dialog.render();
 
@@ -616,7 +621,7 @@ Dialog = function (items, callback) {
         }
     };
 
-    Details.apply(this, fakeParent);
+    Details.call(this, fakeParent);
 
     this.callback = callback;
 };
