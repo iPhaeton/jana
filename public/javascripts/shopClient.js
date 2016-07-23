@@ -445,7 +445,7 @@ Details.prototype.position = function () {
 Details.prototype.submit = function (event) {
     var form = $(event.target);
     
-    makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parent.data._id, form, function (err) {
+    makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parent.data._id, form.serializeArray(), function (err) {
         if (err) alert (err.message);
         getData(data.url, createContent);
     });
@@ -538,20 +538,32 @@ EditPanel.prototype.toggle = function () {
 };
 
 EditPanel.prototype.addCommodity = function () {
-    var questionnaire = new Details ({
-        data: {
-            _id: null,
-            specs: {
-                "Категория": "Лыжи",
-                "Название": ""
-            }
-        }
-    });
+    var questionnaire = new Dialog ({
+        "Категория": "Лыжи",
+        "Название": ""
+    }, "Commodity");
 
     questionnaire.render();
 };
 
 EditPanel.prototype.addCategory = function () {
+    var dialog = new Dialog({"Категория": ""}, "Category", function (form) {
+        var formData = form.serializeArray();
+        return {
+            name: formData[1].value,
+            url: "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[1].value,
+            position: $(".menu-button").length
+        };
+    }, function (data) {
+        $(".side-menu").append("\
+            <li class='menu-button'>\
+                <a role='presentation' href='" + data.url + "'>" + data.name + "</a>\
+            </li>\
+        ");
+    });
+    dialog.render();
+
+/*
     var dialog = new Dialog({"Категория": ""}, function (form) {
         var categoryName = form.find("input[name='val']").val();
         $(".side-menu").append("\
@@ -560,8 +572,7 @@ EditPanel.prototype.addCategory = function () {
         </li>\
         ")
     });
-    dialog.render();
-
+*/
 };
 
 //Popup menu-----------------------------------------------------------------------------------------------------------
@@ -613,7 +624,9 @@ PopupMenu.prototype.close = function () {
 };
 
 //Dialog-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Dialog = function (items, callback) {
+//createData - function to create data, if data to be submitted doesn't comply with data if form
+//callback - to be called after a data is saved to a database
+Dialog = function (items, db, createData, callback) {
     var fakeParent = {
         data: {
             _id: null,
@@ -623,21 +636,35 @@ Dialog = function (items, callback) {
 
     Details.call(this, fakeParent);
 
+    this.db = db;
+    this.createData = createData;
     this.callback = callback;
 };
 
 Dialog.prototype = Object.create(Details.prototype);
 Dialog.prototype.constructor = Dialog;
 
-Dialog.prototype.submit = function () {
+Dialog.prototype.submit = function (event) {
+    var self = this;
     var form = $(event.target);
+
+    if (this.createData) var formData = this.createData(form);
+    else var formData = form.serializeArray();
+
+    if (!formData.url) formData.url = data.url;
+    makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
+        if (err) alert (err.message);
+        getData(formData.url, function () {
+            createContent();
+            if (self.callback) self.callback(formData);
+        });
+    });
 
     this.close();
 
-    this.callback(form);
-
     event.preventDefault();
 };
+
 
 //Close all popups and details, if there are any-------------------------------------------------------------------------------------------------------------------------------
 $(document.body).on("click keydown", function (event) {

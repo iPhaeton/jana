@@ -30,7 +30,8 @@ function dropDatabase (callback) {
 
 function requireModels (callback) {
     require("models/commodity");
-    require("models/config")
+    require("models/config");
+    require("models/category");
 
     async.each(Object.keys(mongoose.models), (model, callback) => {
         mongoose.models[model].ensureIndexes(callback);
@@ -132,7 +133,36 @@ function createTestDB(callback) {
                 })"
             }
         }
-    }
+    };
+
+    var categoryData = [
+        {
+            name: "Лыжи",
+            url: "/dbsearch?db=Commodity&specs=specs.Категория:Лыжи",
+            position: 1
+            //url: "/dbsearch?category=Лыжи&name=Самые%20лучшие%20лыжи&specs=specs.Цвет:Жёлтенькие;specs.Длина:1,5%20м",
+        },
+        {
+            name: "Сноуборды",
+            url: "/dbsearch?db=Commodity&specs=specs.Категория:Сноуборды",
+            position: 2
+        },
+        {
+            name: "Спортивная одежда",
+            url: "/dbsearch?db=Commodity&specs=specs.Категория:Спортивная%20одежда",
+            position: 3
+        },
+        {
+            name: "Спортивная обувь",
+            url: "/dbsearch?db=Commodity&specs=specs.Категория:Спортивная%20обувь",
+            position: 4
+        },
+        {
+            name: "Защитная экипировка",
+            url: "/dbsearch?db=Commodity&specs=specs.Категория:Защитная%20экипировка",
+            position: 5
+        }
+    ];
 
     async.parallel([
         function (callback) {
@@ -144,6 +174,12 @@ function createTestDB(callback) {
         function (callback) {
             var config = new mongoose.models.Config(configData);
             config.save(callback);
+        },
+        function (callback) {
+            async.each(categoryData, (data, callback) => {
+                var category = new mongoose.models.Category(data);
+                category.save(callback);
+            }, callback);
         }
     ], callback);
 };

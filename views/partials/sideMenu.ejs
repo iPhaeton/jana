@@ -1,7 +1,7 @@
 <ul class="nav nav-tabs side-menu">
-    <% for(var menuTitle in sideMenu) { %>
+    <% for(var i = 0; i < sideMenu.length; i++) { %>
         <li class="menu-button">
-            <a role="presentation" href=<%= sideMenu[menuTitle] %>><%= menuTitle %></a>
+            <a role="presentation" href=<%= sideMenu[i].url %>><%= sideMenu[i].name %></a>
         </li>
     <% } %>
 </ul>
