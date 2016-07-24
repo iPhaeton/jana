@@ -1,5 +1,6 @@
 var mongoose = require("libs/mongoose");
 var async = require("async");
+var config = require("config");
 
 module.exports = function () {
     var logger = new require('libs/logger')(module);
@@ -20,6 +21,12 @@ module.exports = function () {
 };
 
 function open (callback) {
+    if (process.env.PORT) {
+        mongoose.connect (config.get("mongoose:uri"), config.get("mongoose:options"));
+    } else {
+        mongoose.connect ("mongodb://localhost/jana-shop", config.get("mongoose:options"));
+    };
+
     mongoose.connection.on("open", callback)
 };
 

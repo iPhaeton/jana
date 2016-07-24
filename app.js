@@ -43,7 +43,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //test of the database
-require("middleware/dbTest")();
+//require("middleware/dbTest")();
+require("middleware/dbConnect")();
 
 /*var router = express.Router();
 app.use(router.all("*", (req, res, next) => {

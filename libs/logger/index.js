@@ -4,6 +4,7 @@ var ENV = process.env.NODE_ENV;
 module.exports = function (module) {
     var app = require("app");
     var self = new Object();
+    var moduleName = module.filename.split("\\");
 
     self.logger = require("./logger")(module, app);
 
@@ -27,7 +28,7 @@ module.exports = function (module) {
                 self.logger.error(err);
             });
         };
-        if (app.get("env") !== "development") self.logger.error(err);
+        if (app.get("env") !== "development" || moduleName[moduleName.length - 1] === "dbConnect.js") self.logger.error(err); //dbConnect. js isn't a part of express, therefore no next(err) may be called
     };
 
     return self;
