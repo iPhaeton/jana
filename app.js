@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var errorhandler = require("errorhandler");
 var config = require("config");
+var session = require('express-session');
 
 var routes = require("./routes/indexRoute");
 var shop = require("./routes/shopRoute");
@@ -53,6 +54,16 @@ app.use(router.all("*", (req, res, next) => {
   next();
 }));*/
 
+//sessions
+var sessionStore = require("libs/sessionStore");
+app.use(session({
+  secret: config.get('session:secret'),
+  key: config.get('session:key'),
+  cookie: config.get('session:cookie'),
+  store: sessionStore
+}));
+
+//routes
 app.use("/", routes);
 app.use("/shop", shop);
 app.use("/dbsearch", dbsearch);
