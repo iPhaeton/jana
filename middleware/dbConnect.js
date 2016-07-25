@@ -12,7 +12,13 @@ module.exports = function (req, res, next) {
         (callback) => {
             async.whilst(() => {
                 return countAttemptsToConnect < 10;
-            }, open, (err) => {
+            }, (callback) => {
+                setTimeout((() => {
+                    return function () {
+                        open(callback);
+                    };
+                })(), 100 * countAttemptsToConnect);
+            }, (err) => {
                 if (err) callback(err);
                 else callback();
             });

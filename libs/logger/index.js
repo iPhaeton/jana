@@ -5,6 +5,7 @@ module.exports = function (module) {
     var app = require("app");
     var self = new Object();
     var moduleName = module.filename.split("\\");
+    if (moduleName.length === 1) moduleName = module.filename.split("/");
 
     self.logger = require("./logger")(module, app);
 
