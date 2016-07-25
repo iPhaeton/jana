@@ -17,8 +17,9 @@ module.exports = function (req, res, next) {
                     return function () {
                         open(callback);
                     };
-                })(), 100 * countAttemptsToConnect);
+                })(), 1000 * countAttemptsToConnect);
             }, (err) => {
+                countAttemptsToConnect = undefined;
                 if (err) callback(err);
                 else callback();
             });
@@ -41,13 +42,13 @@ function open (callback) {
     };
 
     mongoose.connection.on("open", (err) => {
+        if(!countAttemptsToConnect) return;
         countAttemptsToConnect = 11;
         callback();
     });
     mongoose.connection.on("error", (err) => {
         if(!countAttemptsToConnect) return;
         if (countAttemptsToConnect > 9) {
-            countAttemptsToConnect = undefined;
             callback(err);
         }
         else callback();
