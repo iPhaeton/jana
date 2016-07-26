@@ -205,6 +205,22 @@ Dialog.prototype.submit = function (event) {
     event.preventDefault();
 };
 
+//Authentification Window----------------------------------------------------------------------------------------------------------------------------------------------------
+function AuthWindow (type) {
+    this.elem = $("<div id='authentification'></div>");
+    this.type = type
+
+    ModalWindow.call(this, this.elem);
+};
+
+AuthWindow.prototype.render = function () {
+    var form = $("<form></form>");
+    
+};
+
+AuthWindow.prototype = Object.create(ModalWindow.prototype);
+AuthWindow.prototype.constructor = AuthWindow;
+
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
 //elem contains jQuery objects to be addded to ModalWindow
 function ModalWindow (elem) {
