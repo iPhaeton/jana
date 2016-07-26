@@ -6,16 +6,18 @@ function Details (parent) {
 
     this.elem = $("<div id='details'></div>");
     this.elem.css({
-        position: "fixed",
         background: "#079",
         padding: "0px"
     });
+
+    ModalWindow.call(this, this.elem);
 };
+
+Details.prototype = Object.create(ModalWindow.prototype);
+Details.prototype.constructor = Details;
 
 Details.prototype.render = function () {
     var self = this;
-
-    $("#details").detach();
 
     if (this.elem.html()) {
         $(document.body).append(this.elem);
@@ -50,15 +52,7 @@ Details.prototype.render = function () {
     this.elem.append(clearFix);
     this.elem.append(content);
 
-    $(document.body).append(this.elem);
-    this.elem.css({
-        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-        padding: "0 0 1px 1px"
-    });
-
-    $(window).on("resize", this.position.bind(this));
-
-    this.position();
+    this._render();
 };
 
 Details.prototype.createContent = function () {
@@ -153,16 +147,7 @@ Details.prototype.removeField = function (num) {
 };
 
 Details.prototype.close = function () {
-    this.elem.detach();
-    $(window).off("resize", this.position.bind(this));
-};
-
-//set position when the window is resized
-Details.prototype.position = function () {
-    this.elem.css({
-        top: "10%",
-        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
-    });
+    this._close(true);
 };
 
 Details.prototype.submit = function (event) {
@@ -221,21 +206,37 @@ Dialog.prototype.submit = function (event) {
 };
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
-//elements contains jQuery objects to be addded to ModalWindow
-
-function ModalWindow (elements) {
-    this.elem = $("<div id='modal'></div>");
-    this.elem.css({
-        position: "fixed",
-        background: "#079",
-        padding: "0px"
-    });
-    
-    this.elements = elements;
+//elem contains jQuery objects to be addded to ModalWindow
+function ModalWindow (elem) {
+    this.elem = elem;
+    this.elem.addClass("mod");
 };
 
-ModalWindow.render = function () {
-    for (var elem in elements) {
-        this.elem.append(elements[elem]);
-    };
+ModalWindow.prototype._render = function () {
+    this.elem.css({
+        position: "fixed"
+    });
+    $(document.body).append(this.elem);
+    this.elem.css({
+        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+        padding: "0 0 1px 1px"
+    });
+
+    $(window).on("resize", this.position.bind(this));
+
+    this.position();
+};
+
+//set position when the window is resized
+ModalWindow.prototype.position = function () {
+    this.elem.css({
+        top: "10%",
+        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
+    });
+};
+
+ModalWindow.prototype._close = function (keepEvents) {
+    if (keepEvents) $(".mod").detach();
+    else $(".mod").remove();
+    $(window).off("resize");
 };
