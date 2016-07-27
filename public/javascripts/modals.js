@@ -213,13 +213,29 @@ function AuthWindow (type) {
     ModalWindow.call(this, this.elem);
 };
 
-AuthWindow.prototype.render = function () {
-    var form = $("<form></form>");
-    
-};
-
 AuthWindow.prototype = Object.create(ModalWindow.prototype);
 AuthWindow.prototype.constructor = AuthWindow;
+
+AuthWindow.prototype.render = function () { 
+    var form = $(
+    "<form>\
+        <div class='input-group'>\
+            <input type='text' class='form-control' name='username' placeholder='Имя пользователя'>\
+            <input type='text' class='form-control' name='password' placeholder='Пароль'>\
+        </div>\
+    </form>");
+    
+    var button = $("<button type='submit' class='btn btn-default' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация") + "</button>");
+    form.append(button);
+    
+    this.elem.append(form);
+    
+    this._render();
+};
+
+AuthWindow.prototype.close = function () {
+    this._close();
+};
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
 //elem contains jQuery objects to be addded to ModalWindow

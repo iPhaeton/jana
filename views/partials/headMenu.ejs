@@ -3,7 +3,7 @@
     <ul class="nav nav-pills head-menu__left head-menu__panel">
         <% for (var menuTitle in headMenuLeft) {%>
             <li>
-                <a role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
+                <a id=<%= headMenuLeft[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
             </li>
         <% } %>
     </ul>
@@ -12,7 +12,7 @@
         <ul class="nav nav-pills head-menu__right head-menu__panel">
             <% for (var menuTitle in headMenuRight) {%>
                 <li>
-                    <a role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
+                    <a id=<%= headMenuRight[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
                 </li>
             <% }; %>
         </ul>

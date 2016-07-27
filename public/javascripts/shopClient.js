@@ -4,7 +4,7 @@ var thumbnails,
     config,
     data;
 
-$(document).ready(() => {
+$(document).ready(function () {
     var editPanel = new EditPanel();
 
     $(document.body).css({
@@ -382,17 +382,6 @@ EditPanel.prototype.addCategory = function () {
         ");
     });
     dialog.render();
-
-/*
-    var dialog = new Dialog({"Категория": ""}, function (form) {
-        var categoryName = form.find("input[name='val']").val();
-        $(".side-menu").append("\
-        <li class='menu-button'>\
-            <a role='presentation' href='/dbsearch?db=Commodity&amp;specs=specs.Категория:" + categoryName + "'>" + categoryName + "</a>\
-        </li>\
-        ")
-    });
-*/
 };
 
 //Popup menu-----------------------------------------------------------------------------------------------------------
