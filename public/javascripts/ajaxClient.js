@@ -75,3 +75,20 @@ function makeListRequest(reqStr, callback) {
         callback(err);
     });
 };
+
+//Registration and authorization------------------------------------------------------------------------------------------------------------------------------------
+function makeAuthorizationRequest (reqStr, form, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: form.serialize(),
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            403: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    });
+};

@@ -15,13 +15,13 @@
             if (event.keyCode && event.keyCode !== 27) return;
 
             if (findTarget($(event.target), "mod")) return;
-
+            
             //close image preview and popups
             if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
                 $("#image-preview").remove();
                 $(".popup-menu").detach();
             };
-
+            
             //if click is not on a details button, close all details
             if(!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
                 ModalWindow.prototype.close();

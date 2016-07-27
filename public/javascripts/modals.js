@@ -196,7 +196,7 @@ AuthWindow.prototype = Object.create(ModalWindow.prototype);
 AuthWindow.prototype.constructor = AuthWindow;
 
 AuthWindow.prototype.render = function () { 
-    var form = $(
+    this.form = $(
     "<form>\
         <div class='input-group'>\
             <input type='text' class='form-control' name='username' placeholder='Имя пользователя'>\
@@ -205,11 +205,19 @@ AuthWindow.prototype.render = function () {
     </form>");
 
     var button = $("<button type='submit' class='btn btn-default' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация" : "") + "</button>");
-    form.append(button);
+    this.form.append(button);
     
-    this.elem.append(form);
+    this.elem.append(this.form);
+
+    this.form.on("submit", this.submit.bind(this));
     
     this._render();
+};
+
+AuthWindow.prototype.submit = function (event) {
+    makeAuthorizationRequest("/" + this.type, this.form, function (err) {
+        if (err) alert (err);
+    });
 };
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
