@@ -23,33 +23,9 @@ Details.prototype.render = function () {
         $(document.body).append(this.elem);
         return;
     };
-
-    var closeButton = $("<div></div>");
-    closeButton.css({
-        width: "20px",
-        height: "20px",
-        float: "right"
-    });
-    var closeImg = $("<img src='/images/gtk-close.png'>");
-    closeImg.css({
-        width: "100%",
-        height: "100%"
-    });
-    closeButton.append(closeImg);
-    closeButton.hover(function () {
-        $(this).css({
-            cursor: "pointer"
-        })
-    });
-
-    closeButton.on("click", this.close.bind(this));
-
-    var clearFix = ($("<div class='clearfix'></div>"));
     
     var content = this.createContent();
 
-    this.elem.append(closeButton);
-    this.elem.append(clearFix);
     this.elem.append(content);
 
     this._render();
@@ -146,10 +122,6 @@ Details.prototype.removeField = function (num) {
     this.removeList.children().eq(+num).remove();
 };
 
-Details.prototype.close = function () {
-    this._close(true);
-};
-
 Details.prototype.submit = function (event) {
     var form = $(event.target);
     
@@ -207,8 +179,15 @@ Dialog.prototype.submit = function (event) {
 
 //Authentification Window----------------------------------------------------------------------------------------------------------------------------------------------------
 function AuthWindow (type) {
-    this.elem = $("<div id='authentification'></div>");
-    this.type = type
+    this.elem = $("<div id='authentification' remove='true''></div>");
+    this.elem.css({
+        background: "#fff",
+        padding: "5px",
+        border: "1px solid #ccc",
+        borderRadius: "5px"
+    });
+
+    this.type = type;
 
     ModalWindow.call(this, this.elem);
 };
@@ -224,17 +203,13 @@ AuthWindow.prototype.render = function () {
             <input type='text' class='form-control' name='password' placeholder='Пароль'>\
         </div>\
     </form>");
-    
-    var button = $("<button type='submit' class='btn btn-default' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация") + "</button>");
+
+    var button = $("<button type='submit' class='btn btn-default' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация" : "") + "</button>");
     form.append(button);
     
     this.elem.append(form);
     
     this._render();
-};
-
-AuthWindow.prototype.close = function () {
-    this._close();
 };
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -245,13 +220,40 @@ function ModalWindow (elem) {
 };
 
 ModalWindow.prototype._render = function () {
+    this.close();
+
+    var closeButton = $("<div></div>");
+    closeButton.css({
+        width: "20px",
+        height: "20px",
+        float: "right"
+    });
+    var closeImg = $("<img src='/images/gtk-close.png'>");
+    closeImg.css({
+        width: "100%",
+        height: "100%"
+    });
+    closeButton.append(closeImg);
+    closeButton.hover(function () {
+        $(this).css({
+            cursor: "pointer"
+        })
+    });
+
+    closeButton.on("click", this.close.bind(this));
+
+    var clearFix = ($("<div class='clearfix'></div>"));
+
+    this.elem.prepend(closeButton);
+    clearFix.insertAfter(closeButton);
+
     this.elem.css({
         position: "fixed"
     });
     $(document.body).append(this.elem);
     this.elem.css({
         minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-        padding: "0 0 1px 1px"
+        padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
     });
 
     $(window).on("resize", this.position.bind(this));
@@ -267,8 +269,10 @@ ModalWindow.prototype.position = function () {
     });
 };
 
-ModalWindow.prototype._close = function (keepEvents) {
-    if (keepEvents) $(".mod").detach();
-    else $(".mod").remove();
+ModalWindow.prototype.close = function () {
+    var target = $(".mod");
+
+    if (target.attr("remove")) $(".mod").remove();
+    else $(".mod").detach();
     $(window).off("resize");
 };

@@ -431,22 +431,3 @@ PopupMenu.prototype.render = function (invokingEvent) {
 PopupMenu.prototype.close = function () {
     this.elem.detach();
 };
-
-//Close all popups and modals, if there are any-------------------------------------------------------------------------------------------------------------------------------
-$(document.body).on("click keydown", function (event) {
-    if (event.keyCode && event.keyCode !== 27) return;
-
-    if (findTarget($(event.target), "mod")) return;
-
-    //close image preview and popups
-    if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
-        $("#image-preview").remove();
-        $(".popup-menu").detach();
-    };
-
-    //if click is not on a details button, close all details
-    if(!findTarget($(event.target), "details-button edit-button rm-button") || event.keyCode === 27) {
-        $(".mod").detach();
-        $(window).off("resize");
-    };
-});

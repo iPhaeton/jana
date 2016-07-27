@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
             },
             headMenuRight: {
                 "Войти": "/signin",
-                "Регистрация": "signup"
+                "Регистрация": "/signup"
             },
             sideMenu: categories
         });
