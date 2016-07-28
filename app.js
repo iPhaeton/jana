@@ -7,6 +7,9 @@ var errorhandler = require("errorhandler");
 var config = require("config");
 var session = require('express-session');
 
+var HttpError = require("errors").HttpError;
+var sendHttpError = require("middleware/sendHttpError");
+
 var routes = require("./routes/indexRoute");
 var shop = require("./routes/shopRoute");
 var dbsearch = require("routes/dbSearchRoute");
@@ -55,6 +58,9 @@ app.use(router.all("*", (req, res, next) => {
   next();
 }));*/
 
+//add an HttpError handler
+app.use(sendHttpError);
+
 //sessions
 var sessionStore = require("libs/sessionStore");
 app.use(session({
@@ -74,7 +80,7 @@ app.use("/delfile", filedel);
 app.use("/list", list);
 app.use("/signup", signup);
 
-app.use(errorhandler());
+// error handlers
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
@@ -82,22 +88,24 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-// error handlers
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(errorhandler());
-};
-
-// production error handler
-// no stacktraces leaked to user
 app.use(function(err, req, res, next) {
   logger.logErr(err, req);
 
-  if (app.get('env') === 'development') {
-    return next(err);
+  //HttpError handler
+  if (err instanceof HttpError) {
+    res.sendHttpError(err);
+    return;
   };
 
+  // development error handler
+  // will print stacktrace
+  if (app.get('env') === 'development') {
+    errorhandler()(err, req, res, next);
+    return;
+  };
+
+  // production error handler
+  // no stacktraces leaked to user
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

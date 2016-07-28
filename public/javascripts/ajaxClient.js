@@ -77,7 +77,7 @@ function makeListRequest(reqStr, callback) {
 };
 
 //Registration and authorization------------------------------------------------------------------------------------------------------------------------------------
-function makeAuthorizationRequest (reqStr, form, callback) {
+/*function makeAuthorizationRequest (reqStr, form, callback) {
     $.ajax({
         url: reqStr,
         type: "POST",
@@ -86,9 +86,23 @@ function makeAuthorizationRequest (reqStr, form, callback) {
             200: function () {
                 callback(null)
             },
-            403: function (jqXHR) {
+            400: function (jqXHR) {
                 callback(JSON.parse(jqXHR.responseText));
             }
         }
     });
+};*/
+
+function makeAuthorizationRequest (reqStr, form, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: form.serialize(),
+    })
+    .done(function (json) {
+        callback(null, json);
+    })
+    .fail(function (xhr, status, err) {
+        callback(JSON.parse(xhr.responseText));
+    });;
 };

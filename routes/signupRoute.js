@@ -11,10 +11,13 @@ router.post("*", (req, res, next) => {
     if (!username || !password) return next(new HttpError(400, "Все поля обязательны для заполнения"));
 
     User.register(username, password, (err) => {
-        if (err) return next(err);
-    });
+        if (err) {
+            if (~err.message.indexOf("E11000")) return next(new HttpError(403, "Пользователь с таким именем уже существует"));
+            else return next(err);
+        };
 
-    res.sendStatus(200);
+        res.sendStatus(200);
+    });
 });
 
 module.exports = router;
