@@ -74,6 +74,7 @@ app.use("/delfile", filedel);
 app.use("/list", list);
 app.use("/signup", signup);
 
+app.use(errorhandler());
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
@@ -82,6 +83,12 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(errorhandler());
+};
+
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
@@ -97,11 +104,6 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(errorhandler());
-};
 
 //server
 var server = app.listen(process.env.PORT || config.get("port"), process.env.IP || "0.0.0.0", function () {

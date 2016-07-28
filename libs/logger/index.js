@@ -29,7 +29,7 @@ module.exports = function (module) {
                 self.logger.error(err);
             });
         };
-        if (app.get("env") !== "development" || moduleName[moduleName.length - 1] === "dbConnect.js") self.logger.error(err); //dbConnect. js isn't a part of express, therefore no next(err) may be called
+        /*if (app.get("env") !== "development" || moduleName[moduleName.length - 1] === "dbConnect.js")*/ self.logger.error(err); //dbConnect.js isn't a part of express, therefore no next(err) may be called
     };
 
     return self;

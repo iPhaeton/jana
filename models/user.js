@@ -65,6 +65,14 @@ schema.statics.authorize = function (username, password, callback) {
     ], callback);
 };
 
+schema.statics.register = function (username, password, callback) {
+    var user = new this({username: username, password: password});
+    user.save(function (err) {
+        if (err) return callback(err);
+        callback(null, user);
+    });
+};
+
 //Authorize errors
 function AuthError (message) {
     Error.apply(this, arguments);
