@@ -18,6 +18,7 @@ var filesave = require("routes/fileSaveRoute");
 var filedel = require("routes/fileDelRoute");
 var list = require("routes/listRoute");
 var signup = require("routes/signupRoute");
+var signin = require("routes/signinRoute");
 
 var app = express();
 module.exports = app;
@@ -79,6 +80,7 @@ app.use("/savefile", filesave);
 app.use("/delfile", filedel);
 app.use("/list", list);
 app.use("/signup", signup);
+app.use("/signin", signin);
 
 // error handlers
 // catch 404 and forward to error handler
