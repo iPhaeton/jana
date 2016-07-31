@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
                 "Контакты": "/contcts",
             },
             headMenuRight: {
-                "Войти": "/signin",
+                [(req.user ? "Выйти" : "Войти")]: (req.user ? "/signout" : "/signin"),
                 "Регистрация": "/signup"
             },
             sideMenu: categories

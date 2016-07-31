@@ -217,7 +217,10 @@ AuthWindow.prototype.render = function () {
 AuthWindow.prototype.submit = function (event) {
     makeAuthorizationRequest("/" + this.type, this.form, function (err) {
         if (err) alert (err.message);
-        else ModalWindow.prototype.close();
+        else {
+            ModalWindow.prototype.close();
+            location.reload();
+        };
     });
 
     event.preventDefault();

@@ -97,7 +97,7 @@ function makeAuthorizationRequest (reqStr, form, callback) {
     $.ajax({
         url: reqStr,
         type: "POST",
-        data: form.serialize(),
+        data: form ? form.serialize() : null,
     })
     .done(function (json) {
         callback(null, json);

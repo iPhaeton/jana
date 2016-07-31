@@ -9,6 +9,18 @@
             
             showAuthWindow(target.attr("id"));
         });
+        
+        $("#signout").on("click", function (event) {
+            event.preventDefault();
+
+            var target = findTarget($(event.target), "signout");
+            if (!target) return;
+
+            makeAuthorizationRequest("/signout", null, function (err) {
+                if (err) alert (err.message);
+                else window.location.href = "/";
+            });
+        });
 
         //Close all popups and modals, if there are any-------------------------------------------------------------------------------------------------------------------------------
         $(document.body).on("click keydown", function (event) {

@@ -19,6 +19,7 @@ var filedel = require("routes/fileDelRoute");
 var list = require("routes/listRoute");
 var signup = require("routes/signupRoute");
 var signin = require("routes/signinRoute");
+var signout = require("routes/signoutRoute");
 
 var app = express();
 module.exports = app;
@@ -49,8 +50,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //test of the database
-//require("middleware/dbTest")();
-require("middleware/dbConnect")();
+//require("libs/db/dbTest")();
+require("libs/db/dbConnect")();
 
 /*var router = express.Router();
 app.use(router.all("*", (req, res, next) => {
@@ -71,6 +72,9 @@ app.use(session({
   store: sessionStore
 }));
 
+//user
+app.use(require("middleware/loadUser"));
+
 //routes
 app.use("/", routes);
 app.use("/shop", shop);
@@ -81,6 +85,7 @@ app.use("/delfile", filedel);
 app.use("/list", list);
 app.use("/signup", signup);
 app.use("/signin", signin);
+app.use("/signout", signout);
 
 // error handlers
 // catch 404 and forward to error handler
