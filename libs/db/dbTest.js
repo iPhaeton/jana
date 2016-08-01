@@ -170,6 +170,23 @@ function createTestDB(callback) {
             position: 5
         }
     ];
+    
+    var userData = [
+        {
+            username: "jana",
+            password: "burachkovskaya",
+            admin: true
+        },
+        {
+            username: "Phaeton",
+            password: "uhbgtuhbgt",
+            admin: true
+        },
+        {
+            username: "Ilya",
+            password: "111"
+        }
+    ];
 
     async.parallel([
         function (callback) {
@@ -186,6 +203,12 @@ function createTestDB(callback) {
             async.each(categoryData, (data, callback) => {
                 var category = new mongoose.models.Category(data);
                 category.save(callback);
+            }, callback);
+        },
+        function (callback) {
+            async.each(userData, (data, callback) => {
+                var user = new mongoose.models.User(data);
+                user.save(callback);
             }, callback);
         }
     ], callback);
