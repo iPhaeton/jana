@@ -25,7 +25,8 @@ var schema = new Schema ({
         default: Date.now
     },
     admin: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 });
 

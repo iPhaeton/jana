@@ -334,7 +334,7 @@ EditSwitch.prototype.createUploadInput = function () {
 
 //Edit panel-----------------------------------------------------------------------------------------------------------
 function EditPanel () {
-    this.switch = new EditSwitch(this);
+    if ($(".main-content").attr("admin-mode") === "true") this.switch = new EditSwitch(this);
 
     this.elem = $(".edit-panel");
     this.elem.on("click", ".edit-button", this.buttonClick.bind(this));
