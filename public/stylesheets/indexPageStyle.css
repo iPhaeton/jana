@@ -8,7 +8,15 @@
 }
 
 .showcase__image > img {
-    width: 100%;
     position: absolute;
     z-index: -1;
+}
+
+.showcase__image__desktop {
+    width: 100%;
+    height: auto;
+}
+
+.showcase__image__mobile {
+    width: auto;
 }
