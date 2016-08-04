@@ -31,15 +31,3 @@ body {
         right: -100px;
     }
 }
-
-/*@media (max-width: 500px) {
-    .showcase__image__mobile {
-        right: -250px;
-    }
-}
-
-@media (max-width: 350px) {
-    .showcase__image__mobile {
-        right: -350px;
-    }
-}*/
