@@ -12,22 +12,25 @@ body {
     background: #00b3ee;
 }
 
-.showcase__image > img {
+.showcase__image > picture > img {
     position: absolute;
     z-index: -1;
+    right: 0;
+    width: 100%;
 }
 
 .showcase__image__desktop {
-    left: 0;
+    right: 0;
     width: 100%;
 }
 
 .showcase__image__mobile {
-    right: -50px;
+    right: 0;
+    width: 100%;
 }
 
-@media (max-width: 670px) {
+/*@media (max-width: 670px) {
     .showcase__image__mobile {
         right: -100px;
     }
-}
+}*/

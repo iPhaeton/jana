@@ -9,6 +9,12 @@
     <link rel='stylesheet' href="/stylesheets/style.css"/>
     <link rel='stylesheet' href="/stylesheets/indexPageStyle.css"/>
     <link rel='stylesheet' href="/stylesheets/headMenuStyle.css"/>
+
+    <!--Picturefill-->
+    <script>
+      document.createElement( "picture" );
+    </script>
+    <script src="/vendor/bower_components/picturefill/dist/picturefill.js" async></script>
   </head>
 
   <body>
@@ -23,7 +29,12 @@
 
     <div class="jumbotron showcase">
       <div class="showcase__image">
-        <img src="/images/showcase_big.jpg">
+        <!--<img src="/images/showcase_big.jpg">-->
+        <picture>
+          <source srcset="/images/showcase_small.jpg" media="(max-width: 480px)">
+          <source srcset="/images/showcase_medium.jpg" media="(max-width: 1024px)">
+          <img srcset="/images/showcase_big.jpg">
+        </picture>
       </div>
     </div>
 
@@ -34,7 +45,6 @@
     <script src="/javascripts/modals.js"></script>
     <script src="/javascripts/ajaxClient.js"></script>
     <script src="/javascripts/headMenu.js"></script>
-    <script src="/javascripts/indexClient.js"></script>
 
   </body>
 </html>
