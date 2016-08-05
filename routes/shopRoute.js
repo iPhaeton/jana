@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
             title: "Jana - shop",
             headMenuLeft: {
                 "Магазин": "/shop",
-                "Контакты": "/contcts",
+                "Контакты": "/contacts",
             },
             headMenuRight: {
                 [(req.user ? "Выйти" : "Войти")]: (req.user ? "/signout" : "/signin"),

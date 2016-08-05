@@ -1,8 +1,27 @@
-$(document).ready(function () {
+var focusExecuted = false;
+
+$(document).ready (function () {
+    if (focusExecuted) return;
+
+    focusExecuted = true;
+
     scaleImage();
-    $(window).on("resize", function () { //maybe will help against the fact that  scaleImage works not every time, don't know how
-        scaleImage();
-    });
+    $(window).on("resize", scaleImage);
+});
+
+//Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
+//So I listen to document.onfocus and add window.onresize again
+$(document).on("focus", function () {
+    if (focusExecuted) return;
+
+    focusExecuted = true;
+
+    scaleImage();
+    $(window).on("resize", scaleImage);
+});
+
+$(document).on("click", function (event) {
+    if ($(event.target).attr("href")) focusExecuted = false;
 });
 
 function scaleImage () {
