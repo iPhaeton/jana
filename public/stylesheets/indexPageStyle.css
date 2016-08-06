@@ -18,19 +18,3 @@ body {
     right: 0;
     width: 100%;
 }
-
-.showcase__image__desktop {
-    right: 0;
-    width: 100%;
-}
-
-.showcase__image__mobile {
-    right: 0;
-    width: 100%;
-}
-
-/*@media (max-width: 670px) {
-    .showcase__image__mobile {
-        right: -100px;
-    }
-}*/

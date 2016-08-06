@@ -84,7 +84,15 @@ Thumbnails.prototype.build = function (data, config) {
 };
 
 Thumbnails.prototype.render = function () {
-    var i = 0;
+    var row = $("<div class='row'></div>");
+
+    for (var tile of this.tiles) {
+        row.append(tile);
+    };
+
+    this.elem.append(row);
+
+    /*var i = 0;
     for (var tile of this.tiles) {
         if (i%4 === 0) {
             var row = $("<div class='row'></div>")
@@ -94,7 +102,7 @@ Thumbnails.prototype.render = function () {
             this.elem.append(row);
         };
         i++;
-    };
+    };*/
 };
 
 Thumbnails.prototype.clear = function () {
@@ -141,11 +149,11 @@ function Thumbnail (parent, data, config) {
         }
     };
 
-    var col = $("<div class='col-sm-3'></div>");
-    
+    var col = $("<div class='col-sm-6 col-md-4 col-lg-3'></div>");
+
     var div = $("<div class='thumbnail'></div>");
     div.css({
-        textAlign: "right"
+        textAlign: "right",
     });
 
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
@@ -159,7 +167,7 @@ function Thumbnail (parent, data, config) {
         img.on("click", this.chooseImage.bind(this));
         img.on("contextmenu", this.showPopupMenu.bind(this));
     };
-    
+
     var button = $("<button type='button' class='btn btn-default details-button'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
     button.on("click", function (event) {
         self.details.render();
