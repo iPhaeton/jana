@@ -72,6 +72,7 @@ function parseConfig(config) {
 function Thumbnails (elem, config) {
     this.elem = $(elem);
     this.tiles = new Set();
+    this.previousWindowWidth = 0;
 };
 
 Thumbnails.prototype.build = function (data, config) {
@@ -91,6 +92,9 @@ Thumbnails.prototype.render = function () {
     };
 
     this.elem.append(row);
+
+    this.clearTiles(true)();
+    $(window).on("resize", this.clearTiles(false));
 };
 
 Thumbnails.prototype.clear = function () {
@@ -100,6 +104,58 @@ Thumbnails.prototype.clear = function () {
 
 Thumbnails.prototype.unrender = function () {
     this.elem.html("");
+};
+
+//Need theese two functions to deal with tiles of differrent height
+//The first one defines, if the clearance should be done on a particular resize
+Thumbnails.prototype.clearTiles = function (executeAnyway) {
+
+    return function () {
+        var windowWidth = $(window).width();
+
+        if (windowWidth < 768) {
+            if (this.previousWindowWidth >= 768 || executeAnyway) {
+                this.arrangeClears();
+            }
+        } else if (windowWidth >= 768 && windowWidth < 992) {
+            if (this.previousWindowWidth < 768 || this.previousWindowWidth >= 992 || executeAnyway) {
+                this.arrangeClears(3);
+            };
+        } else if (windowWidth >= 992 && windowWidth < 1200) {
+            if (this.previousWindowWidth < 992 || this.previousWindowWidth >= 1200 || executeAnyway) {
+                this.arrangeClears(4);
+            };
+        } else {
+            if (this.previousWindowWidth < 1200 || executeAnyway) {
+                this.arrangeClears(5);
+            };
+        }
+
+        this.previousWindowWidth = windowWidth;
+    }.bind(this);
+
+};
+
+//The second one does the clearance
+Thumbnails.prototype.arrangeClears = function (clearThis) {
+    if (!clearThis) {
+        for (var tile in this.tiles) {
+            tile.removeClass("first-in-a-row");
+        };
+        return;
+    };
+
+    clearThis--;
+
+    var i = 0;
+    for (var tile of this.tiles) {
+        if (i%clearThis === 0) {
+            tile.addClass("first-in-a-row");
+        } else {
+            tile.removeClass("first-in-a-row");
+        };
+        i++;
+    };
 };
 
 //Thumbnail--------------------------------------------------------------------------------------------------------
@@ -144,14 +200,6 @@ function Thumbnail (parent, data, config) {
         textAlign: "right",
     });
 
-    //need this to maintain a constant height for any image
-    var imgContainer = $("<div class='thumbnail thumbnail-img-container'></div>");
-    /*imgContainer.css({
-        maxWidth: "100%",
-        height: "200px",
-        border: "none"
-    });*/
-
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
     //make the image clickable
     if (mode === "edit") {
@@ -168,10 +216,8 @@ function Thumbnail (parent, data, config) {
     button.on("click", function (event) {
         self.details.render();
     });
-
-    imgContainer.append(img);
-    div.append(imgContainer);
-    //div.append(img);
+    
+    div.append(img);
 
     var fields = gatherItemsInOrder(config.showcase);
     for (var i = fields.length-1; i >= 0; i--) {
