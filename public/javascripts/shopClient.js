@@ -73,6 +73,7 @@ function Thumbnails (elem, config) {
     this.elem = $(elem);
     this.tiles = new Set();
     this.previousWindowWidth = 0;
+    this.focusExecuted = false;
 };
 
 Thumbnails.prototype.build = function (data, config) {
@@ -95,6 +96,22 @@ Thumbnails.prototype.render = function () {
 
     this.clearTiles(true)();
     $(window).on("resize", this.clearTiles(false));
+
+    //Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
+    //So I listen to document.onfocus and add window.onresize again
+    $(document).on("focus", function () {
+        if (this.focusExecuted) return;
+
+        this.focusExecuted = true;
+
+        this.clearTiles(true)();
+        $(window).on("resize", this.clearTiles(false));
+    }.bind(this));
+
+    //if we go away from the page by some link, when we come back we will need to add window.onresize again
+    $(document).on("click", function (event) {
+        if ($(event.target).attr("href")) this.focusExecuted = false;
+    }.bind(this));
 };
 
 Thumbnails.prototype.clear = function () {
