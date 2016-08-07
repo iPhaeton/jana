@@ -91,18 +91,6 @@ Thumbnails.prototype.render = function () {
     };
 
     this.elem.append(row);
-
-    /*var i = 0;
-    for (var tile of this.tiles) {
-        if (i%4 === 0) {
-            var row = $("<div class='row'></div>")
-        };
-        row.append(tile);
-        if ((i-3)%4 === 0 || i === this.tiles.size - 1) {
-            this.elem.append(row);
-        };
-        i++;
-    };*/
 };
 
 Thumbnails.prototype.clear = function () {
@@ -156,6 +144,14 @@ function Thumbnail (parent, data, config) {
         textAlign: "right",
     });
 
+    //need this to maintain a constant height for any image
+    var imgContainer = $("<div class='thumbnail thumbnail-img-container'></div>");
+    /*imgContainer.css({
+        maxWidth: "100%",
+        height: "200px",
+        border: "none"
+    });*/
+
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
     //make the image clickable
     if (mode === "edit") {
@@ -173,8 +169,9 @@ function Thumbnail (parent, data, config) {
         self.details.render();
     });
 
-    div.append(img);
-
+    imgContainer.append(img);
+    div.append(imgContainer);
+    //div.append(img);
 
     var fields = gatherItemsInOrder(config.showcase);
     for (var i = fields.length-1; i >= 0; i--) {
