@@ -1,4 +1,32 @@
-.side-menu > li {
-    background: #fff;
-    float: none;
+@media all and (min-width: 768px) {
+
+    .side-menu {
+        border-right: 1px solid #ddd;
+        border-bottom-color: transparent;
+    }
+
+    .side-menu > li > a {
+        width: 100.5%;
+    }
+
+    .side-menu > li.active > a,
+    .side-menu > li.active > a:focus {
+        border: 1px solid #ddd;
+        border-right-color: #fff;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-top-right-radius: 0;
+    }
+
+    .side-menu > li > a:hover {
+        border-color: transparent;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-top-right-radius: 0;
+    }
+
+}
+
+@media all and (max-width: 767px) {
+
 }

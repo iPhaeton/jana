@@ -1,8 +1,9 @@
 .left-margin {
-    padding: 0;
+    padding: 2px;
 }
 
 .main-content {
+    padding-top: 2px;
     background: #fff;
 }
 
