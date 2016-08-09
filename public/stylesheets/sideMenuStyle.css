@@ -2,11 +2,11 @@
     padding: 2px 0 2px 0;
 }
 
-@media all and (min-width: 768px) {
+.side-menu {
+    border-bottom-color: transparent;
+}
 
-    .side-menu {
-        border-bottom-color: transparent;
-    }
+@media all and (min-width: 768px) {
 
     .side-menu > li > a {
         width: 101%;
@@ -43,5 +43,8 @@
 }
 
 @media all and (max-width: 767px) {
-
+    .side-menu > li.active > a {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
 }

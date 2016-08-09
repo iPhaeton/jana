@@ -19,10 +19,10 @@ $(document).ready(function () {
             return;
         };
 
-        if ($(window).width() >= 768) {
+        //if ($(window).width() >= 768) {
             $(".side-menu > .menu-button").removeClass("active");
             target.parent().addClass("active");
-        };
+        //};
 
         getData(target.attr("href"), createContent);
 
