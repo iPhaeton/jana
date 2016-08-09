@@ -19,9 +19,9 @@
     <% } %>
 
     <% if (user) {%>
-    <ul class="nav nav-pills head-menu__right head-menu__panel">
+    <ul class="nav nav-pills head-menu__right head-menu__panel" id="users-area">
         <li>
-            <a id="users-area" role="presentation" href="/usersarea">Добро пожаловать, <%= (user.admin ? "хозяйка" : user.username)%> </a>
+            <a role="presentation" href="/usersarea">Добро пожаловать, <%= (user.admin ? "хозяйка" : user.username)%> </a>
         </li>
     </ul>
     <% } %>

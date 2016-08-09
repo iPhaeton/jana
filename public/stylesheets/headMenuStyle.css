@@ -15,6 +15,35 @@
     background-color: #337ab7;
 }
 
-.head-menu__user-panel {
-    float: right;
+@media all and (max-width: 700px) {
+    #users-area{
+        border: none;
+        display: block;
+        width: 100%;
+    }
+
+    #users-area > li{
+        float: right;
+    }
+}
+
+@media all and (max-width: 480px) {
+
+    .head-menu__panel {
+        display: block;
+        width: 100%;
+    }
+
+    .head-menu__panel > li {
+        display: block;
+        width: 100%;
+        text-align: center;
+        float: none !important;
+    }
+
+    .head-menu__panel > li > a {
+        margin-left: -15px !important;
+        margin-right: -15px !important;
+    }
+
 }
