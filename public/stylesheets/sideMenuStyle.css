@@ -1,21 +1,28 @@
+.left-margin {
+    padding: 2px 0 2px 0;
+}
+
 @media all and (min-width: 768px) {
 
     .side-menu {
-        border-right: 1px solid #ddd;
         border-bottom-color: transparent;
     }
 
     .side-menu > li > a {
-        width: 100.5%;
+        width: 101%;
+        margin-right: 0;
+        background: #fff;
     }
 
     .side-menu > li.active > a,
-    .side-menu > li.active > a:focus {
+    .side-menu > li.active > a:focus,
+    .side-menu > li.active > a:hover {
         border: 1px solid #ddd;
         border-right-color: #fff;
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
         border-top-right-radius: 0;
+        z-Index: 999;
     }
 
     .side-menu > li > a:hover {
@@ -24,7 +31,15 @@
         border-bottom-left-radius: 5px;
         border-top-right-radius: 0;
     }
-
+    
+    .separator-vertical-line {
+        width: 1px;
+        border-left: 1px solid #ddd;
+        height: 100%;
+        position: absolute;
+        left: 16.66666667%;
+        margin-top: -2px;
+    }
 }
 
 @media all and (max-width: 767px) {

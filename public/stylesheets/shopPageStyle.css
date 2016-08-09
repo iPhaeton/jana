@@ -1,10 +1,7 @@
-.left-margin {
-    padding: 2px;
-}
-
 .main-content {
     padding-top: 2px;
     background: #fff;
+    position: relative;
 }
 
 .thumbnails {
