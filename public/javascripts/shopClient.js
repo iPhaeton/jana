@@ -19,10 +19,9 @@ $(document).ready(function () {
             return;
         };
 
-        //if ($(window).width() >= 768) {
-            $(".side-menu > .menu-button").removeClass("active");
-            target.parent().addClass("active");
-        //};
+        $(".side-menu > .menu-button").removeClass("active");
+        target.parent().addClass("active");
+        target.blur();
 
         getData(target.attr("href"), createContent);
 

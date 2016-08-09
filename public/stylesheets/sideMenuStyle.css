@@ -43,7 +43,8 @@
 }
 
 @media all and (max-width: 767px) {
-    .side-menu > li.active > a {
+    .side-menu > li.active > a,
+    .side-menu > li.active > a:hover {
         border: 1px solid #ddd;
         border-radius: 5px;
     }
