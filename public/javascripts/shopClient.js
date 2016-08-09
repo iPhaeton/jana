@@ -110,12 +110,15 @@ Thumbnails.prototype.render = function () {
         this.focusExecuted = true;
 
         this.clearTiles(true)();
-        $(window).on("resize", this.clearTiles(false));
+        $(window).off("resize", this.clearTiles(false)); //just in case
+        $(window).on("resize", this.clearTiles(false)); //when comming back from anothr page
     }.bind(this));
 
     //if we go away from the page by some link, when we come back we will need to add window.onresize again
     $(document).on("click", function (event) {
         if ($(event.target).attr("href")) this.focusExecuted = false;
+        $(window).off("resize", this.clearTiles(false)); //just in case
+        $(window).on("resize", this.clearTiles(false)); //when an element with href is pressed, but page hasn't been reloaded
     }.bind(this));
 };
 
