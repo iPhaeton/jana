@@ -39,6 +39,19 @@
                 ModalWindow.prototype.close();
             };
         });
+        
+        $(".collapse-button").on("click", function (event) {
+            var target = findTarget($(event.target), "collapse-button");
+            if(!target) return;
+
+            var toggleTarget = $(".collapsable");
+            var height = Array.prototype.reduce.call(toggleTarget.find("ul"), function (currentHeight, currentElem) {
+                return currentHeight + currentElem.offsetHeight;
+            }, 0);
+
+            if (toggleTarget.height()) toggleTarget.height(0);
+            else toggleTarget.height(height);
+        });
     });
     
     function showAuthWindow(id) {

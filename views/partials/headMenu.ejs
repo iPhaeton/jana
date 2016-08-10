@@ -4,13 +4,15 @@
         <div class="container">
     <% } %>
     
-        <div class="collapse-button collapsing">
+        <div class="collapse-button collapsing" data-toggle="#head-menu__items">
             <div class="button-bar"></div>
             <div class="button-bar"></div>
             <div class="button-bar"></div>
         </div>
 
-        <div class="collapsable">
+        <div class="clearfix"></div>
+
+        <div class="collapsable" id="head-menu__items">
             <ul class="head-menu__left head-menu__panel">
                 <% for (var menuTitle in headMenuLeft) {%>
                     <li>
@@ -36,6 +38,8 @@
                     </li>
                 </ul>
             <% } %>
+
+            <div class="clearfix"></div>
         </div>
     
     <% if (container) {%>
