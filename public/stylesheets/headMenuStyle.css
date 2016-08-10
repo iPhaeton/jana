@@ -43,6 +43,52 @@
     background-color: #337ab7;
 }
 
+.collapse-button {
+    width: 26px;
+    height: 26px;
+    border-radius: 1px;
+    background-color: #333;
+    float: right;
+    margin-top: 8px;
+    margin-right: 15px;
+    margin-bottom: 8px;
+    padding: 1px;
+    border: 1px solid #eee;
+}
+
+.collapse-button:hover {
+    cursor: pointer;
+}
+
+.button-bar {
+    display: block;
+    background-color: #eee;
+    width: 18px;
+    height: 2px;
+    border-radius: 1px;
+    margin: 4px 0 0 2px;
+}
+
+@media all and (min-width: 768px) {
+    .collapsable  {
+        display: block;
+    }
+    
+    .collapsing {
+        display: none;
+    }
+}
+
+@media all and (max-width: 767px) {
+    .collapsable  {
+        display: none;
+    }
+    
+    .collapsing {
+        display: block;
+    }
+}
+
 /*
 .head-menu__panel > li >a {
     border-radius: 0px;

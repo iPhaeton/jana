@@ -3,32 +3,40 @@
     <% if (container) {%>
         <div class="container">
     <% } %>
+    
+        <div class="collapse-button collapsing">
+            <div class="button-bar"></div>
+            <div class="button-bar"></div>
+            <div class="button-bar"></div>
+        </div>
 
-        <ul class="head-menu__left head-menu__panel">
-            <% for (var menuTitle in headMenuLeft) {%>
-                <li>
-                    <a id=<%= headMenuLeft[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
-                </li>
-            <% } %>
-        </ul>
-
-        <% if (headMenuRight) { %>
-            <ul class="head-menu__right head-menu__panel">
-                <% for (var menuTitle in headMenuRight) {%>
+        <div class="collapsable">
+            <ul class="head-menu__left head-menu__panel">
+                <% for (var menuTitle in headMenuLeft) {%>
                     <li>
-                        <a id=<%= headMenuRight[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
+                        <a id=<%= headMenuLeft[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
                     </li>
-                <% }; %>
+                <% } %>
             </ul>
-        <% } %>
 
-        <% if (user) {%>
-            <ul class="head-menu__right head-menu__panel" id="users-area">
-                <li>
-                    <a role="presentation" href="/usersarea">Добро пожаловать, <%= (user.admin ? "хозяйка" : user.username)%> </a>
-                </li>
-            </ul>
-        <% } %>
+            <% if (headMenuRight) { %>
+                <ul class="head-menu__right head-menu__panel">
+                    <% for (var menuTitle in headMenuRight) {%>
+                        <li>
+                            <a id=<%= headMenuRight[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
+                        </li>
+                    <% }; %>
+                </ul>
+            <% } %>
+
+            <% if (user) {%>
+                <ul class="head-menu__right head-menu__panel" id="users-area">
+                    <li>
+                        <a role="presentation" href="/usersarea">Добро пожаловать, <%= (user.admin ? "хозяйка" : user.username)%> </a>
+                    </li>
+                </ul>
+            <% } %>
+        </div>
     
     <% if (container) {%>
         </div>
