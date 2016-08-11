@@ -43,6 +43,10 @@
     background-color: #337ab7;
 }
 
+.head-menu a:focus {
+    text-decoration: none;
+}
+
 .collapse-button {
     width: 26px;
     height: 26px;
@@ -76,6 +80,17 @@
 
 .button-bar + .button-bar {
     margin: 4px 0 0 2px;
+}
+
+.brand {
+    font-weight: 900;
+    color: #eee;
+    font-size: 20px;
+    padding: 11px 30px 10px 15px !important;
+}
+
+.brand:hover {
+    background-color: #333 !important;
 }
 
 #head-menu__items {
