@@ -51,6 +51,9 @@
 
             if (toggleTarget.height()) toggleTarget.height(0);
             else toggleTarget.height(height);
+            
+            
+            target.blur();
         });
     });
     
