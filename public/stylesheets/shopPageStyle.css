@@ -1,10 +1,7 @@
-.left-margin {
-    padding: 0;
-}
-
 .main-content {
+    padding-top: 2px;
     background: #fff;
-    width: 80%;
+    position: relative;
 }
 
 .thumbnails {
@@ -15,4 +12,8 @@
 
 .edit-button {
     float: right;
+}
+
+.first-in-a-row {
+    clear: both;
 }

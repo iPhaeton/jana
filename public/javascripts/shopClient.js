@@ -19,6 +19,10 @@ $(document).ready(function () {
             return;
         };
 
+        $(".side-menu > .menu-button").removeClass("active");
+        target.parent().addClass("active");
+        target.blur();
+
         getData(target.attr("href"), createContent);
 
         event.preventDefault();
@@ -72,6 +76,8 @@ function parseConfig(config) {
 function Thumbnails (elem, config) {
     this.elem = $(elem);
     this.tiles = new Set();
+    this.previousWindowWidth = 0;
+    this.focusExecuted = false;
 };
 
 Thumbnails.prototype.build = function (data, config) {
@@ -84,17 +90,35 @@ Thumbnails.prototype.build = function (data, config) {
 };
 
 Thumbnails.prototype.render = function () {
-    var i = 0;
+    var row = $("<div class='row'></div>");
+
     for (var tile of this.tiles) {
-        if (i%4 === 0) {
-            var row = $("<div class='row'></div>")
-        };
         row.append(tile);
-        if ((i-3)%4 === 0 || i === this.tiles.size - 1) {
-            this.elem.append(row);
-        };
-        i++;
     };
+
+    this.elem.append(row);
+
+    this.clearTiles(true)();
+    $(window).on("resize", this.clearTiles(false));
+
+    //Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
+    //So I listen to document.onfocus and add window.onresize again
+    $(document).on("focus", function () {
+        if (this.focusExecuted) return;
+
+        this.focusExecuted = true;
+
+        this.clearTiles(true)();
+        $(window).off("resize", this.clearTiles(false)); //just in case
+        $(window).on("resize", this.clearTiles(false)); //when comming back from anothr page
+    }.bind(this));
+
+    //if we go away from the page by some link, when we come back we will need to add window.onresize again
+    $(document).on("click", function (event) {
+        if ($(event.target).attr("href")) this.focusExecuted = false;
+        $(window).off("resize", this.clearTiles(false)); //just in case
+        $(window).on("resize", this.clearTiles(false)); //when an element with href is pressed, but page hasn't been reloaded
+    }.bind(this));
 };
 
 Thumbnails.prototype.clear = function () {
@@ -104,6 +128,58 @@ Thumbnails.prototype.clear = function () {
 
 Thumbnails.prototype.unrender = function () {
     this.elem.html("");
+};
+
+//Need theese two functions to deal with tiles of differrent height
+//The first one defines, if the clearance should be done on a particular resize
+Thumbnails.prototype.clearTiles = function (executeAnyway) {
+
+    return function () {
+        var windowWidth = $(window).width();
+
+        if (windowWidth < 768) {
+            if (this.previousWindowWidth >= 768 || executeAnyway) {
+                this.arrangeClears();
+            }
+        } else if (windowWidth >= 768 && windowWidth < 992) {
+            if (this.previousWindowWidth < 768 || this.previousWindowWidth >= 992 || executeAnyway) {
+                this.arrangeClears(3);
+            };
+        } else if (windowWidth >= 992 && windowWidth < 1200) {
+            if (this.previousWindowWidth < 992 || this.previousWindowWidth >= 1200 || executeAnyway) {
+                this.arrangeClears(4);
+            };
+        } else {
+            if (this.previousWindowWidth < 1200 || executeAnyway) {
+                this.arrangeClears(5);
+            };
+        }
+
+        this.previousWindowWidth = windowWidth;
+    }.bind(this);
+
+};
+
+//The second one does the clearance
+Thumbnails.prototype.arrangeClears = function (clearThis) {
+    if (!clearThis) {
+        for (var tile in this.tiles) {
+            tile.removeClass("first-in-a-row");
+        };
+        return;
+    };
+
+    clearThis--;
+
+    var i = 0;
+    for (var tile of this.tiles) {
+        if (i%clearThis === 0) {
+            tile.addClass("first-in-a-row");
+        } else {
+            tile.removeClass("first-in-a-row");
+        };
+        i++;
+    };
 };
 
 //Thumbnail--------------------------------------------------------------------------------------------------------
@@ -141,11 +217,11 @@ function Thumbnail (parent, data, config) {
         }
     };
 
-    var col = $("<div class='col-sm-3'></div>");
-    
+    var col = $("<div class='col-sm-6 col-md-4 col-lg-3'></div>");
+
     var div = $("<div class='thumbnail'></div>");
     div.css({
-        textAlign: "right"
+        textAlign: "right",
     });
 
     var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
@@ -159,14 +235,13 @@ function Thumbnail (parent, data, config) {
         img.on("click", this.chooseImage.bind(this));
         img.on("contextmenu", this.showPopupMenu.bind(this));
     };
-    
+
     var button = $("<button type='button' class='btn btn-default details-button'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
     button.on("click", function (event) {
         self.details.render();
     });
-
+    
     div.append(img);
-
 
     var fields = gatherItemsInOrder(config.showcase);
     for (var i = fields.length-1; i >= 0; i--) {

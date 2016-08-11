@@ -1,29 +1,48 @@
-<div class="head-menu" role="navigation">
+<nav class="navbar navbar-inverse head-menu" role="navigation">
 
-    <ul class="nav nav-pills head-menu__left head-menu__panel">
-        <% for (var menuTitle in headMenuLeft) {%>
-            <li>
-                <a id=<%= headMenuLeft[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
-            </li>
-        <% } %>
-    </ul>
+    <% if (container) {%>
+        <div class="container">
+    <% } %>
+    
+        <div class="navbar-header">
+            <a href="/" class="navbar-brand">JANA</a>
+            <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#panel">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+    
+        <div class="collapse navbar-collapse" id="panel">
+            <ul class="nav navbar-nav navbar-left head-menu__panel">
+                <% for (var menuTitle in headMenuLeft) {%>
+                    <li>
+                        <a id=<%= headMenuLeft[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuLeft[menuTitle] %>><%= menuTitle %></a>
+                    </li>
+                <% } %>
+            </ul>
 
-    <% if (headMenuRight) { %>
-        <ul class="nav nav-pills head-menu__right head-menu__panel">
-            <% for (var menuTitle in headMenuRight) {%>
-                <li>
-                    <a id=<%= headMenuRight[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
-                </li>
-            <% }; %>
-        </ul>
+            <% if (headMenuRight) { %>
+                <ul class="nav navbar-nav navbar-right head-menu__panel">
+                    <% for (var menuTitle in headMenuRight) {%>
+                        <li>
+                            <a id=<%= headMenuRight[menuTitle].split("/")[1] %> role="presentation" href=<%= headMenuRight[menuTitle] %>><%= menuTitle %></a>
+                        </li>
+                    <% }; %>
+                </ul>
+            <% } %>
+
+            <% if (user) {%>
+                <ul class="nav navbar-nav navbar-right head-menu__panel" id="users-area">
+                    <li>
+                        <a role="presentation" href="/usersarea">Добро пожаловать, <%= (user.admin ? "хозяйка" : user.username)%> </a>
+                    </li>
+                </ul>
+            <% } %>
+        </div>
+        
+    <% if (container) {%>
+        </div>
     <% } %>
 
-    <% if (user) {%>
-    <ul class="nav nav-pills head-menu__right head-menu__panel">
-        <li>
-            <a id="users-area" role="presentation" href="/usersarea">Добро пожаловать, <%= (user.admin ? "хозяйка" : user.username)%> </a>
-        </li>
-    </ul>
-    <% } %>
-
-</div>
+</nav>

@@ -24,7 +24,8 @@ router.get('/', function(req, res, next) {
                 [(req.user ? "Выйти" : "Войти")]: (req.user ? "/signout" : "/signin"),
                 "Регистрация": "/signup"
             },
-            sideMenu: categories
+            sideMenu: categories,
+            container: false
         });
     });
 });

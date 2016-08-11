@@ -1,7 +1,11 @@
-<ul class="nav nav-tabs side-menu">
-    <% for(var i = 0; i < sideMenu.length; i++) { %>
-        <li class="menu-button">
-            <a role="presentation" href=<%= sideMenu[i].url %>><%= sideMenu[i].name %></a>
-        </li>
-    <% } %>
-</ul>
+<div class="col-sm-2 left-margin">
+    <ul class="nav nav-tabs nav-stacked side-menu">
+        <% for(var i = 0; i < sideMenu.length; i++) { %>
+            <li class="menu-button">
+                <a role="presentation" href=<%= sideMenu[i].url %>><%= sideMenu[i].name %></a>
+            </li>
+        <% } %>
+    </ul>
+</div>
+
+<div class="separator-vertical-line"></div>
