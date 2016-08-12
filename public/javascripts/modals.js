@@ -34,9 +34,9 @@ Details.prototype.render = function () {
 Details.prototype.createContent = function () {
     var content = $("<form></form>");
 
-    this.keyList = $("<ul class='list-group'></ul>");
-    this.valueList = $("<ul class='list-group'></ul>");
-    this.removeList = $("<ul class='list-group'></ul>");
+    this.keyList = $("<ul class='list-group' allow-for-width='true'></ul>");
+    this.valueList = $("<ul class='list-group' allow-for-width='true'></ul>");
+    this.removeList = $("<ul class='list-group' allow-for-width='true'></ul>");
 
     this.keyList.css({
         float: "left",
@@ -278,10 +278,23 @@ ModalWindow.prototype._render = function () {
         position: "fixed"
     });
     $(document.body).append(this.elem);
-    this.elem.css({
-        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-        padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
-    });
+
+    var allowForWidth = $("[allow-for-width='true']");
+    if (allowForWidth.length) {
+        var requiredWidth = 0;
+        for (var i = 0; i < allowForWidth.length; i++) {
+            requiredWidth += allowForWidth.eq(i).width();
+        };
+        this.elem.css({
+            minWidth: requiredWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
+        });
+    } else {
+        this.elem.css({
+            minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
+        });
+    };
 
     $(window).on("resize", this.position.bind(this));
     
@@ -308,10 +321,30 @@ ModalWindow.prototype._render = function () {
 
 //set position when the window is resized
 ModalWindow.prototype.position = function () {
-    this.elem.css({
-        top: "10%",
-        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
-    });
+    if (this.elem.width() > $(document.body).width()) {
+        this.elem.css({
+            position: "absolute",
+            top: "10%",
+            left: "0px"
+        });
+
+        //add a div to expand the width of the window to accomodate the whole modal window
+        if (!$(".width-expander").length) {
+            var widthExpander = $("<div class='width-expander'></div>");
+            widthExpander.css({
+                width: this.elem.width() + "px"
+            });
+            $(document.body).append(widthExpander);
+        };
+    } else {
+        $(".width-expander").remove();
+
+        this.elem.css({
+            position: "fixed",
+            top: "10%",
+            left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px",
+        });
+    };
 };
 
 ModalWindow.prototype.close = function () {
