@@ -1,16 +1,16 @@
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {
     if (!parent.data) return;
+    
+    ModalWindow.call(this, false);
 
     this.parent = parent;
 
-    this.elem = $("<div id='details'></div>");
+    this.elem.attr("id", "details");
     this.elem.css({
         background: "#079",
         padding: "0px"
     });
-
-    ModalWindow.call(this, this.elem);
 };
 
 Details.prototype = Object.create(ModalWindow.prototype);
@@ -136,7 +136,7 @@ Details.prototype.submit = function (event) {
 };
 
 //Dialog-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//createData - function to create data, if data to be submitted doesn't comply with data if form
+//createData - function to create data, if data to be submitted doesn't comply with data in form
 //callback - to be called after a data is saved to a database
 Dialog = function (items, db, createData, callback) {
     var fakeParent = {
@@ -179,7 +179,9 @@ Dialog.prototype.submit = function (event) {
 
 //Authentification Window----------------------------------------------------------------------------------------------------------------------------------------------------
 function AuthWindow (type) {
-    this.elem = $("<div id='authentification' remove='true''></div>");
+    ModalWindow.call(this, true);
+    
+    this.elem.attr("id", "authentification");
     this.elem.css({
         background: "#fff",
         padding: "5px",
@@ -188,8 +190,6 @@ function AuthWindow (type) {
     });
 
     this.type = type;
-
-    ModalWindow.call(this, this.elem);
 };
 
 AuthWindow.prototype = Object.create(ModalWindow.prototype);
@@ -239,10 +239,11 @@ AuthWindow.prototype.submit = function (event) {
 };
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
-//elem contains jQuery objects to be addded to ModalWindow
-function ModalWindow (elem) {
-    this.elem = elem;
-    this.elem.addClass("mod");
+//romove shows if the window should be removed whe deleted or jast detach
+function ModalWindow (remove) {
+    this.elem = $("<div class='mod' remove=" + remove + "></div>");
+    
+    this.focusExecuted = false;
 };
 
 ModalWindow.prototype._render = function () {
@@ -283,6 +284,24 @@ ModalWindow.prototype._render = function () {
     });
 
     $(window).on("resize", this.position.bind(this));
+    
+    //Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
+    //So I listen to document.onfocus and add window.onresize again
+    $(document).on("focus", function () {
+        if (this.focusExecuted) return;
+
+        this.focusExecuted = true;
+        
+        $(window).off("resize", this.position.bind(this)); //just in case
+        $(window).on("resize", this.position.bind(this)); //when comming back from anothr page
+    }.bind(this));
+
+    //if we go away from the page by some link, when we come back we will need to add window.onresize again
+    $(document).on("click", function (event) {
+        if ($(event.target).attr("href")) this.focusExecuted = false;
+        $(window).off("resize", this.position.bind(this)); //just in case
+        $(window).on("resize", this.position.bind(this)); //when an element with href is pressed, but page hasn't been reloaded
+    }.bind(this));
 
     this.position();
 };
