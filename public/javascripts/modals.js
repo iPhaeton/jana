@@ -198,13 +198,25 @@ AuthWindow.prototype.constructor = AuthWindow;
 AuthWindow.prototype.render = function () { 
     this.form = $(
     "<form>\
-        <div class='input-group'>\
-            <input type='text' class='form-control' name='username' placeholder='Имя пользователя'>\
-            <input type='text' class='form-control' name='password' placeholder='Пароль'>\
+        <div class='form-group'>\
+            <label for='username' class='sr-only'>Имя пользователя</label>\
+                <input type='text' class='form-control' name='username' id='username' placeholder='Имя пользователя'>\
+        </div>\
+        <div class='form-group'>\
+            <label for='password' class='sr-only'>Пароль</label>\
+                <input type='password' class='form-control' name='password' id='password' placeholder='Пароль' autocomplete='off'>\
         </div>\
     </form>");
+    
+    this.form.css({
+        minWidth: 300
+    })
 
-    var button = $("<button type='submit' class='btn btn-default' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация" : "") + "</button>");
+    var button = $("<button type='submit' class='btn btn-primary' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация" : "") + "</button>");
+    button.css({
+        margin: "0 10px 10px 10px",
+        float: "right"
+    });
     this.form.append(button);
     
     this.elem.append(this.form);
