@@ -1,16 +1,16 @@
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {
     if (!parent.data) return;
+    
+    ModalWindow.call(this, false);
 
     this.parent = parent;
 
-    this.elem = $("<div id='details'></div>");
+    this.elem.attr("id", "details");
     this.elem.css({
         background: "#079",
         padding: "0px"
     });
-
-    ModalWindow.call(this, this.elem);
 };
 
 Details.prototype = Object.create(ModalWindow.prototype);
@@ -34,9 +34,9 @@ Details.prototype.render = function () {
 Details.prototype.createContent = function () {
     var content = $("<form></form>");
 
-    this.keyList = $("<ul class='list-group'></ul>");
-    this.valueList = $("<ul class='list-group'></ul>");
-    this.removeList = $("<ul class='list-group'></ul>");
+    this.keyList = $("<ul class='list-group' allow-for-width='true'></ul>");
+    this.valueList = $("<ul class='list-group' allow-for-width='true'></ul>");
+    this.removeList = $("<ul class='list-group' allow-for-width='true'></ul>");
 
     this.keyList.css({
         float: "left",
@@ -136,7 +136,7 @@ Details.prototype.submit = function (event) {
 };
 
 //Dialog-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//createData - function to create data, if data to be submitted doesn't comply with data if form
+//createData - function to create data, if data to be submitted doesn't comply with data in form
 //callback - to be called after a data is saved to a database
 Dialog = function (items, db, createData, callback) {
     var fakeParent = {
@@ -179,7 +179,9 @@ Dialog.prototype.submit = function (event) {
 
 //Authentification Window----------------------------------------------------------------------------------------------------------------------------------------------------
 function AuthWindow (type) {
-    this.elem = $("<div id='authentification' remove='true''></div>");
+    ModalWindow.call(this, true);
+    
+    this.elem.attr("id", "authentification");
     this.elem.css({
         background: "#fff",
         padding: "5px",
@@ -188,8 +190,6 @@ function AuthWindow (type) {
     });
 
     this.type = type;
-
-    ModalWindow.call(this, this.elem);
 };
 
 AuthWindow.prototype = Object.create(ModalWindow.prototype);
@@ -198,13 +198,25 @@ AuthWindow.prototype.constructor = AuthWindow;
 AuthWindow.prototype.render = function () { 
     this.form = $(
     "<form>\
-        <div class='input-group'>\
-            <input type='text' class='form-control' name='username' placeholder='Имя пользователя'>\
-            <input type='text' class='form-control' name='password' placeholder='Пароль'>\
+        <div class='form-group'>\
+            <label for='username' class='sr-only'>Имя пользователя</label>\
+                <input type='text' class='form-control' name='username' id='username' placeholder='Имя пользователя'>\
+        </div>\
+        <div class='form-group'>\
+            <label for='password' class='sr-only'>Пароль</label>\
+                <input type='password' class='form-control' name='password' id='password' placeholder='Пароль' autocomplete='off'>\
         </div>\
     </form>");
+    
+    this.form.css({
+        minWidth: 300
+    })
 
-    var button = $("<button type='submit' class='btn btn-default' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация" : "") + "</button>");
+    var button = $("<button type='submit' class='btn btn-primary' id='auth-button'>" + ((this.type === "signin") ? "Войти" : (this.type === "signup") ? "Регистрация" : "") + "</button>");
+    button.css({
+        margin: "0 10px 10px 10px",
+        float: "right"
+    });
     this.form.append(button);
     
     this.elem.append(this.form);
@@ -227,10 +239,11 @@ AuthWindow.prototype.submit = function (event) {
 };
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
-//elem contains jQuery objects to be addded to ModalWindow
-function ModalWindow (elem) {
-    this.elem = elem;
-    this.elem.addClass("mod");
+//romove shows if the window should be removed whe deleted or jast detach
+function ModalWindow (remove) {
+    this.elem = $("<div class='mod' remove=" + remove + "></div>");
+    
+    this.focusExecuted = false;
 };
 
 ModalWindow.prototype._render = function () {
@@ -265,22 +278,73 @@ ModalWindow.prototype._render = function () {
         position: "fixed"
     });
     $(document.body).append(this.elem);
-    this.elem.css({
-        minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-        padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
-    });
+
+    var allowForWidth = $("[allow-for-width='true']");
+    if (allowForWidth.length) {
+        var requiredWidth = 0;
+        for (var i = 0; i < allowForWidth.length; i++) {
+            requiredWidth += allowForWidth.eq(i).width();
+        };
+        this.elem.css({
+            minWidth: requiredWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
+        });
+    } else {
+        this.elem.css({
+            minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
+            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
+        });
+    };
 
     $(window).on("resize", this.position.bind(this));
+    
+    //Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
+    //So I listen to document.onfocus and add window.onresize again
+    $(document).on("focus", function () {
+        if (this.focusExecuted) return;
+
+        this.focusExecuted = true;
+        
+        $(window).off("resize", this.position.bind(this)); //just in case
+        $(window).on("resize", this.position.bind(this)); //when comming back from anothr page
+    }.bind(this));
+
+    //if we go away from the page by some link, when we come back we will need to add window.onresize again
+    $(document).on("click", function (event) {
+        if ($(event.target).attr("href")) this.focusExecuted = false;
+        $(window).off("resize", this.position.bind(this)); //just in case
+        $(window).on("resize", this.position.bind(this)); //when an element with href is pressed, but page hasn't been reloaded
+    }.bind(this));
 
     this.position();
 };
 
 //set position when the window is resized
 ModalWindow.prototype.position = function () {
-    this.elem.css({
-        top: "10%",
-        left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px"
-    });
+    if (this.elem.width() > $(document.body).width()) {
+        this.elem.css({
+            position: "absolute",
+            top: "10%",
+            left: "0px"
+        });
+
+        //add a div to expand the width of the window to accomodate the whole modal window
+        if (!$(".width-expander").length) {
+            var widthExpander = $("<div class='width-expander'></div>");
+            widthExpander.css({
+                width: this.elem.width() + "px"
+            });
+            $(document.body).append(widthExpander);
+        };
+    } else {
+        $(".width-expander").remove();
+
+        this.elem.css({
+            position: "fixed",
+            top: "10%",
+            left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px",
+        });
+    };
 };
 
 ModalWindow.prototype.close = function () {

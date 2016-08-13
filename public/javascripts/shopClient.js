@@ -236,7 +236,7 @@ function Thumbnail (parent, data, config) {
         img.on("contextmenu", this.showPopupMenu.bind(this));
     };
 
-    var button = $("<button type='button' class='btn btn-default details-button'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
+    var button = $("<button type='button' class='btn btn-default details-button' data-toggle='modal' data-target='details'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
     button.on("click", function (event) {
         self.details.render();
     });

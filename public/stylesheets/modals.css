@@ -1,0 +1,7 @@
+.form-group {
+    padding: 10px;
+}
+
+.form-group + .form-group {
+    padding: 0 10px 10px 10px;
+}
