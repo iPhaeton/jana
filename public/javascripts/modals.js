@@ -261,6 +261,9 @@ ModalWindow.prototype._render = function (content) {
         });
     };
 
+    this.elem.css({
+        visibility: "hidden" //To prevent scampering of a modal across the window, visibility is restored after positioning
+    });
     $(document.body).append(this.elem);
 
     this.closeButton.on("click", this.close.bind(this));
@@ -290,29 +293,37 @@ ModalWindow.prototype._render = function (content) {
 
 //set position when the window is resized
 ModalWindow.prototype.position = function () {
-    var body = $(document.body),
-        win = $(window),
-        docElem = $(document.documentElement);
+    var self = this;
 
-    if (this.elem.width() > win.width()) {
-        this.elem.css({
-            position: "absolute",
-            top: win.scrollTop() + 30 + "px",
-            left: "0px"
+    setTimeout(function () { //To prevent multiple executions
+        var body = $(document.body),
+            win = $(window),
+            docElem = $(document.documentElement);
+
+        if (self.elem.width() > win.width()) {
+            self.elem.css({
+                position: "absolute",
+                top: win.scrollTop() + 30 + "px",
+                left: "0px"
+            });
+        } else if (self.elem.height()+30 > win.height()) {
+            self.elem.css({
+                position: "absolute",
+                top: win.scrollTop() + "px",
+                left: win.scrollLeft() + win.width()/2 - self.elem.width()/2 + "px",
+            });
+        } else {
+            self.elem.css({
+                position: "fixed",
+                top: "30px",
+                left: win.scrollLeft() + win.width()/2 - self.elem.width()/2 + "px",
+            });
+        };
+
+        self.elem.css({
+            visibility: "visible"
         });
-    } else if (this.elem.height()+30 > win.height()) {
-        this.elem.css({
-            position: "absolute",
-            top: win.scrollTop() + "px",
-            left: win.scrollLeft() + win.width()/2 - this.elem.width()/2 + "px",
-        });
-    } else {
-        this.elem.css({
-            position: "fixed",
-            top: "30px",
-            left: win.scrollLeft() + win.width()/2 - this.elem.width()/2 + "px",
-        });
-    };
+    }, 0);
 };
 
 ModalWindow.prototype.close = function () {
