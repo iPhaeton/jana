@@ -201,12 +201,10 @@ AuthWindow.prototype.render = function () {
         float: "right"
     });
     this.form.append(button);
-    
-    this.elem.append(this.form);
 
     this.form.on("submit", this.submit.bind(this));
     
-    this._render();
+    this._render(this.form);
 };
 
 AuthWindow.prototype.submit = function (event) {
