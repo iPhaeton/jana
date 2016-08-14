@@ -34,34 +34,18 @@ Details.prototype.render = function () {
 Details.prototype.createContent = function () {
     var content = $("<form></form>");
 
-    this.keyList = $("<ul class='list-group' allow-for-width='true'></ul>");
-    this.valueList = $("<ul class='list-group' allow-for-width='true'></ul>");
-    this.removeList = $("<ul class='list-group' allow-for-width='true'></ul>");
-
-    this.keyList.css({
-        float: "left",
-        margin: "0px"
-    });
-    this.valueList.css({
-        float: "left",
-        margin: "0px"
-    });
-    this.removeList.css({
-        float: "left",
-        margin: "0px"
-    });
+    var panel = $("<div class='panel panel-default'></div>")
+    this.table = $("<table class='table'><tbody></tbody></table>");
 
     //for some reason properties are read in the opposite order
     var items = gatherItemsInOrder(this.parent.data.specs);
 
     for (var i = items.length - 1; i >= 0; i--) {
-        this.addField({key: items[i], val: this.parent.data.specs[items[i]]});
+        this.addField(this.table.find("tbody"), {key: items[i], val: this.parent.data.specs[items[i]]});
     };
 
-    content.append(this.keyList);
-    content.append(this.valueList);
-    content.append(this.removeList);
-    content.append($("<div class='clearfix'></div>"));
+    panel.append(this.table);
+    content.append(panel);
 
     if (mode === "edit") {
         var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
@@ -94,10 +78,10 @@ Details.prototype.editButtonClick = function (event) {
 
     switch (target.attr("id")) {
         case "add-button":
-            this.addField();
+            this.addField(this.table.find("tbody"));
             return;
         case "rm-button":
-            this.removeField(target.attr("num"));
+            this.removeField(this.table.find("tbody"), target.attr("num"));
             return;
         case "cancel-button":
             this.close();
@@ -105,21 +89,25 @@ Details.prototype.editButtonClick = function (event) {
     }
 };
 
-Details.prototype.addField = function (value) {
+Details.prototype.addField = function (container, value) {
     if (mode === "edit") {
-        this.keyList.append($("<input class='list-group-item' name='key' value='" + (value ? value.key : "") + "'>"));
-        this.valueList.append($("<input class='list-group-item' name='val' value='" + (value ? value.val : "") +"'>"));
-        this.removeList.append($("<input type='button' class='btn list-group-item' id='rm-button' num='" + this.removeList.children().length + "' value='Удалить'>"));
+        container.append(
+            "<tr>\
+                <td><input name='key' value='" + (value ? value.key : "") + "'></td>\
+                <td><input name='val' value='" + (value ? value.val : "") +"'></td>\
+                <td><input type='button' class='btn' id='rm-button' num='" + container.children().length + "' value='Удалить'></td>\
+            </tr>");
     } else {
-        this.keyList.append($("<li class='list-group-item'>" + (value ? value.key : "") + "</li>"));
-        this.valueList.append($("<li class='list-group-item'>" + (value ? value.val : "") + "</li>"));
+        container.append(
+            "<tr>\
+                <td>" + (value ? value.key : "") + "</td>\
+                <td>" + (value ? value.val : "") + "</td>\
+            </tr>");
     };
 };
 
-Details.prototype.removeField = function (num) {
-    this.keyList.children().eq(+num).remove();
-    this.valueList.children().eq(+num).remove();
-    this.removeList.children().eq(+num).remove();
+Details.prototype.removeField = function (container, num) {
+    container.children().eq(+num).remove();
 };
 
 Details.prototype.submit = function (event) {
