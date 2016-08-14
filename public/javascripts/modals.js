@@ -19,16 +19,11 @@ Details.prototype.constructor = Details;
 Details.prototype.render = function () {
     var self = this;
 
-    if (this.elem.html()) {
-        $(document.body).append(this.elem);
-        return;
-    };
-    
-    var content = this.createContent();
+    if (!this.elem.html()) {
+        var content = this.createContent();
+    }
 
-    this.elem.append(content);
-
-    this._render();
+    this._render(content);
 };
 
 Details.prototype.createContent = function () {
@@ -234,37 +229,40 @@ function ModalWindow (remove) {
     this.focusExecuted = false;
 };
 
-ModalWindow.prototype._render = function () {
+ModalWindow.prototype._render = function (content) {
     this.close();
 
-    var closeButton = $("<div></div>");
-    closeButton.css({
-        width: "20px",
-        height: "20px",
-        float: "right"
-    });
-    var closeImg = $("<img src='/images/gtk-close.png'>");
-    closeImg.css({
-        width: "100%",
-        height: "100%"
-    });
-    closeButton.append(closeImg);
-    closeButton.hover(function () {
-        $(this).css({
-            cursor: "pointer"
-        })
-    });
+    if (!this.elem.html()) {
+        if (content) this.elem.append(content);
 
-    closeButton.on("click", this.close.bind(this));
+        this.closeButton = $("<div></div>");
+        this.closeButton.css({
+            width: "20px",
+            height: "20px",
+            float: "right"
+        });
+        var closeImg = $("<img src='/images/gtk-close.png'>");
+        closeImg.css({
+            width: "100%",
+            height: "100%"
+        });
+        this.closeButton.append(closeImg);
+        this.closeButton.hover(function () {
+            $(this).css({
+                cursor: "pointer"
+            })
+        });
 
-    var clearFix = ($("<div class='clearfix'></div>"));
+        var clearFix = ($("<div class='clearfix'></div>"));
 
-    this.elem.prepend(closeButton);
-    clearFix.insertAfter(closeButton);
+        this.elem.prepend(this.closeButton);
+        clearFix.insertAfter(this.closeButton);
 
-    this.elem.css({
-        position: "fixed"
-    });
+        this.elem.css({
+            position: "fixed"
+        });
+    };
+
     $(document.body).append(this.elem);
 
     var allowForWidth = $("[allow-for-width='true']");
@@ -283,6 +281,8 @@ ModalWindow.prototype._render = function () {
             padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
         });
     };
+
+    this.closeButton.on("click", this.close.bind(this));
 
     $(window).on("resize", this.position.bind(this));
     
@@ -336,9 +336,5 @@ ModalWindow.prototype.position = function () {
 };
 
 ModalWindow.prototype.close = function () {
-    var target = $(".mod");
-
-    if (target.attr("remove")) $(".mod").remove();
-    else $(".mod").detach();
-    $(window).off("resize");
+    $(".mod").remove();
 };
