@@ -290,17 +290,27 @@ ModalWindow.prototype._render = function (content) {
 
 //set position when the window is resized
 ModalWindow.prototype.position = function () {
-    if (this.elem.width() > $(document.body).width()) {
+    var body = $(document.body),
+        win = $(window),
+        docElem = $(document.documentElement);
+
+    if (this.elem.width() > win.width()) {
         this.elem.css({
             position: "absolute",
-            top: "10%",
+            top: win.scrollTop() + 30 + "px",
             left: "0px"
+        });
+    } else if (this.elem.height()+30 > win.height()) {
+        this.elem.css({
+            position: "absolute",
+            top: win.scrollTop() + "px",
+            left: win.scrollLeft() + win.width()/2 - this.elem.width()/2 + "px",
         });
     } else {
         this.elem.css({
             position: "fixed",
-            top: "10%",
-            left: (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth/2) - (this.elem.get(0).offsetWidth/2) + "px",
+            top: "30px",
+            left: win.scrollLeft() + win.width()/2 - this.elem.width()/2 + "px",
         });
     };
 };
