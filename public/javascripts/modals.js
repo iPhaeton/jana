@@ -19,49 +19,28 @@ Details.prototype.constructor = Details;
 Details.prototype.render = function () {
     var self = this;
 
-    if (this.elem.html()) {
-        $(document.body).append(this.elem);
-        return;
-    };
-    
-    var content = this.createContent();
+    if (!this.elem.html()) {
+        var content = this.createContent();
+    }
 
-    this.elem.append(content);
-
-    this._render();
+    this._render(content);
 };
 
 Details.prototype.createContent = function () {
     var content = $("<form></form>");
 
-    this.keyList = $("<ul class='list-group' allow-for-width='true'></ul>");
-    this.valueList = $("<ul class='list-group' allow-for-width='true'></ul>");
-    this.removeList = $("<ul class='list-group' allow-for-width='true'></ul>");
-
-    this.keyList.css({
-        float: "left",
-        margin: "0px"
-    });
-    this.valueList.css({
-        float: "left",
-        margin: "0px"
-    });
-    this.removeList.css({
-        float: "left",
-        margin: "0px"
-    });
+    var panel = $("<div class='panel panel-default'></div>")
+    this.table = $("<table class='table'><tbody></tbody></table>");
 
     //for some reason properties are read in the opposite order
     var items = gatherItemsInOrder(this.parent.data.specs);
 
     for (var i = items.length - 1; i >= 0; i--) {
-        this.addField({key: items[i], val: this.parent.data.specs[items[i]]});
+        this.addField(this.table.find("tbody"), {key: items[i], val: this.parent.data.specs[items[i]]});
     };
 
-    content.append(this.keyList);
-    content.append(this.valueList);
-    content.append(this.removeList);
-    content.append($("<div class='clearfix'></div>"));
+    panel.append(this.table);
+    content.append(panel);
 
     if (mode === "edit") {
         var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
@@ -94,10 +73,10 @@ Details.prototype.editButtonClick = function (event) {
 
     switch (target.attr("id")) {
         case "add-button":
-            this.addField();
+            this.addField(this.table.find("tbody"));
             return;
         case "rm-button":
-            this.removeField(target.attr("num"));
+            this.removeField(this.table.find("tbody"), target.attr("num"));
             return;
         case "cancel-button":
             this.close();
@@ -105,21 +84,25 @@ Details.prototype.editButtonClick = function (event) {
     }
 };
 
-Details.prototype.addField = function (value) {
+Details.prototype.addField = function (container, value) {
     if (mode === "edit") {
-        this.keyList.append($("<input class='list-group-item' name='key' value='" + (value ? value.key : "") + "'>"));
-        this.valueList.append($("<input class='list-group-item' name='val' value='" + (value ? value.val : "") +"'>"));
-        this.removeList.append($("<input type='button' class='btn list-group-item' id='rm-button' num='" + this.removeList.children().length + "' value='Удалить'>"));
+        container.append(
+            "<tr>\
+                <td><input name='key' value='" + (value ? value.key : "") + "'></td>\
+                <td><input name='val' value='" + (value ? value.val : "") +"'></td>\
+                <td><input type='button' class='btn' id='rm-button' num='" + container.children().length + "' value='Удалить'></td>\
+            </tr>");
     } else {
-        this.keyList.append($("<li class='list-group-item'>" + (value ? value.key : "") + "</li>"));
-        this.valueList.append($("<li class='list-group-item'>" + (value ? value.val : "") + "</li>"));
+        container.append(
+            "<tr>\
+                <td>" + (value ? value.key : "") + "</td>\
+                <td>" + (value ? value.val : "") + "</td>\
+            </tr>");
     };
 };
 
-Details.prototype.removeField = function (num) {
-    this.keyList.children().eq(+num).remove();
-    this.valueList.children().eq(+num).remove();
-    this.removeList.children().eq(+num).remove();
+Details.prototype.removeField = function (container, num) {
+    container.children().eq(+num).remove();
 };
 
 Details.prototype.submit = function (event) {
@@ -218,12 +201,10 @@ AuthWindow.prototype.render = function () {
         float: "right"
     });
     this.form.append(button);
-    
-    this.elem.append(this.form);
 
     this.form.on("submit", this.submit.bind(this));
     
-    this._render();
+    this._render(this.form);
 };
 
 AuthWindow.prototype.submit = function (event) {
@@ -240,61 +221,49 @@ AuthWindow.prototype.submit = function (event) {
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
 //romove shows if the window should be removed whe deleted or jast detach
-function ModalWindow (remove) {
-    this.elem = $("<div class='mod' remove=" + remove + "></div>");
+function ModalWindow () {
+    this.elem = $("<div class='mod'></div>");
     
     this.focusExecuted = false;
 };
 
-ModalWindow.prototype._render = function () {
+ModalWindow.prototype._render = function (content) {
     this.close();
 
-    var closeButton = $("<div></div>");
-    closeButton.css({
-        width: "20px",
-        height: "20px",
-        float: "right"
-    });
-    var closeImg = $("<img src='/images/gtk-close.png'>");
-    closeImg.css({
-        width: "100%",
-        height: "100%"
-    });
-    closeButton.append(closeImg);
-    closeButton.hover(function () {
-        $(this).css({
-            cursor: "pointer"
-        })
-    });
+    if (!this.elem.html()) {
+        if (content) this.elem.append(content);
 
-    closeButton.on("click", this.close.bind(this));
-
-    var clearFix = ($("<div class='clearfix'></div>"));
-
-    this.elem.prepend(closeButton);
-    clearFix.insertAfter(closeButton);
-
-    this.elem.css({
-        position: "fixed"
-    });
-    $(document.body).append(this.elem);
-
-    var allowForWidth = $("[allow-for-width='true']");
-    if (allowForWidth.length) {
-        var requiredWidth = 0;
-        for (var i = 0; i < allowForWidth.length; i++) {
-            requiredWidth += allowForWidth.eq(i).width();
-        };
-        this.elem.css({
-            minWidth: requiredWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
+        this.closeButton = $("<div></div>");
+        this.closeButton.css({
+            width: "20px",
+            height: "20px",
+            float: "right"
         });
-    } else {
+        var closeImg = $("<img src='/images/gtk-close.png'>");
+        closeImg.css({
+            width: "100%",
+            height: "100%"
+        });
+        this.closeButton.append(closeImg);
+        this.closeButton.hover(function () {
+            $(this).css({
+                cursor: "pointer"
+            })
+        });
+
+        var clearFix = ($("<div class='clearfix'></div>"));
+
+        this.elem.prepend(this.closeButton);
+        clearFix.insertAfter(this.closeButton);
+
         this.elem.css({
-            minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
+            position: "fixed"
         });
     };
+
+    $(document.body).append(this.elem);
+
+    this.closeButton.on("click", this.close.bind(this));
 
     $(window).on("resize", this.position.bind(this));
     
@@ -327,18 +296,7 @@ ModalWindow.prototype.position = function () {
             top: "10%",
             left: "0px"
         });
-
-        //add a div to expand the width of the window to accomodate the whole modal window
-        if (!$(".width-expander").length) {
-            var widthExpander = $("<div class='width-expander'></div>");
-            widthExpander.css({
-                width: this.elem.width() + "px"
-            });
-            $(document.body).append(widthExpander);
-        };
     } else {
-        $(".width-expander").remove();
-
         this.elem.css({
             position: "fixed",
             top: "10%",
@@ -348,9 +306,5 @@ ModalWindow.prototype.position = function () {
 };
 
 ModalWindow.prototype.close = function () {
-    var target = $(".mod");
-
-    if (target.attr("remove")) $(".mod").remove();
-    else $(".mod").detach();
-    $(window).off("resize");
+    $(".mod").remove();
 };
