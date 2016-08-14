@@ -223,8 +223,8 @@ AuthWindow.prototype.submit = function (event) {
 
 //Modal window---------------------------------------------------------------------------------------------------------------------------------------------------------------
 //romove shows if the window should be removed whe deleted or jast detach
-function ModalWindow (remove) {
-    this.elem = $("<div class='mod' remove=" + remove + "></div>");
+function ModalWindow () {
+    this.elem = $("<div class='mod'></div>");
     
     this.focusExecuted = false;
 };
@@ -265,23 +265,6 @@ ModalWindow.prototype._render = function (content) {
 
     $(document.body).append(this.elem);
 
-    var allowForWidth = $("[allow-for-width='true']");
-    if (allowForWidth.length) {
-        var requiredWidth = 0;
-        for (var i = 0; i < allowForWidth.length; i++) {
-            requiredWidth += allowForWidth.eq(i).width();
-        };
-        this.elem.css({
-            minWidth: requiredWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
-        });
-    } else {
-        this.elem.css({
-            minWidth: this.elem.get(0).clientWidth + 2 + "px", //the width is a bit bigger than it should be to avoid moving of the lists when a display is narrower than the div
-            padding: this.elem.css("padding") ? this.elem.css("padding") : "0 0 1px 1px"
-        });
-    };
-
     this.closeButton.on("click", this.close.bind(this));
 
     $(window).on("resize", this.position.bind(this));
@@ -315,18 +298,7 @@ ModalWindow.prototype.position = function () {
             top: "10%",
             left: "0px"
         });
-
-        //add a div to expand the width of the window to accomodate the whole modal window
-        if (!$(".width-expander").length) {
-            var widthExpander = $("<div class='width-expander'></div>");
-            widthExpander.css({
-                width: this.elem.width() + "px"
-            });
-            $(document.body).append(widthExpander);
-        };
     } else {
-        $(".width-expander").remove();
-
         this.elem.css({
             position: "fixed",
             top: "10%",
