@@ -223,12 +223,17 @@ AuthWindow.prototype.submit = function (event) {
 //romove shows if the window should be removed whe deleted or jast detach
 function ModalWindow () {
     this.elem = $("<div class='mod'></div>");
+    this.elem.css({
+        zIndex: 3
+    })
     
     this.focusExecuted = false;
 };
 
 ModalWindow.prototype._render = function (content) {
     this.close();
+    
+    this.preventScrolling(true);
 
     if (!this.elem.html()) {
         if (content) this.elem.append(content);
@@ -296,9 +301,7 @@ ModalWindow.prototype.position = function () {
     var self = this;
 
     setTimeout(function () { //To prevent multiple executions
-        var body = $(document.body),
-            win = $(window),
-            docElem = $(document.documentElement);
+        var win = $(window);
 
         if (self.elem.width() > win.width()) {
             self.elem.css({
@@ -328,4 +331,30 @@ ModalWindow.prototype.position = function () {
 
 ModalWindow.prototype.close = function () {
     $(".mod").remove();
+    
+    this.preventScrolling(false);
 };
+
+ModalWindow.prototype.preventScrolling = function (prevent) {
+    var doc = $(document);
+    
+    $(document.body).css({
+        overflow: prevent ? "hidden" : "visible"
+    });
+    
+    if (prevent) {
+        background = $("<div class='dim-background'></div>");
+        background.css({
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: doc.height(),
+            background: "rgba(0,0,0,.5)",
+            zIndex: 2
+        });
+        $(document.body).append(background);
+    } else {
+        $(".dim-background").remove();
+    }
+}
