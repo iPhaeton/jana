@@ -355,12 +355,15 @@ function EditSwitch(parent) {
     this.parent = parent;
 
     this.elem = $("<button type='button' class='btn btn-default'>Редактировать</button>");
-    this.elem.appendTo(document.body);
+    //this.elem.appendTo(document.body);
+    this.elem.appendTo($(".main-content"));
 
     this.elem.css({
-        position: "absolute",
+        float: "right",
+        margin: "5px"
+        /*position: "absolute",
         top: "95%",
-        left: "90%"
+        left: "90%"*/
     });
 
     $(this.elem).on("click", this.switchMode.bind(this));
@@ -374,7 +377,7 @@ EditSwitch.prototype.switchMode = function () {
         if (!$("#uploadInput").length) this.createUploadInput();
     } else {
         mode = "view";
-        this.elem.text("Редактирование");
+        this.elem.text("Редактировать");
     };
 
     createContent();
