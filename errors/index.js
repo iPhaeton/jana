@@ -23,3 +23,13 @@ util.inherits(FileSaveError, HttpError);
 FileSaveError.prototype.name = "FileSaveError";
 
 exports.FileSaveError = FileSaveError;
+
+//DB errors------------------------------------------------------------------------------------------------
+function DBError () {
+    HttpError.apply(this, [503, "База данных недоступна"]);
+    Error.captureStackTrace(this, DBError);
+};
+util.inherits(DBError, HttpError);
+DBError.prototype.name = "DBError";
+
+exports.DBError = DBError;

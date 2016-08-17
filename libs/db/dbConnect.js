@@ -1,3 +1,5 @@
+var app = require("app");
+
 var mongoose = require("libs/mongoose");
 var async = require("async");
 var config = require("config");
@@ -17,7 +19,7 @@ module.exports = function (req, res, next) {
                     logger.log("Tyring to connect to the database - " + countAttemptsToConnect);
                     open(callback);
                     countAttemptsToConnect++;
-                }, 1000 * countAttemptsToConnect);
+                }, 1000/* * countAttemptsToConnect*/);
             }, (err) => {
                 countAttemptsToConnect = undefined;
                 if (err) callback(err);
@@ -26,8 +28,14 @@ module.exports = function (req, res, next) {
         },
         requireModels
     ], (err) => {
-        if (err) logger.logErr(err);
-        else logger.log("db ok");
+        if (err) {
+            app.set("dbConnected", false);
+            logger.logErr(err);
+        }
+        else {
+            app.set("dbConnected", true);
+            logger.log("db ok");
+        }
     });
 
 };

@@ -24,6 +24,9 @@ var signout = require("routes/signoutRoute");
 var app = express();
 module.exports = app;
 
+//global variable, which indicates conditions of the datatbase
+app.set("dbConnected", false);
+
 // view engine setup
 app.engine("ejs", require("ejs-locals"));
 app.set('views', path.join(__dirname, 'views'));
@@ -62,6 +65,9 @@ app.use(router.all("*", (req, res, next) => {
 
 //add an HttpError handler
 app.use(sendHttpError);
+
+//database check
+app.use(require("middleware/dbCheck"));
 
 //sessions
 var sessionStore = require("libs/sessionStore");

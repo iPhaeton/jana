@@ -1,4 +1,5 @@
 var fs = require("fs");
+var HttpError = require("errors").HttpError;
 var ENV = process.env.NODE_ENV;
 
 module.exports = function (module) {
@@ -28,8 +29,11 @@ module.exports = function (module) {
                 if (req) self.logger.error(req.method + " " + req.originalUrl);
                 self.logger.error(err);
             });
-        };
-        if (app.get("env") !== "development" || moduleName[moduleName.length - 1] === "dbConnect.js") self.logger.error(err); //dbConnect.js isn't a part of express, therefore no next(err) may be called
+        } else
+        {
+            //dbConnect.js isn't a part of express, therefore no next(err) may be called
+            if (err instanceof HttpError || moduleName[moduleName.length - 1] === "dbConnect.js") self.logger.error(err);
+        }
     };
 
     return self;
