@@ -29,11 +29,9 @@ module.exports = function (req, res, next) {
         requireModels
     ], (err) => {
         if (err) {
-            app.set("dbConnected", false);
             logger.logErr(err);
         }
         else {
-            app.set("dbConnected", true);
             logger.log("db ok");
         }
     });
@@ -53,7 +51,14 @@ function open (callback) {
     mongoose.connection.once ("error", onConnectionError);
 
     function onConnectionOpen (err) {
+        app.set("dbConnected", true);
+
+        mongoose.connection.on ("connected", onConnection);
+        mongoose.connection.on ("disconnected", onDisconnection);
+
+        //set a constant error listener
         mongoose.connection.removeListener("error", onConnectionError);
+        mongoose.connection.on ("error", onConnectionError);
 
         if(!countAttemptsToConnect) return;
         countAttemptsToConnect = 11;
@@ -61,7 +66,7 @@ function open (callback) {
     };
 
     function onConnectionError (err) {
-        //logger.log("initiated by - " + initiatedBy);
+        app.set("dbConnected", false);
 
         mongoose.connection.removeListener("open", onConnectionOpen);
 
@@ -70,6 +75,16 @@ function open (callback) {
             callback(err);
         }
         else callback();
+    };
+
+    function onConnection () {
+        app.set("dbConnected", true);
+        logger.log("Reconnected to database");
+    }
+
+    function onDisconnection () {
+        app.set("dbConnected", false);
+        logger.logErr("Disconnected from database");
     };
 };
 
