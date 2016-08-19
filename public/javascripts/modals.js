@@ -50,7 +50,9 @@ Details.prototype.render = function () {
 };
 
 Details.prototype.createContent = function () {
-    var panel = $("<div class='panel panel-default'></div>")
+    this.elem.find("#details__content").remove();
+    
+    var panel = $("<div class='panel panel-default' id='details__content'></div>")
     this.table = $("<table class='table'><tbody></tbody></table>");
 
     //for some reason properties are read in the opposite order
@@ -61,7 +63,7 @@ Details.prototype.createContent = function () {
     };
 
     panel.append(this.table);
-    this.content.append(panel);
+    this.content.prepend(panel);
 };
 
 Details.prototype.editButtonClick = function (event) {
@@ -77,6 +79,7 @@ Details.prototype.editButtonClick = function (event) {
             this.removeField(this.table.find("tbody"), target.attr("num"));
             return;
         case "cancel-button":
+            this.createContent();
             this.close();
             return;
     }
