@@ -20,14 +20,35 @@ Details.prototype.render = function () {
     var self = this;
 
     if (!this.elem.html()) {
-        var content = this.createContent();
-    }
+        this.createContent();
+        
+        if (mode === "edit") {
+            var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
+            saveButton.css({
+                float: "right"
+            });
 
-    this._render(content);
+            var addButton = $("<button type='button' class='btn btn-default' id='add-button'>Добавить</button>");
+
+            var cancelButton = $("<button type='button' class='btn btn-default' id='cancel-button'>Отмена</button>");
+            cancelButton.css({
+                float: "right"
+            });
+
+            this.content.append(cancelButton);
+            this.content.append(addButton);
+            this.content.append(saveButton);
+        };
+    };
+    
+    this.content.on("submit", this.submit.bind(this));
+    this.content.on("click", ".btn", this.editButtonClick.bind(this));
+
+    this._render(this.content);
 };
 
 Details.prototype.createContent = function () {
-    var content = $("<form></form>");
+    this.content = $("<form></form>");
 
     var panel = $("<div class='panel panel-default'></div>")
     this.table = $("<table class='table'><tbody></tbody></table>");
@@ -40,30 +61,7 @@ Details.prototype.createContent = function () {
     };
 
     panel.append(this.table);
-    content.append(panel);
-
-    if (mode === "edit") {
-        var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
-        saveButton.css({
-            float: "right"
-        });
-
-        var addButton = $("<button type='button' class='btn btn-default' id='add-button'>Добавить</button>");
-
-        var cancelButton = $("<button type='button' class='btn btn-default' id='cancel-button'>Отмена</button>");
-        cancelButton.css({
-            float: "right"
-        });
-
-        content.append(cancelButton);
-        content.append(addButton);
-        content.append(saveButton);
-    };
-    
-    content.on("submit", this.submit.bind(this));
-    content.on("click", ".btn", this.editButtonClick.bind(this));
-    
-    return content;
+    this.content.append(panel);
 };
 
 Details.prototype.editButtonClick = function (event) {
