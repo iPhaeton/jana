@@ -23,7 +23,7 @@ commoditySchema.methods.writeData = function (data, next, callback) {
   this.save(function (err) {
     if (err) next(err);
     callback();
-  })
+  });
 };
 
 module.exports = mongoose.model ("Commodity", commoditySchema);
