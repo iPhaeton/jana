@@ -74,15 +74,17 @@ Details.prototype.editButtonClick = function (event) {
     switch (target.attr("id")) {
         case "add-button":
             this.addField(this.table.find("tbody"));
-            return;
+            break;
         case "rm-button":
             this.removeField(this.table.find("tbody"), target.attr("num"));
-            return;
+            break;
         case "cancel-button":
             this.createContent();
             this.close();
-            return;
-    }
+            break;
+    };
+    
+    target.blur();
 };
 
 Details.prototype.addField = function (container, value) {
