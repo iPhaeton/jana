@@ -20,6 +20,8 @@ Details.prototype.render = function () {
     var self = this;
 
     if (!this.elem.html()) {
+        this.content = $("<form></form>");
+        
         this.createContent();
         
         if (mode === "edit") {
@@ -48,8 +50,6 @@ Details.prototype.render = function () {
 };
 
 Details.prototype.createContent = function () {
-    this.content = $("<form></form>");
-
     var panel = $("<div class='panel panel-default'></div>")
     this.table = $("<table class='table'><tbody></tbody></table>");
 
@@ -101,6 +101,10 @@ Details.prototype.addField = function (container, value) {
 
 Details.prototype.removeField = function (container, num) {
     container.children().eq(+num).remove();
+    
+    for (var i = +num; i < container.children().length; i++) {
+        container.children().eq(i).find("input").attr("num", i);
+    };
 };
 
 Details.prototype.submit = function (event) {
