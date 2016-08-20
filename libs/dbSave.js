@@ -18,7 +18,7 @@ module.exports = function (model, id, data, next, callback) {
     } else {
         var commodity = new mongoose.models[model](data);
         commodity.save((err) => {
-            if (err) return next(err);
+            if (err) return callback(err);
             callback();
         });
     };

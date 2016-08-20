@@ -155,12 +155,16 @@ Dialog.prototype.submit = function (event) {
 
     if (!formData.url && data) formData.url = data.url;
     makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
-        if (err) alert (err.message);
+        if (err) {
+            if (self.callback) self.callback(err);
+            else alert (err.message);
+            return;
+        }
 
         if (formData) {
             getData(formData.url, function () {
                 createContent();
-                if (self.callback) self.callback(formData);
+                if (self.callback) self.callback(null, formData);
             });
         };
     });

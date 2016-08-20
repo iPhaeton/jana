@@ -473,7 +473,13 @@ EditPanel.prototype.addCategory = function () {
             url: "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[1].value,
             position: $(".menu-button").length
         };
-    }, function (data) {
+    }, function (err, data) {
+        if (err) {
+            if (err.message === "Документ уже существует") alert("Яна, категория с таким имененм у тебя уже есть");
+            else alert(err.message);
+            return;
+        }
+
         $(".side-menu").append("\
             <li class='menu-button'>\
                 <a role='presentation' href='" + data.url + "'>" + data.name + "</a>\
