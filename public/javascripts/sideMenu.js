@@ -3,6 +3,10 @@
     $(document).ready(function () {
 
         $(".side-menu").on("contextmenu", ".menu-button", function (event) {
+            if (findTarget($(event.target), "popup-menu")) return;
+
+            $(".popup-menu").remove();
+
             if (mode !== "edit") return;
 
             var popupMenu = new PopupMenu($(this), event, {
