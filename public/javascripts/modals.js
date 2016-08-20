@@ -153,13 +153,16 @@ Dialog.prototype.submit = function (event) {
     if (this.createData) var formData = this.createData(form);
     else var formData = form.serializeArray();
 
-    if (!formData.url) formData.url = data.url;
+    if (!formData.url && data) formData.url = data.url;
     makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
         if (err) alert (err.message);
-        getData(formData.url, function () {
-            createContent();
-            if (self.callback) self.callback(formData);
-        });
+
+        if (formData) {
+            getData(formData.url, function () {
+                createContent();
+                if (self.callback) self.callback(formData);
+            });
+        };
     });
 
     this.close();
