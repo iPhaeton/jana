@@ -20,16 +20,39 @@ Details.prototype.render = function () {
     var self = this;
 
     if (!this.elem.html()) {
-        var content = this.createContent();
-    }
+        this.content = $("<form></form>");
+        
+        this.createContent();
+        
+        if (mode === "edit") {
+            var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
+            saveButton.css({
+                float: "right"
+            });
 
-    this._render(content);
+            var addButton = $("<button type='button' class='btn btn-default' id='add-button'>Добавить</button>");
+
+            var cancelButton = $("<button type='button' class='btn btn-default' id='cancel-button'>Отмена</button>");
+            cancelButton.css({
+                float: "right"
+            });
+
+            this.content.append(cancelButton);
+            this.content.append(addButton);
+            this.content.append(saveButton);
+        };
+    };
+    
+    this.content.on("submit", this.submit.bind(this));
+    this.content.on("click", ".btn", this.editButtonClick.bind(this));
+
+    this._render(this.content);
 };
 
 Details.prototype.createContent = function () {
-    var content = $("<form></form>");
-
-    var panel = $("<div class='panel panel-default'></div>")
+    this.elem.find("#details__content").remove();
+    
+    var panel = $("<div class='panel panel-default' id='details__content'></div>")
     this.table = $("<table class='table'><tbody></tbody></table>");
 
     //for some reason properties are read in the opposite order
@@ -40,30 +63,7 @@ Details.prototype.createContent = function () {
     };
 
     panel.append(this.table);
-    content.append(panel);
-
-    if (mode === "edit") {
-        var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
-        saveButton.css({
-            float: "right"
-        });
-
-        var addButton = $("<button type='button' class='btn btn-default' id='add-button'>Добавить</button>");
-
-        var cancelButton = $("<button type='button' class='btn btn-default' id='cancel-button'>Отмена</button>");
-        cancelButton.css({
-            float: "right"
-        });
-
-        content.append(cancelButton);
-        content.append(addButton);
-        content.append(saveButton);
-    };
-    
-    content.on("submit", this.submit.bind(this));
-    content.on("click", ".btn", this.editButtonClick.bind(this));
-    
-    return content;
+    this.content.prepend(panel);
 };
 
 Details.prototype.editButtonClick = function (event) {
@@ -74,14 +74,17 @@ Details.prototype.editButtonClick = function (event) {
     switch (target.attr("id")) {
         case "add-button":
             this.addField(this.table.find("tbody"));
-            return;
+            break;
         case "rm-button":
             this.removeField(this.table.find("tbody"), target.attr("num"));
-            return;
+            break;
         case "cancel-button":
+            this.createContent();
             this.close();
-            return;
-    }
+            break;
+    };
+    
+    target.blur();
 };
 
 Details.prototype.addField = function (container, value) {
@@ -103,6 +106,10 @@ Details.prototype.addField = function (container, value) {
 
 Details.prototype.removeField = function (container, num) {
     container.children().eq(+num).remove();
+    
+    for (var i = +num; i < container.children().length; i++) {
+        container.children().eq(i).find("input").attr("num", i);
+    };
 };
 
 Details.prototype.submit = function (event) {
@@ -146,13 +153,20 @@ Dialog.prototype.submit = function (event) {
     if (this.createData) var formData = this.createData(form);
     else var formData = form.serializeArray();
 
-    if (!formData.url) formData.url = data.url;
+    if (!formData.url && data) formData.url = data.url;
     makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
-        if (err) alert (err.message);
-        getData(formData.url, function () {
-            createContent();
-            if (self.callback) self.callback(formData);
-        });
+        if (err) {
+            if (self.callback) self.callback(err);
+            else alert (err.message);
+            return;
+        }
+
+        if (formData) {
+            getData(formData.url, function () {
+                createContent();
+                if (self.callback) self.callback(null, formData);
+            });
+        };
     });
 
     this.close();
@@ -223,12 +237,17 @@ AuthWindow.prototype.submit = function (event) {
 //romove shows if the window should be removed whe deleted or jast detach
 function ModalWindow () {
     this.elem = $("<div class='mod'></div>");
+    this.elem.css({
+        zIndex: 3
+    })
     
     this.focusExecuted = false;
 };
 
 ModalWindow.prototype._render = function (content) {
     this.close();
+    
+    this.preventScrolling(true);
 
     if (!this.elem.html()) {
         if (content) this.elem.append(content);
@@ -296,9 +315,7 @@ ModalWindow.prototype.position = function () {
     var self = this;
 
     setTimeout(function () { //To prevent multiple executions
-        var body = $(document.body),
-            win = $(window),
-            docElem = $(document.documentElement);
+        var win = $(window);
 
         if (self.elem.width() > win.width()) {
             self.elem.css({
@@ -328,4 +345,30 @@ ModalWindow.prototype.position = function () {
 
 ModalWindow.prototype.close = function () {
     $(".mod").remove();
+    
+    this.preventScrolling(false);
 };
+
+ModalWindow.prototype.preventScrolling = function (prevent) {
+    var doc = $(document);
+    
+    $(document.body).css({
+        overflow: prevent ? "hidden" : "visible"
+    });
+    
+    if (prevent) {
+        background = $("<div class='dim-background'></div>");
+        background.css({
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: doc.height(),
+            background: "rgba(0,0,0,.5)",
+            zIndex: 2
+        });
+        $(document.body).append(background);
+    } else {
+        $(".dim-background").remove();
+    }
+}

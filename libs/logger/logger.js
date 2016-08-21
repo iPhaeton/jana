@@ -8,12 +8,12 @@ module.exports = function (module, app) {
         new winston.transports.Console({
             timestamp: true,
             colorize: true,
-            level: (ENV === "development") ? "debug" : "error",
+            level: (ENV === "development") ? "debug" : app.get("errorsLogFilePath") ? "error" : "debug",
             label: path
         })
     ];
 
-    if (ENV !== "development") {
+    if (ENV !== "development" && app.get("errorsLogFilePath")) {
         transports.push(new winston.transports.File({
             timestamp: true,
             colorize: true,

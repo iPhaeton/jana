@@ -1,3 +1,4 @@
+//DB------------------------------------------------------------------------------------------------------------------------------------------------------------
 function makeDBSearchRequest (reqStr, callback) {
     $.ajax({
         url: reqStr,
@@ -28,6 +29,22 @@ function makeDBSaveRequest (reqStr, data, callback) {
     });
 };
 
+function makeDBDelRequest (reqStr, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            404: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    });
+};
+
+//Files--------------------------------------------------------------------------------------------------------------------------------------------------------
 function makeFileSaveRequest(reqStr, file, callback) {
     $.ajax({
         url: reqStr,
@@ -77,22 +94,6 @@ function makeListRequest(reqStr, callback) {
 };
 
 //Registration and authorization------------------------------------------------------------------------------------------------------------------------------------
-/*function makeAuthorizationRequest (reqStr, form, callback) {
-    $.ajax({
-        url: reqStr,
-        type: "POST",
-        data: form.serialize(),
-        statusCode:{
-            200: function () {
-                callback(null)
-            },
-            400: function (jqXHR) {
-                callback(JSON.parse(jqXHR.responseText));
-            }
-        }
-    });
-};*/
-
 function makeAuthorizationRequest (reqStr, form, callback) {
     $.ajax({
         url: reqStr,

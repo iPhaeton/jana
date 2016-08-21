@@ -233,7 +233,6 @@ function Thumbnail (parent, data, config) {
             })
         });
         img.on("click", this.chooseImage.bind(this));
-        img.on("contextmenu", this.showPopupMenu.bind(this));
     };
 
     var button = $("<button type='button' class='btn btn-default details-button' data-toggle='modal' data-target='details'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
@@ -253,6 +252,8 @@ function Thumbnail (parent, data, config) {
     };
 
     div.append(button);
+
+    if (mode === "edit") col.on("contextmenu", this.showPopupMenu.bind(this));
 
     col.append(div);
 
@@ -284,12 +285,14 @@ Thumbnail.prototype.showDirList = function (event) {
             files[list[i]] = [this.chooseImageOnServer.bind(this), this.showDirPopupMenu.bind(this)];
         };
         
-        var menu = new PopupMenu(this.elem, null, files);
+        var menu = new PopupMenu(this.elem, event, files, true);
         menu.elem.addClass("dir-list");
     });
 };
 
 Thumbnail.prototype.showDirPopupMenu = function (event) {
+    $(".popup-menu[unremovable='false']").remove();
+
     var target = findTarget($(event.target), "popup-button");
     if (!target) return;
     
@@ -302,16 +305,27 @@ Thumbnail.prototype.showDirPopupMenu = function (event) {
 };
 
 Thumbnail.prototype.showPopupMenu = function (event) {
-    $(".popup-menu").detach();
+    var target = findTarget($(event.target), "thumbnail thumbnail-img details-button popup-menu");
+    if (!target) {
+        $(".popup-menu").remove();
+        return;
+    };
 
-    if (this.popupMenu) {
-        this.popupMenu.render(event);
-    } else {
-        this.popupMenu = new PopupMenu(this.elem, event, {
+    if (!target.hasClass("popup-menu")) $(".popup-menu").remove();
+
+    if (target.hasClass("thumbnail")) {
+        var popupMenu = new PopupMenu(this.elem, event, {
+            "Удалить товар": [this.delete.bind(this)]
+        });
+    } else if (target.hasClass("thumbnail-img")) {
+        var popupMenu = new PopupMenu(this.elem, event, {
             "Загрузить новое изображение": [this.chooseImage.bind(this)],
             "Выбрать изображение на сервере": [this.showDirList.bind(this)]
         });
+    } else if (target.hasClass("details-button")) {
+        return;
     };
+
     event.preventDefault();
 };
 
@@ -350,17 +364,27 @@ Thumbnail.prototype.deleteImage = function (event) {
     });
 };
 
+Thumbnail.prototype.delete = function (event) {
+    makeDBDelRequest("/dbdel?db=Commodity&id=" + this.data._id, function (err) {
+        if (err) alert (err.message);
+        getData(data.url, createContent);
+    });
+};
+
 //Edit switch----------------------------------------------------------------------------------------------------------
 function EditSwitch(parent) {
     this.parent = parent;
 
     this.elem = $("<button type='button' class='btn btn-default'>Редактировать</button>");
-    this.elem.appendTo(document.body);
+    //this.elem.appendTo(document.body);
+    this.elem.appendTo($(".main-content"));
 
     this.elem.css({
-        position: "absolute",
+        float: "right",
+        margin: "5px"
+        /*position: "absolute",
         top: "95%",
-        left: "90%"
+        left: "90%"*/
     });
 
     $(this.elem).on("click", this.switchMode.bind(this));
@@ -374,7 +398,7 @@ EditSwitch.prototype.switchMode = function () {
         if (!$("#uploadInput").length) this.createUploadInput();
     } else {
         mode = "view";
-        this.elem.text("Редактирование");
+        this.elem.text("Редактировать");
     };
 
     createContent();
@@ -449,7 +473,13 @@ EditPanel.prototype.addCategory = function () {
             url: "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[1].value,
             position: $(".menu-button").length
         };
-    }, function (data) {
+    }, function (err, data) {
+        if (err) {
+            if (err.message === "Документ уже существует") alert("Яна, категория с таким имененм у тебя уже есть");
+            else alert(err.message);
+            return;
+        }
+
         $(".side-menu").append("\
             <li class='menu-button'>\
                 <a role='presentation' href='" + data.url + "'>" + data.name + "</a>\
@@ -460,9 +490,9 @@ EditPanel.prototype.addCategory = function () {
 };
 
 //Popup menu-----------------------------------------------------------------------------------------------------------
-function PopupMenu(parent, invokingEvent, items) {
+function PopupMenu(parent, invokingEvent, items, unremovable) { //unremovable means this popup should not be deleted on popup on itself
     this.parent = parent;
-    this.elem = $("<div class='popup-menu'></div>");
+    this.elem = $("<div class='popup-menu'" + (unremovable ? "unremovable='true'" : "unremovable='false'") + "></div>");
     this.list = $("<ul class='list-group'></ul>");
     
     for (var item in items) {

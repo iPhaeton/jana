@@ -1,3 +1,5 @@
+var app = require("app");
+
 var mongoose = require("libs/mongoose");
 var async = require("async");
 var config = require("config");
@@ -13,11 +15,11 @@ module.exports = function (req, res, next) {
             async.whilst(() => {
                 return countAttemptsToConnect < 10;
             }, (callback) => {
-                setTimeout((() => {
-                    return function () {
-                        open(callback);
-                    };
-                })(), 1000 * countAttemptsToConnect);
+                setTimeout(() => {
+                    logger.log("Tyring to connect to the database - " + countAttemptsToConnect);
+                    open(callback);
+                    countAttemptsToConnect++;
+                }, 1000/* * countAttemptsToConnect*/);
             }, (err) => {
                 countAttemptsToConnect = undefined;
                 if (err) callback(err);
@@ -26,14 +28,18 @@ module.exports = function (req, res, next) {
         },
         requireModels
     ], (err) => {
-        if (err) logger.logErr(err);
-        else logger.log("db ok");
+        if (err) {
+            logger.logErr(err);
+        }
+        else {
+            logger.log("db ok");
+        }
     });
 
 };
 
 function open (callback) {
-    if (countAttemptsToConnect !== undefined) countAttemptsToConnect++;
+    //var initiatedBy = countAttemptsToConnect;
 
     if (process.env.PORT) {
         mongoose.connect (config.get("mongoose:uri"), config.get("mongoose:options"));
@@ -41,18 +47,45 @@ function open (callback) {
         mongoose.connect ("mongodb://localhost/jana-shop", config.get("mongoose:options"));
     };
 
-    mongoose.connection.on("open", (err) => {
+    mongoose.connection.once ("open", onConnectionOpen);
+    mongoose.connection.once ("error", onConnectionError);
+
+    function onConnectionOpen (err) {
+        app.set("dbConnected", true);
+
+        mongoose.connection.on ("connected", onConnection);
+        mongoose.connection.on ("disconnected", onDisconnection);
+
+        //set a constant error listener
+        mongoose.connection.removeListener("error", onConnectionError);
+        mongoose.connection.on ("error", onConnectionError);
+
         if(!countAttemptsToConnect) return;
         countAttemptsToConnect = 11;
         callback();
-    });
-    mongoose.connection.on("error", (err) => {
-        if(!countAttemptsToConnect) return;
+    };
+
+    function onConnectionError (err) {
+        app.set("dbConnected", false);
+
+        mongoose.connection.removeListener("open", onConnectionOpen);
+
+        if (!countAttemptsToConnect) return;
         if (countAttemptsToConnect > 9) {
             callback(err);
         }
         else callback();
-    });
+    };
+
+    function onConnection () {
+        app.set("dbConnected", true);
+        logger.log("Reconnected to database");
+    }
+
+    function onDisconnection () {
+        app.set("dbConnected", false);
+        logger.logErr("Disconnected from database");
+    };
 };
 
 function requireModels (callback) {

@@ -1,6 +1,7 @@
 var express = require('express');
 var url = require("url");
 var dbSave = require("libs/dbSave");
+var HttpError = require("errors").HttpError;
 
 var router = express.Router();
 
@@ -9,7 +10,10 @@ router.post("*", (req, res, next) => {
 
     //find and save a doc
     dbSave(query.db, query.id, parseBody(req.body, query.db), next, function (err) {
-        if (err) return next(err);
+        if (err) {
+            if (~err.message.indexOf("E11000")) return next(new HttpError(403, "Документ уже существует"));
+            else return next(err);
+        };
         res.sendStatus(200);
     })
 });

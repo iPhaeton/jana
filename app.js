@@ -14,6 +14,7 @@ var routes = require("./routes/indexRoute");
 var shop = require("./routes/shopRoute");
 var dbsearch = require("routes/dbSearchRoute");
 var dbsave = require("routes/dbSaveRoute");
+var dbdel = require("routes/dbDelRoute");
 var filesave = require("routes/fileSaveRoute");
 var filedel = require("routes/fileDelRoute");
 var list = require("routes/listRoute");
@@ -24,17 +25,24 @@ var signout = require("routes/signoutRoute");
 var app = express();
 module.exports = app;
 
+//global variable, which indicates conditions of the datatbase
+app.set("dbConnected", false);
+
 // view engine setup
 app.engine("ejs", require("ejs-locals"));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //create logger
+var logger;
 if (app.get('env') !== 'development') {
-  require("./libs/createErrorsLogFile")(app);
+  require("./libs/createErrorsLogFile")(app, (e) => {
+    logger = new require('./libs/logger')(module);
+    if (e) logger.logErr("Errors logfile has not been created");
+  });
+} else {
+  logger = new require('./libs/logger')(module);
 };
-
-var logger = new require('./libs/logger')(module);
 
 //log out the requests
 app.use(function (req, res, next) {
@@ -63,6 +71,9 @@ app.use(router.all("*", (req, res, next) => {
 //add an HttpError handler
 app.use(sendHttpError);
 
+//database check
+app.use(require("middleware/dbCheck"));
+
 //sessions
 var sessionStore = require("libs/sessionStore");
 app.use(session({
@@ -80,6 +91,7 @@ app.use("/", routes);
 app.use("/shop", shop);
 app.use("/dbsearch", dbsearch);
 app.use("/dbsave", dbsave);
+app.use("/dbdel", dbdel);
 app.use("/savefile", filesave);
 app.use("/delfile", filedel);
 app.use("/list", list);
@@ -116,11 +128,11 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    statusCode: err.status || 500
   });
 });
 
 //server
 var server = app.listen(process.env.PORT || config.get("port"), process.env.IP || "0.0.0.0", function () {
-  logger.log("Server listening on port " + process.env.PORT || config.get("port"));
+  logger.log("Server listening on port " + (process.env.PORT || config.get("port")));
 });

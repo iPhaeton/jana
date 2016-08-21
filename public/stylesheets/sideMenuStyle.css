@@ -22,7 +22,7 @@
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
         border-top-right-radius: 0;
-        z-Index: 999;
+        z-Index: 1;
     }
 
     .side-menu > li > a:hover {
