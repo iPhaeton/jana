@@ -34,11 +34,15 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //create logger
+var logger;
 if (app.get('env') !== 'development') {
-  require("./libs/createErrorsLogFile")(app);
+  require("./libs/createErrorsLogFile")(app, (e) => {
+    logger = new require('./libs/logger')(module);
+    if (e) logger.logErr("Errors logfile has not been created");
+  });
+} else {
+  logger = new require('./libs/logger')(module);
 };
-
-var logger = new require('./libs/logger')(module);
 
 //log out the requests
 app.use(function (req, res, next) {
