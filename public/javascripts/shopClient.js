@@ -285,7 +285,7 @@ Thumbnail.prototype.showDirList = function (event) {
             files[list[i]] = [this.chooseImageOnServer.bind(this), this.showDirPopupMenu.bind(this)];
         };
         
-        var menu = new PopupMenu(this.elem, null, files, true);
+        var menu = new PopupMenu(this.elem, event, files, true);
         menu.elem.addClass("dir-list");
     });
 };

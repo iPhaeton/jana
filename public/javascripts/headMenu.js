@@ -23,7 +23,7 @@
         });
 
         //Close all popups and modals, if there are any-------------------------------------------------------------------------------------------------------------------------------
-        $(document.body).on("click keydown", function (event) {
+        $(document.documentElement).on("click keydown", function (event) {
             if (event.keyCode && event.keyCode !== 27) return;
 
             if (findTarget($(event.target), "mod")) return;
