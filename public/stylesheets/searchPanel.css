@@ -1,3 +1,18 @@
+.search-panel {
+    position: fixed;
+    width: 250px;
+    min-height: 100%;
+    background-color: #fff;
+    top: 0;
+    right: 0;
+    transition: width .3s;
+    z-index: 4;
+}
+
+.search-panel__hidden {
+    width: 0 !important;
+}
+
 .search-button {
     float: right;
     background: transparent;
@@ -8,6 +23,14 @@
 
 .search-button:focus {
     outline: none;
+}
+
+@media all and (max-width: 430px) {
+
+    .search-panel {
+        width: 100%;
+    }
+
 }
 
 @media all and (min-width: 768px) {
