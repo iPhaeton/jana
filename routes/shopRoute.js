@@ -25,7 +25,8 @@ router.get('/', function(req, res, next) {
                 "Регистрация": "/signup"
             },
             sideMenu: categories,
-            container: false
+            container: false,
+            searchButton: true
         });
     });
 });

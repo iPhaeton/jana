@@ -2,13 +2,20 @@ var mode = "view";
 
 var thumbnails,
     config,
-    data;
+    data,
+    searchPanel;
 
 $(document).ready(function () {
     var editPanel = new EditPanel();
 
     $(document.body).css({
         height: $(window).height()
+    });
+
+    searchPanel = new SearchPanel({
+        popups:[
+            "Производители"
+        ]
     });
 
     $(".side-menu").on("click", ".menu-button", function (event) {

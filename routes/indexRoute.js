@@ -13,7 +13,8 @@ router.get('/', function(req, res, next) {
       [(req.user ? "Выйти" : "Войти")]: (req.user ? "/signout" : "/signin"),
       "Регистрация": "/signup"
     },
-    container: true
+    container: true,
+    searchButton: false
   });
 });
 
