@@ -14,14 +14,34 @@ function SearchPanel(options) {
 
 SearchPanel.prototype.setEvents = function () {
     this.toggleButton.on("click", this.toggle.bind(this));
+    $(document.documentElement).on("keydown", this, function (event) {
+        if (event.keyCode === 70 && event.ctrlKey && event.shiftKey) event.data.toggle();
+    });
 };
 
 SearchPanel.prototype.toggle = function () {
+    var self = this;
+
     this.elem.toggleClass("zero-width");
+
+    if (!this.elem.hasClass("zero-width")) {
+        setTimeout(function () {
+            $(document.documentElement).on("click keydown", self, self.hide);
+        }, 0);
+    } else {
+        $(document.documentElement).off("click keydown", self.hide);
+    };
 };
 
-SearchPanel.prototype.toggleElemClass = function (event) {
-    var target = $(this);
+SearchPanel.prototype.hide = function (event) {
+    var target = findTarget($(event.target), "search-panel");
+    if (target) return;
+
+    var self = event.data;
+
+    if (event.keyCode && event.keyCode !== 27) return;
+
+    self.toggle();
 };
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
@@ -43,7 +63,7 @@ SearchPanelPopupControl.prototype.create = function () {
             <span class="glyphicon glyphicon-chevron-down search-panel__control-popup__icon" aria-hidden="true"></span>\
         </div>');
 
-    this.body = $("<div class='search-panel__body-popup zero-display'></div>");
+    this.body = $("<div class='search-panel__popup-panel zero-display'></div>");
 
     this.getValues(function (err, values) {
         for (var value in values) {
