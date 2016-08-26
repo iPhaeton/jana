@@ -5,18 +5,28 @@ function SearchPanel(options) {
 
     this.setEvents();
 
+    this.popups = {};
     if (options.popups) {
         for (var i = 0; i < options.popups.length; i++) {
-            new SearchPanelPopupControl(options.popups[i], this.elem);
+            this.popups[i] = new SearchPanelPopupControl(options.popups[i], this.elem);
         };
     };
 };
 
 SearchPanel.prototype.setEvents = function () {
+
     this.toggleButton.on("click", this.toggle.bind(this));
+
     $(document.documentElement).on("keydown", this, function (event) {
         if (event.keyCode === 70 && event.ctrlKey && event.shiftKey) event.data.toggle();
     });
+
+    this.elem.on("click", this.hidePopups.bind(this));
+
+};
+
+SearchPanel.prototype.unsetEvents = function () {
+    $(document.documentElement).off("click keydown", this.hide);
 };
 
 SearchPanel.prototype.toggle = function () {
@@ -29,7 +39,8 @@ SearchPanel.prototype.toggle = function () {
             $(document.documentElement).on("click keydown", self, self.hide);
         }, 0);
     } else {
-        $(document.documentElement).off("click keydown", self.hide);
+        this.hidePopups()
+        this.unsetEvents();
     };
 };
 
@@ -42,11 +53,20 @@ SearchPanel.prototype.hide = function (event) {
     if (event.keyCode && event.keyCode !== 27) return;
 
     self.toggle();
+    self.hidePopups(event);
+};
+
+SearchPanel.prototype.hidePopups = function (event) {
+    if (event && $(event.target).closest(".search-panel__control-popup").length) return;
+
+    for (let i in this.popups) {
+        this.popups[i].hide();
+    };
 };
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
 SearchPanelPopupControl = function (name, parent) {
-    this.elem = $("<div class='form-group'></div>");
+    this.elem = $("<div class='form-group search-panel__popup'></div>");
     this.name = name;
     this.parent = parent;
 
@@ -91,4 +111,8 @@ SearchPanelPopupControl.prototype.render = function () {
 
 SearchPanelPopupControl.prototype.toggle = function () {
     this.body.toggleClass("zero-display");
+};
+
+SearchPanelPopupControl.prototype.hide = function () {
+    this.body.addClass("zero-display");
 };
