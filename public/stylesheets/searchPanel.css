@@ -36,9 +36,13 @@
 .search-panel__popup-panel {
     position: absolute;
     right: 0;
-    width: 500px;
     border: 1px solid #ccc;
     background: #fff;
+}
+
+.search-panel__popup-panel label {
+    padding-left: 30px;
+    font-weight: normal;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

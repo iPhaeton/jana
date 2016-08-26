@@ -57,7 +57,8 @@ SearchPanel.prototype.hide = function (event) {
 };
 
 SearchPanel.prototype.hidePopups = function (event) {
-    if (event && $(event.target).closest(".search-panel__control-popup").length) return;
+    //if (event && $(event.target).closest(".search-panel__control-popup").length) return;
+    if (event && findTarget($(event.target), "search-panel__control-popup search-panel__popup-panel")) return;
 
     for (let i in this.popups) {
         this.popups[i].hide();
@@ -66,7 +67,7 @@ SearchPanel.prototype.hidePopups = function (event) {
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
 SearchPanelPopupControl = function (name, parent) {
-    this.elem = $("<div class='form-group search-panel__popup'></div>");
+    this.elem = $("<div class='search-panel__popup'></div>");
     this.name = name;
     this.parent = parent;
 
@@ -83,11 +84,30 @@ SearchPanelPopupControl.prototype.create = function () {
             <span class="glyphicon glyphicon-chevron-down search-panel__control-popup__icon" aria-hidden="true"></span>\
         </div>');
 
-    this.body = $("<div class='search-panel__popup-panel zero-display'></div>");
+    this.body = $(
+        "<div class='search-panel__popup-panel zero-display'>\
+            <div class='row'></div>\
+        </div>");
 
     this.getValues(function (err, values) {
+        let col = createCol();
+
+        let i = 1;
         for (var value in values) {
-            self.body.append("<input type='checkbox'>" + value);
+            col.append("<label class='checkbox'><input type='checkbox'>" + value + "</label>");
+            if (i++ % 20 === 0) col = createCol();
+        };
+        self.itemsCount = i;
+        self.body.css({
+            width: Math.ceil(self.itemsCount/20)*100 + "%"
+        });
+        self.elem.find(".col").addClass("col-xs-" + (12/Math.ceil(i/20)));
+
+        function createCol() {
+            let row = self.body.find(".row"),
+                col = $("<div class='col'></div>");
+            row.append(col);
+            return col;
         };
     });
 
@@ -111,8 +131,22 @@ SearchPanelPopupControl.prototype.render = function () {
 
 SearchPanelPopupControl.prototype.toggle = function () {
     this.body.toggleClass("zero-display");
+
+    var mql = window.matchMedia("(max-width: " + this.body.width() + "px)").addListener(this.handleWindowSize.bind(this));
 };
 
 SearchPanelPopupControl.prototype.hide = function () {
     this.body.addClass("zero-display");
+};
+
+SearchPanelPopupControl.prototype.handleWindowSize = function (mql) {
+    if (mql.matches) {
+        this.body.css({
+            width: "100%"
+        });
+    } else {
+        this.body.css({
+            width: Math.ceil(this.itemsCount/20)*100 + "%"
+        });
+    };
 };
