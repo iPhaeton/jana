@@ -43,6 +43,7 @@
 .search-panel__popup-panel label {
     padding-left: 30px;
     font-weight: normal;
+    word-break: break-all;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -76,6 +77,15 @@
 
     .search-panel {
         width: 100%;
+    }
+
+    .search-panel__popup-panel .col {
+        width: 100%;
+        margin-top: -15px;
+    }
+
+    .search-panel__popup-panel .col:first-child {
+        margin-top: 0;
     }
 
 }

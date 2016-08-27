@@ -97,11 +97,12 @@ SearchPanelPopupControl.prototype.create = function () {
             col.append("<label class='checkbox'><input type='checkbox'>" + value + "</label>");
             if (i++ % 20 === 0) col = createCol();
         };
-        self.itemsCount = i;
         self.body.css({
-            width: Math.ceil(self.itemsCount/20)*100 + "%"
+            width: Math.ceil(i/20)*100 + "%"
         });
         self.elem.find(".col").addClass("col-xs-" + (12/Math.ceil(i/20)));
+
+        $(window).on("resize", self.handleBodySize.bind(self));
 
         function createCol() {
             let row = self.body.find(".row"),
@@ -131,22 +132,24 @@ SearchPanelPopupControl.prototype.render = function () {
 
 SearchPanelPopupControl.prototype.toggle = function () {
     this.body.toggleClass("zero-display");
-
-    var mql = window.matchMedia("(max-width: " + this.body.width() + "px)").addListener(this.handleWindowSize.bind(this));
+    this.bodyWidth = this.body.width();
+    this.handleBodySize();
 };
 
 SearchPanelPopupControl.prototype.hide = function () {
     this.body.addClass("zero-display");
 };
 
-SearchPanelPopupControl.prototype.handleWindowSize = function (mql) {
-    if (mql.matches) {
+SearchPanelPopupControl.prototype.handleBodySize = function () {
+    let win = $(window);
+
+    if (win.width() > this.bodyWidth) {
         this.body.css({
-            width: "100%"
+            width: this.bodyWidth + "px"
         });
     } else {
         this.body.css({
-            width: Math.ceil(this.itemsCount/20)*100 + "%"
+            width: win.width() + "px"
         });
     };
 };
