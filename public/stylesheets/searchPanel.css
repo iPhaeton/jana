@@ -38,15 +38,17 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 .search-panel__popup-panel {
-    position: absolute;
+    position: fixed;
     right: 0;
     border: 1px solid #ccc;
     background: #fff;
+    z-index: 5;
 }
 
 .search-panel__popup-panel label {
     padding-left: 30px;
     word-break: break-all;
+    font-weight: normal;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -98,13 +100,21 @@
         width: 100%;
     }
 
-    .search-panel__popup-panel .col {
+    .search-panel__popup-panel {
         width: 100%;
+    }
+
+    .search-panel__popup-panel .col {
+        width: 70%;
         margin-top: -15px;
     }
 
     .search-panel__popup-panel .col:first-child {
         margin-top: 0;
+    }
+
+    .search-panel__popup-panel label {
+        padding-left: 20%;
     }
 
 }

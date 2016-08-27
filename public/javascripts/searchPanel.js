@@ -45,7 +45,7 @@ SearchPanel.prototype.toggle = function () {
 };
 
 SearchPanel.prototype.hide = function (event) {
-    var target = findTarget($(event.target), "search-panel");
+    var target = findTarget($(event.target), "search-panel search-panel__popup-panel");
     if (target) return;
 
     var self = event.data;
@@ -101,7 +101,7 @@ SearchPanelPopupControl.prototype.create = function () {
         self.body.css({
             width: self.bodyWidth + "px"
         });
-        self.elem.find(".col").addClass("col-xs-" + (12/Math.ceil(i/20)));
+        $(".col").addClass("col-xs-" + (12/Math.ceil(i/20)));
 
         $(window).on("resize", self.handleBodySize.bind(self));
 
@@ -114,7 +114,8 @@ SearchPanelPopupControl.prototype.create = function () {
     });
 
     this.elem.append(this.button);
-    this.elem.append(this.body);
+    //this.elem.append(this.body);
+    $(document.body).append(this.body);
 
     this.setEvents();
 };
@@ -125,6 +126,7 @@ SearchPanelPopupControl.prototype.getValues = function (callback) {
 
 SearchPanelPopupControl.prototype.setEvents = function () {
     this.button.on("click", this.toggle.bind(this));
+    this.body.on("click", this.hide.bind(this));
 };
 
 SearchPanelPopupControl.prototype.render = function () {
@@ -136,7 +138,9 @@ SearchPanelPopupControl.prototype.toggle = function () {
     this.handleBodySize();
 };
 
-SearchPanelPopupControl.prototype.hide = function () {
+SearchPanelPopupControl.prototype.hide = function (event) {
+    if (event && findTarget($(event.target), "col")) return;
+
     this.body.addClass("zero-display");
 };
 
@@ -155,6 +159,20 @@ SearchPanelPopupControl.prototype.handleBodySize = function () {
             self.body.css({
                 width: win.width() + "px"
             });
+        };
+
+        self.body.css({
+            top: self.button.offset().top + self.button.outerHeight()
+        })
+
+        if (self.body.position().top + self.body.height() > win.height()) {
+            self.body.css({
+                position: "absolute"
+            })
+        } else {
+            self.body.css({
+                position: "fixed"
+            })
         };
     }, 100);
 };
