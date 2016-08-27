@@ -94,7 +94,7 @@ SearchPanelPopupControl.prototype.create = function () {
 
         let i = 1;
         for (var value in values) {
-            col.append("<label class='checkbox'><input type='checkbox'>" + value + "</label>");
+            col.append("<label class='checkbox'><input type='checkbox' name='" + value + "'>" + value + "</label>");
             if (i++ % 20 === 0) col = createCol();
         };
         self.body.css({

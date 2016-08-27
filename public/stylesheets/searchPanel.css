@@ -9,6 +9,10 @@
     z-index: 4;
 }
 
+.search-panel label {
+    font-weight: normal;
+}
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 .search-panel__control-popup {
     position: relative;
@@ -42,7 +46,6 @@
 
 .search-panel__popup-panel label {
     padding-left: 30px;
-    font-weight: normal;
     word-break: break-all;
 }
 
@@ -57,6 +60,22 @@
 
 .search-button:focus {
     outline: none;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+.search-panel__price-span {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.search-panel__price-span input {
+    width: 50%;
+    float: left;
+    border-radius: 0;
+}
+
+.search-panel__price-span p {
+    padding-left: 10px;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
