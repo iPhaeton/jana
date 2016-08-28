@@ -2,13 +2,14 @@
 function SearchPanel(options) {
     this.elem = $(".search-panel");
     this.toggleButton = $(".search-button");
+    this.form = this.elem.find("form");
 
     this.setEvents();
 
     this.popups = {};
     if (options.popups) {
         for (var i = 0; i < options.popups.length; i++) {
-            this.popups[i] = new SearchPanelPopupControl(options.popups[i], this.elem);
+            this.popups[options.popups[i]] = new SearchPanelPopupControl(options.popups[i], this.elem);
         };
     };
 };
@@ -24,6 +25,8 @@ SearchPanel.prototype.setEvents = function () {
     this.elem.on("click", this.hidePopups.bind(this));
 
     $(".search-panel__hide-button").on("click", this.toggle.bind(this));
+
+    this.form.on("submit", this.submit.bind(this));
 
 };
 
@@ -67,6 +70,22 @@ SearchPanel.prototype.hidePopups = function (event) {
     };
 };
 
+SearchPanel.prototype.submit = function (event) {
+    event.preventDefault();
+
+    var request = this.form.serialize();
+
+    var data = {};
+    for (let popup in this.popups) {
+        data[popup] = this.popups[popup].data;
+    };
+
+    makeSearchRequest(request, data, (function (err, response) {
+        if (err) alert("Ничего не найдено");
+        this.toggle();
+    }).bind(this));
+};
+
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
 SearchPanelPopupControl = function (name, parent) {
     this.elem = $("<div class='search-panel__popup'></div>");
@@ -75,6 +94,13 @@ SearchPanelPopupControl = function (name, parent) {
 
     this.create();
     this.render();
+
+    Object.defineProperty(this, "data", {
+        get: function () {
+            this.body.submit();
+            return this._data;
+        }
+    });
 };
 
 SearchPanelPopupControl.prototype.create = function () {
@@ -129,6 +155,7 @@ SearchPanelPopupControl.prototype.getValues = function (callback) {
 SearchPanelPopupControl.prototype.setEvents = function () {
     this.button.on("click", this.toggle.bind(this));
     this.body.on("click", this.hide.bind(this));
+    this.body.on("submit", this.submit.bind(this));
 };
 
 SearchPanelPopupControl.prototype.render = function () {
@@ -178,4 +205,10 @@ SearchPanelPopupControl.prototype.handleBodySize = function () {
             });
         };
     }, 100);
+};
+
+SearchPanelPopupControl.prototype.submit = function (event) {
+    event.preventDefault();
+
+    this._data = this.body.serializeArray();
 };
