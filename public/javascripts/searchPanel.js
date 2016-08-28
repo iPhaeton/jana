@@ -23,6 +23,8 @@ SearchPanel.prototype.setEvents = function () {
 
     this.elem.on("click", this.hidePopups.bind(this));
 
+    $(".search-panel__hide-button").on("click", this.toggle.bind(this));
+
 };
 
 SearchPanel.prototype.unsetEvents = function () {
@@ -85,9 +87,9 @@ SearchPanelPopupControl.prototype.create = function () {
         </div>');
 
     this.body = $(
-        "<div class='search-panel__popup-panel zero-display'>\
+        "<form class='search-panel__popup-panel zero-display'>\
             <div class='row'></div>\
-        </div>");
+        </form>");
 
     this.getValues(function (err, values) {
         let col = createCol();
@@ -151,18 +153,9 @@ SearchPanelPopupControl.prototype.handleBodySize = function () {
     this.handleBodySizeTimer = setTimeout(function () {
         let win = $(window);
 
-        if (win.width() > self.bodyWidth) {
-            self.body.css({
-                width: self.bodyWidth + "px"
-            });
-        } else {
-            self.body.css({
-                width: win.width() + "px"
-            });
-        };
-
         self.body.css({
-            top: self.button.offset().top + self.button.outerHeight()
+            top: self.button.offset().top + self.button.outerHeight(),
+            right: 0
         })
 
         if (self.body.position().top + self.body.height() > win.height()) {
@@ -173,6 +166,16 @@ SearchPanelPopupControl.prototype.handleBodySize = function () {
             self.body.css({
                 position: "fixed"
             })
+        };
+
+        if (win.width() > self.bodyWidth) {
+            self.body.css({
+                width: self.bodyWidth + "px"
+            });
+        } else {
+            self.body.css({
+                width: win.width() + "px"
+            });
         };
     }, 100);
 };
