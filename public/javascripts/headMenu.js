@@ -27,7 +27,7 @@
             if (event.keyCode && event.keyCode !== 27) return;
 
             if (findTarget($(event.target), "mod")) return;
-            
+
             //close image preview and popups
             if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
                 $("#image-preview").remove();

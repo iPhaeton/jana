@@ -8,10 +8,10 @@ var router = express.Router();
 router.get("*", (req, res , next) => {
     var query = url.parse(req.url, true).query;
 
-    var model = parseSpecs(query);
-    if (!model) return next(new HttpError(400, "No model has been passed"));
+    var axillaryParams = parseSpecs(query);
+    if (!axillaryParams.model) return next(new HttpError(400, "No model has been passed"));
 
-    dbSearch(model, query, (err, commodities) => {
+    dbSearch(axillaryParams.model, query, axillaryParams.field, (err, commodities) => {
         if (err) return next(err);
         res.json(commodities);
     });
@@ -31,8 +31,16 @@ function parseSpecs (query) {
         };
         delete query.specs;
     };
+    
+    if (query.field) {
+        var field = query.field;
+        delete query.field;
+    }
 
-    return model;
+    return {
+        model: model,
+        field: field
+    };
 };
 
 module.exports = router;

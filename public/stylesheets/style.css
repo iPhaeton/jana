@@ -1,11 +1,9 @@
 body {
   background-color: #000;
+  height: 100% !important;
+  overflow-x: hidden !important;
 }
 
 .header {
   background: #000;
 }
-
-/*.left-margin {
-  float: left;
-}*/

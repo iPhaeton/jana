@@ -12,6 +12,7 @@
         <link rel='stylesheet' href="/stylesheets/sideMenuStyle.css" />
         <link rel='stylesheet' href="/stylesheets/shopPageStyle.css" />
         <link rel='stylesheet' href="/stylesheets/modals.css"/>
+        <link rel='stylesheet' href="/stylesheets/searchPanel.css"/>
     </head>
 
     <body>
@@ -23,6 +24,8 @@
             </div>
             
         </div>
+
+        <%- partial("./partials/searchPanel.ejs")%>
 
         <div class="container main-content" admin-mode="<%= user ? user.admin : false %>">
             <div class="row">
@@ -52,6 +55,7 @@
         <script src="/javascripts/headMenu.js"></script>
         <script src="/javascripts/sideMenu.js"></script>
         <script src="/javascripts/shopClient.js"></script>
+        <script src="/javascripts/searchPanel.js"></script>
 
     </body>
 </html>
