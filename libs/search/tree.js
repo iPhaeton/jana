@@ -1,8 +1,10 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
-function Tree (text) {
+function Tree (text, name) {
     this.text = parentElem.textContent;
-    this.docs = {};
+    this.docs = {};//ids of the docs that contain this text
+    this.name = name;//the name of a field that contains this text in a doc
+    this.found = null;//a collocation that was found in this tree
 
     var current,
         previous,
@@ -42,46 +44,44 @@ function Tree (text) {
 };
 
 //Search by a letter colocation
-Tree.prototype.find = function (str) {
+Tree.prototype.search = function (str) {
+    //a single letter string
+    if (str.length === 1) return returnResult(this[str].indecies);
 
-    var j = 0;
-    if (str.length === 1){
-        if (this[str]) return returnResult(true, str);
-        else return returnResult(false, null);
-    };
+    //result is a set of the indecies where a found collocation starts
+    var result = new Set();
 
-    //set result with all indecies of the first letter
     var currentSymbol = str.charAt(0),
         nextSymbol = str.charAt(1),
         previousSymbol = currentSymbol;
-    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) {
-        return returnResult(false, null);
+    if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return returnResult(null);
+    for (var index of this[currentSymbol].children[nextSymbol]) {
+        result.add(index);
     };
 
-    //go from parent to child, if there is no next child, delete the corresponding property from result
     for (var i = 1; i < str.length - 1; i++) {
         currentSymbol = str.charAt(i);
         nextSymbol = str.charAt(i + 1);
-        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) {
-            str = "";
-            return returnResult(false, null);
+        if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return returnResult(null);
+
+        for (var index of this[currentSymbol].parents[previousSymbol]) {
+            if (this[currentSymbol].children[nextSymbol][index] === undefined) result.delete(index - i);
         };
 
         previousSymbol = currentSymbol;
     };
 
-    return returnResult(true, str);
+    return returnResult(result);
 
-    function returnResult(found, str) {
-        if (found) {
+    function returnResult(result) {
+        if (result) {
             this.found = str;
-            return true;
+            return result;
+        } else {
+            this.found = null;
+            return null;
         }
-        else {
-            this.found = "";
-            return false;
-        }
-    }
+    };
 };
 
 exports.Tree = Tree;
