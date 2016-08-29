@@ -12,6 +12,9 @@ var commoditySchema = new Schema ({
   },
   specs: {
     type: Object
+  },
+  searchable: {
+    type: Array
   }
 });
 

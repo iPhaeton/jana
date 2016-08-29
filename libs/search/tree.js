@@ -1,8 +1,8 @@
 //The tree contains every letter from the text only once
 //Every letter contains indecies of its every parent (every previous letter in the text) and every child (every next letter in the text)
 function Tree (text, name) {
-    this.text = parentElem.textContent;
-    this.docs = {};//ids of the docs that contain this text
+    this.text = text;
+    this.docsIds = new Set();//ids of the docs that contain this text
     this.name = name;//the name of a field that contains this text in a doc
     this.found = null;//a collocation that was found in this tree
 
