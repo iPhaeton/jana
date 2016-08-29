@@ -58,9 +58,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//test of the database
-//require("libs/db/dbTest")();
-require("libs/db/dbConnect")();
+//connect to the database
+if (app.get("env") === "test") require("libs/db/dbTest")(require("libs/db/onDbConnection"));
+else require("libs/db/dbConnect")(require("libs/db/onDbConnection"));
 
 /*var router = express.Router();
 app.use(router.all("*", (req, res, next) => {

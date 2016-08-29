@@ -3,11 +3,10 @@ var app = require("app");
 var mongoose = require("libs/mongoose");
 var async = require("async");
 var config = require("config");
-var logger = new require('libs/logger')(module);
 
 var countAttemptsToConnect = 0
 
-module.exports = function (req, res, next) {
+module.exports = function (callback) {
     var logger = new require('libs/logger')(module);
 
     async.series([
@@ -27,14 +26,7 @@ module.exports = function (req, res, next) {
             });
         },
         requireModels
-    ], (err) => {
-        if (err) {
-            logger.logErr(err);
-        }
-        else {
-            logger.log("db ok");
-        }
-    });
+    ], callback);
 
 };
 

@@ -1,10 +1,8 @@
-var app = require("app");
-
 var mongoose = require("libs/mongoose");
 var async = require("async");
 var config = require("config");
 
-module.exports = function () {
+module.exports = function (callback) {
     var logger = new require('libs/logger')(module);
 
     async.series([
@@ -12,15 +10,7 @@ module.exports = function () {
         dropDatabase,
         requireModels,
         createTestDB
-    ], (err) => {
-        if (err) {
-            logger.logErr(err);
-        } else {
-            app.set("dbConnected", true);
-            logger.log("db ok");
-        };
-        //mongoose.disconnect();
-    })
+    ], callback)
 };
 
 function open (callback) {
