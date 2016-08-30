@@ -129,7 +129,7 @@ function createTestDB(callback) {
                 })"
             }
         },
-        searchable: [
+        commoditySearchableFields: [
             "Категория",
             "Название",
             "Описание",

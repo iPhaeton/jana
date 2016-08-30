@@ -4,6 +4,7 @@ var mongoose = require("libs/mongoose");
 var logger = new require('libs/logger')(module);
 var Tree = require("libs/search/tree").Tree;
 var async = require("async");
+var app = require("app");
 
 class Forest {
     
@@ -14,11 +15,8 @@ class Forest {
 
             for (let j = 0; j < fieldsToSearchIn.length; j++) {
                 let text = docs[i].specs[fieldsToSearchIn[j]];
-                console.log(text);
 
-                var t = new Tree (text, fieldsToSearchIn[j]);
-                console.log(t);
-                if (!this.trees[text]) this.trees[text] = t;
+                if (!this.trees[text]) this.trees[text] = new Tree (text, fieldsToSearchIn[j]);
                 this.trees[text].docsIds.add(docs[i]._id);
             };
             
@@ -53,9 +51,8 @@ module.exports = function () {
             return
         };
         
-        //console.log(data[0].length, data[1].length);
-        
-        let forest = new Forest(data[0], data[1][0]);
+        let forest = new Forest(data[0], data[1][0]._doc.commoditySearchableFields);
+        app.set("forest", forest);
         
         //console.log(forest.trees["Жёлтенькие"].docsIds.size);
     });
