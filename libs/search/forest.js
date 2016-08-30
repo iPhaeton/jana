@@ -29,11 +29,13 @@ class Forest {
         
         for (var tree in this.trees) {
             if (this.trees[tree].search(text)) {
-                for (var id in this.trees[tree].docsIds) {
+                for (var id of this.trees[tree].docsIds) {
                     result.add(id);
                 };
             };
         };
+        
+        return result;
     };
     
 };
