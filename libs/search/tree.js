@@ -48,6 +48,16 @@ class Tree {
     };
     
     search (str) {
+        let returnResult = (result) => {
+            if (result) {
+                this.found = str;
+                return result;
+            } else {
+                this.found = null;
+                return null;
+            }
+        };
+
         //a single letter string
         if (str.length === 1) return returnResult(this[str].indecies);
 
@@ -75,16 +85,6 @@ class Tree {
         };
 
         return returnResult(result);
-
-        function returnResult(result) {
-            if (result) {
-                this.found = str;
-                return result;
-            } else {
-                this.found = null;
-                return null;
-            }
-        };
     };
 
 }

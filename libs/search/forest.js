@@ -23,6 +23,19 @@ class Forest {
         };
     };
     
+    find (query) {
+        var text = query["search-input"];
+        var result = new Set();
+        
+        for (var tree in this.trees) {
+            if (this.trees[tree].search(text)) {
+                for (var id in this.trees[tree].docsIds) {
+                    result.add(id);
+                };
+            };
+        };
+    };
+    
 };
 
 module.exports = function () {
