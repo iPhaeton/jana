@@ -16,8 +16,10 @@ class Forest {
             for (let j = 0; j < fieldsToSearchIn.length; j++) {
                 let text = docs[i].specs[fieldsToSearchIn[j]];
 
-                if (!this.trees[text]) this.trees[text] = new Tree (text, fieldsToSearchIn[j]);
-                this.trees[text].docsIds.add(docs[i]._id);
+                if (text) {
+                    if (!this.trees[text]) this.trees[text] = new Tree (text, fieldsToSearchIn[j]);
+                    this.trees[text].docsIds.add(docs[i]._id);
+                };
             };
             
         };

@@ -75,12 +75,12 @@ SearchPanel.prototype.submit = function (event) {
 
     var request = this.form.serialize();
 
-    var data = {};
+    var searchData = {};
     for (let popup in this.popups) {
-        data[popup] = this.popups[popup].data;
+        searchData[popup] = this.popups[popup].searchData;
     };
 
-    makeSearchRequest(request, data, (function (err, response) {
+    makeSearchRequest(request, searchData, (function (err, response) {
         if (err) alert("Ничего не найдено");
         this.toggle();
     }).bind(this));
