@@ -1,7 +1,7 @@
 var mongoose = require("libs/mongoose");
 
 module.exports = function (ids, callback) {
-    var result = new Set();
+    var result = new Array(ids.size);
     var counter = 0;
     
     for (var id of ids) {
@@ -11,8 +11,8 @@ module.exports = function (ids, callback) {
             if (err) {
                 callback(err);
             } else {
-                result.add(commodity._doc);
                 counter--;
+                result[counter] = commodity._doc;
                 if (!counter) callback(null, result);
             };
         });
