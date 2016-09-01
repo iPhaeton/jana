@@ -49,7 +49,7 @@ class Tree {
     
     search (str) {
         let returnResult = (result) => {
-            if (result) {
+            if (result && result.size) {
                 this.found = str;
                 return result;
             } else {
