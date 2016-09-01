@@ -13,6 +13,7 @@ router.get("*", (req, res, next) => {
 
     gatherDocsById(result, (err, commodities) => {
         if (err) return next(err);
+        commodities.length
         res.json(commodities);
     })
 });

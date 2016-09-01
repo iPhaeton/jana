@@ -59,7 +59,7 @@ class Tree {
         };
 
         //a single letter string
-        if (str.length === 1) return returnResult(this[str].indecies);
+        if (str.length === 1 && this[str]) return returnResult(this[str].indecies);
 
         //result is a set of the indecies where a found collocation starts
         var result = new Set();
