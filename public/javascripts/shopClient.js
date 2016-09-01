@@ -1,8 +1,8 @@
 var mode = "view";
 
 var thumbnails,
-    config,
-    data,
+    storedData, //data and configare not necesarily needed to be reloaded on every getData
+    storedConfig, //data and configare not necesarily needed to be reloaded on every getData
     searchPanel;
 
 $(document).ready(function () {
@@ -26,9 +26,7 @@ $(document).ready(function () {
             return;
         };
 
-        $(".side-menu > .menu-button").removeClass("active");
-        target.parent().addClass("active");
-        target.blur();
+        sideMenuActive(target);
 
         getData(target.attr("href"), createContent);
 
@@ -37,6 +35,9 @@ $(document).ready(function () {
 });
 
 function getData(url, callback) {
+    var config,
+        data;
+
     async.parallel([
         //get configuration
         function (callback) {
@@ -46,8 +47,8 @@ function getData(url, callback) {
             makeDBSearchRequest(url, callback);
         }
     ], function (err, results) {
-        config = parseConfig(results[0][0]);
-        data = results[1];
+        storedConfig = config = parseConfig(results[0][0]);
+        storedData = data = results[1];
         data.url = url;
 
         if (err) {
@@ -55,12 +56,20 @@ function getData(url, callback) {
             return;
         };
 
-        callback();
+        callback(data, config);
     });
 };
 
-function createContent () {
-    if (!data || !config) return;
+function createContent (data, config) {
+    //if called without any of the arguments, that argument is taken from the global variable
+    //data and config are stored in global variables when they are taken from the database
+    var data = data || storedData,
+        config = config || storedConfig;
+
+    if (!data && thumbnails) {
+        thumbnails.clear();
+    } 
+    if(!config) return;
 
     if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, config);
     thumbnails.clear();
@@ -92,7 +101,7 @@ Thumbnails.prototype.build = function (data, config) {
     this.config = config;
 
     for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add((new Thumbnail(this, this.data[i], this.config)).elem);
+        this.tiles.add((new Thumbnail(this, this.data[i], this.config, this.data.url)).elem);
     };
 };
 
@@ -190,12 +199,13 @@ Thumbnails.prototype.arrangeClears = function (clearThis) {
 };
 
 //Thumbnail--------------------------------------------------------------------------------------------------------
-function Thumbnail (parent, data, config) {
+function Thumbnail (parent, data, config, dataUrl) {
     this.parent = parent;
     this.data = data || {
         img: undefined,
         specs:{}
     };
+    this.dataUrl = dataUrl;
     this.details = new Details(this);
     var self = this;
 
@@ -277,9 +287,10 @@ Thumbnail.prototype.chooseImageOnServer = function (event) {
     target = findTarget(target, "popup-button");
     if(!target) return;
 
+    var self = this;
     makeFileSaveRequest("/savefile?id=" + this.data._id, target.text(), function (err) {
         if (err) alert (err.message);
-        getData(data.url, createContent);
+        getData(self.dataUrl, createContent);
     });
 };
 
@@ -372,9 +383,10 @@ Thumbnail.prototype.deleteImage = function (event) {
 };
 
 Thumbnail.prototype.delete = function (event) {
+    var self = this;
     makeDBDelRequest("/dbdel?db=Commodity&id=" + this.data._id, function (err) {
         if (err) alert (err.message);
-        getData(data.url, createContent);
+        getData(self.dataUrl, createContent);
     });
 };
 
@@ -433,7 +445,7 @@ EditSwitch.prototype.createUploadInput = function () {
     uploadInput.on("change", function (event) {
         makeFileSaveRequest("/savefile?id=" + callerId, this.files[0], function (err) {
             if (err) alert (err.message);
-            getData(data.url, createContent);
+            getData(storedData.url, createContent);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         });
     });
 };

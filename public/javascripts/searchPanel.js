@@ -3,6 +3,7 @@ function SearchPanel(options) {
     this.elem = $(".search-panel");
     this.toggleButton = $(".search-button");
     this.form = this.elem.find("form");
+    this.input = this.elem.find("#search-input");
 
     this.setEvents();
 
@@ -74,15 +75,41 @@ SearchPanel.prototype.submit = function (event) {
     event.preventDefault();
 
     var request = this.form.serialize();
+    
+    if (!this.input.val().length) return;
 
-    var data = {};
+    var searchData = {};
     for (let popup in this.popups) {
-        data[popup] = this.popups[popup].data;
+        searchData[popup] = this.popups[popup].searchData;
     };
+    
+    var config,
+        data;
 
-    makeSearchRequest(request, data, (function (err, response) {
-        if (err) alert("Ничего не найдено");
+    async.parallel([
+        function (callback) {
+            if (!storedConfig) makeDBSearchRequest("/dbsearch?db=Config", callback);
+            else callback();
+        },
+        function (callback) {
+            makeSearchRequest(request, searchData, callback);
+        }
+    ], (function (err, results) {
+        if (err) {
+            alert("Ошибка поиска");
+            return;
+        };
+        
         this.toggle();
+        
+        if (results[0]) {
+            storedConfig = config = parseConfig(results[0][0]);
+        };
+        
+        if (!results[1]) alert("Ничего не найдено");
+        storedData = data = results[1];
+        
+        createContent(data, config || storedConfig);
     }).bind(this));
 };
 

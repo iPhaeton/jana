@@ -114,10 +114,11 @@ Details.prototype.removeField = function (container, num) {
 
 Details.prototype.submit = function (event) {
     var form = $(event.target);
-    
+
+    var self = this;
     makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parent.data._id, form.serializeArray(), function (err) {
         if (err) alert (err.message);
-        getData(data.url, createContent);
+        getData(self.parent.dataUrl, createContent);
     });
 
     this.close();
@@ -153,7 +154,7 @@ Dialog.prototype.submit = function (event) {
     if (this.createData) var formData = this.createData(form);
     else var formData = form.serializeArray();
 
-    if (!formData.url && data) formData.url = data.url;
+    if (!formData.url && storedData) formData.url = storedData.url;
     makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
         if (err) {
             if (self.callback) self.callback(err);
@@ -165,6 +166,10 @@ Dialog.prototype.submit = function (event) {
             getData(formData.url, function () {
                 createContent();
                 if (self.callback) self.callback(null, formData);
+
+                if (self.db === "Category") {
+                    sideMenuActive($(".side-menu a[href='" + formData.url + "']"));
+                };
             });
         };
     });

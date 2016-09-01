@@ -33,3 +33,9 @@
     };
 
 })();
+
+function sideMenuActive(target) {
+    $(".side-menu > .menu-button").removeClass("active");
+    target.parent().addClass("active");
+    target.blur();
+}
