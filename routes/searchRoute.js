@@ -11,11 +11,14 @@ router.get("*", (req, res, next) => {
     
     var result = find(query);
 
-    gatherDocsById(result, (err, commodities) => {
-        if (err) return next(err);
-        commodities.length
-        res.json(commodities);
-    })
+    if (result.size) {
+        gatherDocsById(result, (err, commodities) => {
+            if (err) return next(err);
+            res.json(commodities);
+        });
+    } else {
+        res.json(null);
+    }
 });
 
 module.exports = router;

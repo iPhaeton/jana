@@ -82,12 +82,6 @@ SearchPanel.prototype.submit = function (event) {
     
     var config,
         data;
-    
-    /*makeSearchRequest(request, searchData, (function (err, response) {
-        if (err) alert("Ничего не найдено");
-        this.toggle();
-        createContent(response);
-    }).bind(this));*/
 
     async.parallel([
         function (callback) {
@@ -98,11 +92,18 @@ SearchPanel.prototype.submit = function (event) {
             makeSearchRequest(request, searchData, callback);
         }
     ], (function (err, results) {
-        if (err) alert("Ничего не найдено");
+        if (err) {
+            alert("Ошибка поиска");
+            return;
+        };
+        
         this.toggle();
+        
         if (results[0]) {
             storedConfig = config = parseConfig(results[0][0]);
         };
+        
+        if (!results[1]) alert("Ничего не найдено");
         storedData = data = results[1];
         
         createContent(data, config || storedConfig);

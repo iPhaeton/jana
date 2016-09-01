@@ -66,7 +66,10 @@ function createContent (data, config) {
     var data = data || storedData,
         config = config || storedConfig;
 
-    if (!data || !config) return;
+    if (!data && thumbnails) {
+        thumbnails.clear();
+    } 
+    if(!config) return;
 
     if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, config);
     thumbnails.clear();
