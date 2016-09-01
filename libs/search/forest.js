@@ -5,11 +5,14 @@ var logger = new require('libs/logger')(module);
 var Tree = require("libs/search/tree").Tree;
 var async = require("async");
 var app = require("app");
+var crypto = require("crypto");
 
 class Forest {
     
     constructor (docs, fieldsToSearchIn) {
         this.trees = {};
+
+        //var count = 0;
         
         for (let i = 0; i < docs.length; i++) {
 
@@ -17,12 +20,18 @@ class Forest {
                 let text = docs[i].specs[fieldsToSearchIn[j]];
 
                 if (text) {
-                    if (!this.trees[text]) this.trees[text] = new Tree (text, fieldsToSearchIn[j]);
-                    this.trees[text].docsIds.add(docs[i]._id);
+                    let sha = crypto.createHmac("sha256", text).digest("hex");
+                    if (!this.trees[sha]) {
+                        this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
+                        //count++;
+                    }
+                    this.trees[sha].docsIds.add(docs[i]._id);
                 };
             };
             
         };
+
+        //console.log(count);
     };
     
     find (query) {
