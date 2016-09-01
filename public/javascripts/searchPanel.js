@@ -3,6 +3,7 @@ function SearchPanel(options) {
     this.elem = $(".search-panel");
     this.toggleButton = $(".search-button");
     this.form = this.elem.find("form");
+    this.input = this.elem.find("#search-input");
 
     this.setEvents();
 
@@ -74,6 +75,8 @@ SearchPanel.prototype.submit = function (event) {
     event.preventDefault();
 
     var request = this.form.serialize();
+    
+    if (!this.input.val().length) return;
 
     var searchData = {};
     for (let popup in this.popups) {

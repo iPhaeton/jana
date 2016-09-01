@@ -78,7 +78,7 @@ class Tree {
             if (!this[currentSymbol] || !this[currentSymbol].children[nextSymbol]) return returnResult(null);
 
             for (var index of this[currentSymbol].parents[previousSymbol]) {
-                if (this[currentSymbol].children[nextSymbol][index] === undefined) result.delete(index - i);
+                if (!this[currentSymbol].children[nextSymbol].has(index)) result.delete(index - i);
             };
 
             previousSymbol = currentSymbol;
