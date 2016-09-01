@@ -79,10 +79,33 @@ SearchPanel.prototype.submit = function (event) {
     for (let popup in this.popups) {
         searchData[popup] = this.popups[popup].searchData;
     };
-
-    makeSearchRequest(request, searchData, (function (err, response) {
+    
+    var config,
+        data;
+    
+    /*makeSearchRequest(request, searchData, (function (err, response) {
         if (err) alert("Ничего не найдено");
         this.toggle();
+        createContent(response);
+    }).bind(this));*/
+
+    async.parallel([
+        function (callback) {
+            if (!storedConfig) makeDBSearchRequest("/dbsearch?db=Config", callback);
+            else callback();
+        },
+        function (callback) {
+            makeSearchRequest(request, searchData, callback);
+        }
+    ], (function (err, results) {
+        if (err) alert("Ничего не найдено");
+        this.toggle();
+        if (results[0]) {
+            storedConfig = config = parseConfig(results[0][0]);
+        };
+        storedData = data = results[1];
+        
+        createContent(data, config || storedConfig);
     }).bind(this));
 };
 
