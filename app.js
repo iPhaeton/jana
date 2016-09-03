@@ -138,3 +138,6 @@ app.use(function(err, req, res, next) {
 var server = app.listen(process.env.PORT || config.get("port"), process.env.IP || "0.0.0.0", function () {
   logger.log("Server listening on port " + (process.env.PORT || config.get("port")));
 });
+
+//WebSocket
+require("socket")(server);

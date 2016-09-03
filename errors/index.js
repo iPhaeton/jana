@@ -33,3 +33,15 @@ util.inherits(DBError, HttpError);
 DBError.prototype.name = "DBError";
 
 exports.DBError = DBError;
+
+//Authorization errors-----------------------------------------------------------------------------------------
+function AuthError (message) {
+    Error.apply(this, arguments);
+    Error.captureStackTrace(this, AuthError);
+
+    this.message = message;
+};
+util.inherits(AuthError, HttpError);
+AuthError.prototype.name = "AuthError";
+
+exports.AuthError = AuthError;
