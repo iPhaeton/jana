@@ -140,4 +140,5 @@ var server = app.listen(process.env.PORT || config.get("port"), process.env.IP |
 });
 
 //WebSocket
-require("socket")(server);
+require("libs/socket")(server);
+require("libs/socket/onUpgradeAuth")(server);
