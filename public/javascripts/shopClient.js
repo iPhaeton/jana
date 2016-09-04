@@ -5,7 +5,8 @@ var thumbnails,
     storedConfig, //data and configare not necesarily needed to be reloaded on every getData
     searchPanel;
 
-var socket = establishWebSocket();
+var socket = new SockConnection(window.location.origin + "/sock");
+socket.connect();
 
 $(document).ready(function () {
     var editPanel = new EditPanel();
