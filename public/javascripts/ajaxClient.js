@@ -44,23 +44,6 @@ function makeDBDelRequest (reqStr, callback) {
     });
 };
 
-function makeSearchRequest(request, data, callback) {
-    $.ajax({
-        url: "/search?" + request,
-        type: "GET",
-        dataType: "json",
-        data: data,
-        statusCode: {
-            200: function (json) {
-                callback(null, json);
-            },
-            404: function (jqXHR) {
-                callback(JSON.parse((jqXHR.responseText)));
-            }
-        }
-    })
-};
-
 //Files--------------------------------------------------------------------------------------------------------------------------------------------------------
 function makeFileSaveRequest(reqStr, file, callback) {
     $.ajax({

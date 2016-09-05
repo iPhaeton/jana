@@ -3,6 +3,9 @@
 class SockConnection {
     constructor (url) {
         this.url = url;
+        this.callbacks = {
+            searchResult: null
+        }
     };
     
     connect () {
@@ -11,22 +14,27 @@ class SockConnection {
 
         var self = this;
         this.connection.onopen = function() {
-            console.log(self.connection.readyState);
-            self.connection.send("test");
+            //console.log(self.connection.readyState);
+            //self.connection.send("test");
         };
+
+        this.connection.onmessage = function (event) {
+            var json = JSON.parse(event.data),
+                data = json.data,
+                type = json.type;
+
+            if (!self.callbacks[type]) return;
+
+            if (data === "Error") self.callbacks[type](new Error(type + " error"));
+            else self.callbacks[type](null, data);
+        };
+    };
+
+    send (data) {
+        this.connection.send(data);
     };
 
     setHandlers () {
 
     }
 };
-
-//function establishWebSocket() {
-    /*var socket = new WebSocket("ws://" + window.location.hostname + ":3000");
-    return socket;*/
-
-    
-
-    /*sock.add
-    sock.send('test');*/
-//};
