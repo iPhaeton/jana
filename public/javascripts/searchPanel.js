@@ -80,7 +80,7 @@ SearchPanel.prototype.submit = function (event) {
 
     var searchData = {};
     for (let popup in this.popups) {
-        searchData[popup] = this.popups[popup].searchData;
+        searchData[popup] = this.popups[popup].getData();
     };
     
     var config,
@@ -182,7 +182,6 @@ SearchPanelPopupControl.prototype.getValues = function (callback) {
 SearchPanelPopupControl.prototype.setEvents = function () {
     this.button.on("click", this.toggle.bind(this));
     this.body.on("click", this.hide.bind(this));
-    this.body.on("submit", this.submit.bind(this));
 };
 
 SearchPanelPopupControl.prototype.render = function () {
@@ -234,8 +233,7 @@ SearchPanelPopupControl.prototype.handleBodySize = function () {
     }, 100);
 };
 
-SearchPanelPopupControl.prototype.submit = function (event) {
-    event.preventDefault();
-
+SearchPanelPopupControl.prototype.getData = function () {
     this._data = this.body.serializeArray();
+    return this._data;
 };

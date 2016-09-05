@@ -100,6 +100,8 @@ function Thumbnails (elem, config) {
 };
 
 Thumbnails.prototype.build = function (data, config) {
+    if (!data) return;
+
     this.data = data;
     this.config = config;
 

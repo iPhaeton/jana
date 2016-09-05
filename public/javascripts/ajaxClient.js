@@ -59,7 +59,7 @@ function makeSearchRequest(request, data, callback) {
             }
         }
     })
-}
+};
 
 //Files--------------------------------------------------------------------------------------------------------------------------------------------------------
 function makeFileSaveRequest(reqStr, file, callback) {
