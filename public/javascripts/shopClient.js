@@ -105,9 +105,12 @@ Thumbnails.prototype.build = function (data, config) {
     this.data = data;
     this.config = config;
 
-    for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add((new Thumbnail(this, this.data[i], this.config, this.data.url)).elem);
+    for (var doc of this.data) {
+        this.tiles.add((new Thumbnail(this, doc, this.config, this.data.url)).elem);
     };
+/*    for (var i = 0; i < this.data.length; i++) {
+        this.tiles.add((new Thumbnail(this, this.data[i], this.config, this.data.url)).elem);
+    };*/
 };
 
 Thumbnails.prototype.render = function () {

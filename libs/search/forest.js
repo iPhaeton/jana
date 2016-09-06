@@ -25,7 +25,7 @@ class Forest {
                         this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
                         //count++;
                     }
-                    this.trees[sha].docsIds.add(docs[i]._id);
+                    this.trees[sha].docs.add({id: [docs[i]._id], name: docs[i].specs["Название"]});
                 };
             };
             
@@ -36,12 +36,13 @@ class Forest {
     
     find (query) {
         var text = query["search-input"];
-        var result = new Set();
+        var result = {},
+            i = 0;
         
         for (var tree in this.trees) {
             if (this.trees[tree].search(text)) {
-                for (var id of this.trees[tree].docsIds) {
-                    result.add(id);
+                for (var doc of this.trees[tree].docs) {
+                    result[i++] = {_id: doc.id, specs: {"Название": doc.name}};
                 };
             };
         };

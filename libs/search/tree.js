@@ -6,7 +6,7 @@ class Tree {
     
     constructor (text, name) {
         this.text = text;
-        this.docsIds = new Set();//ids of the docs that contain this text
+        this.docs = new Set();//ids of the docs that contain this text
         this.name = name;//the name of a field that contains this text in a doc
         this.found = null;//a collocation that was found in this tree
 
