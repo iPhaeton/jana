@@ -3,6 +3,7 @@ var app = require("app");
 var mongoose = require("libs/mongoose");
 var async = require("async");
 var config = require("config");
+var logger = new require('libs/logger')(module);
 
 var countAttemptsToConnect = 0
 
