@@ -105,6 +105,8 @@ Thumbnails.prototype.build = function (data, config) {
     this.data = data;
     this.config = config;
 
+    if (!Array.isArray(this.data)) addIterator(this.data);
+
     for (var doc of this.data) {
         this.tiles.add((new Thumbnail(this, doc, this.config, this.data.url)).elem);
     };

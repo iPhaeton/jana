@@ -21,3 +21,31 @@ function gatherItemsInOrder(obj) {
     };
     return items;
 };
+
+//add an iterator to an object
+function addIterator (obj) {
+    if (typeof obj !== "object") return;
+    
+    obj[Symbol.iterator] = function () {
+        let yeildThis = this.first;
+        let self = this;
+
+        return {
+            next () {
+                if (yeildThis){
+                    var returnThis = {
+                        value: yeildThis,
+                        done: false
+                    };
+                    yeildThis = yeildThis.next;
+                } else {
+                    var returnThis = {
+                        done: true
+                    }
+                };
+
+                return returnThis;
+            }
+        };
+    }
+}

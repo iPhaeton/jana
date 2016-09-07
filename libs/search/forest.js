@@ -25,7 +25,7 @@ class Forest {
                         this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
                         //count++;
                     }
-                    this.trees[sha].docs.add({id: [docs[i]._id], name: docs[i].specs["Название"]});
+                    this.trees[sha].docs.add({id: docs[i]._id, name: docs[i].specs["Название"]});
                 };
             };
             
@@ -36,13 +36,12 @@ class Forest {
     
     find (query) {
         var text = query["search-input"];
-        var result = {},
-            i = 0;
+        var result = new searchResult();
         
         for (var tree in this.trees) {
             if (this.trees[tree].search(text)) {
                 for (var doc of this.trees[tree].docs) {
-                    result[i++] = {_id: doc.id, specs: {"Название": doc.name}};
+                    result.add({_id: doc.id, specs: {"Название": doc.name}});
                 };
             };
         };
@@ -50,6 +49,20 @@ class Forest {
         return result;
     };
     
+};
+
+class searchResult {
+    add (value) {
+        if (this[value._id]) return;
+
+        this[value._id] = value;
+        
+        if (this.previouslyAdded) this.previouslyAdded.next = this[value._id];
+        else this.first = this[value._id];
+        this.previouslyAdded = this[value._id];
+        
+        this[value._id].next = null;
+    };
 };
 
 module.exports = function () {
