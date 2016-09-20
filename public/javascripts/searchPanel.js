@@ -72,7 +72,9 @@ SearchPanel.prototype.hidePopups = function (event) {
 };
 
 SearchPanel.prototype.submit = function (event) {
-    event.preventDefault();
+    var self = this;
+
+    if (event) event.preventDefault();
 
     var request = this.form.serialize();
     
@@ -92,18 +94,34 @@ SearchPanel.prototype.submit = function (event) {
             else callback();
         },
         function (callback) {
-            makeSearchRequest(request, searchData, callback);
+            makeSearchRequest(request, searchData, callback, self.showSearchResult);
         }
     ], (function (err, results) {
-        this.toggle();
+        if (event) this.toggle();
         
         if (results[0]) {
             storedConfig = config = parseConfig(results[0][0]);
         };
         
-        createContent(null, config || storedConfig);
+        //createContent(null, config || storedConfig);
+        if (thumbnails) {
+            thumbnails.clear();
+            thumbnails.data.url = "search";
+        };
+
+        socket.send(JSON.stringify({
+            request: "/searchResults"
+        }));
     }).bind(this));
 };
+
+SearchPanel.prototype.showSearchResult = function (data) {
+    if (!thumbnails) {
+        thumbnails = new Thumbnails("#commodity-list", storedData, storedConfig);
+        thumbnails.data.url = "search";
+    }
+    thumbnails.add(data);
+}
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
 SearchPanelPopupControl = function (name, parent) {

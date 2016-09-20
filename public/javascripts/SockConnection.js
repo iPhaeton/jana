@@ -31,6 +31,7 @@ class SockConnection {
     };
 
     send (data) {
+        this.lastRequest = data;
         this.connection.send(data);
     };
 

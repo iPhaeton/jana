@@ -2,7 +2,6 @@
 
 var url = require("url");
 var find = require("libs/find");
-var gatherDocsById = require("libs/gatherDocsById");
 
 class Router {
     constructor () {};
@@ -18,7 +17,11 @@ class Router {
     };
     
     ["/search"] (query) {
-        var result = find(query, this.socket);
+        find.search(query, this.socket);
+    };
+    
+    ["/searchResults"] () {
+        find.yieldSearchResults(this.socket);
     };
 };
 

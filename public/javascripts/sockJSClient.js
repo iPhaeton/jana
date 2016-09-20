@@ -1,7 +1,7 @@
-function makeSearchRequest(request, data, callback) {
+function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
     socket.callbacks.searchResult = function (err, data) {
         if (data === "searchComplete") {
-            callback(null, null);
+            onSearchEnd(null, null);
             return;
         };
 
@@ -10,6 +10,8 @@ function makeSearchRequest(request, data, callback) {
             socket.callbacks.searchResult = null;
             return;
         };
+
+        onSearchResult(data);
     };
 
     socket.send(JSON.stringify({

@@ -47,8 +47,6 @@ class Forest {
         };
 
         socket.write(JSON.stringify({type: "searchResult", data: "searchComplete"}));
-
-        this.yeildFinalResults(socket);
     };
     
     yeildFinalResults (socket) {

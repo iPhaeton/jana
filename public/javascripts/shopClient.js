@@ -38,6 +38,11 @@ $(document).ready(function () {
 });
 
 function getData(url, callback) {
+    if (url === "search") {
+        searchPanel.submit();
+        return;
+    }
+
     var config,
         data;
 
@@ -97,6 +102,8 @@ function Thumbnails (elem, config) {
     this.tiles = new Set();
     this.previousWindowWidth = 0;
     this.focusExecuted = false;
+
+    this.data = [];
 };
 
 Thumbnails.prototype.build = function (data, config) {
@@ -108,9 +115,6 @@ Thumbnails.prototype.build = function (data, config) {
     for (var doc of this.data) {
         this.tiles.add((new Thumbnail(this, doc, this.config, this.data.url)).elem);
     };
-/*    for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add((new Thumbnail(this, this.data[i], this.config, this.data.url)).elem);
-    };*/
 };
 
 Thumbnails.prototype.render = function () {
@@ -145,7 +149,18 @@ Thumbnails.prototype.render = function () {
     }.bind(this));
 };
 
+Thumbnails.prototype.add = function (dataToAdd) {
+    var newThumbnail = (new Thumbnail(this, dataToAdd, this.config || storedConfig, "search"));
+
+    this.tiles.add(newThumbnail.elem);
+    this.elem.append(newThumbnail.elem);
+
+    this.data.push(dataToAdd);
+    storedData = this.data;
+};
+
 Thumbnails.prototype.clear = function () {
+    this.data = [];
     this.tiles.clear();
     this.elem.html("");
 };
