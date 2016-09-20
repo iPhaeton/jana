@@ -50,13 +50,20 @@ class Forest {
     };
     
     yeildFinalResults (socket) {
+        var count = this.result.size;
+        
         for (var id of this.result) {
             mongoose.models["Commodity"].findById(id, (err, commodity) => {
                 if (err) {
                     logger.logErr(err);
                     socket.write(JSON.stringify({type: "searchResult", data: "Error"}));
                 } else {
-                    socket.write(JSON.stringify({type: "searchResult", data: commodity}));
+                    count--;
+                    if (!count) {
+                        socket.write(JSON.stringify({type: "searchResult", data: commodity, done: true}));
+                    } else {
+                        socket.write(JSON.stringify({type: "searchResult", data: commodity, done: false}));
+                    };
                 };
             });
         };

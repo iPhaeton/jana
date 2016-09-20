@@ -21,12 +21,13 @@ class SockConnection {
         this.connection.onmessage = function (event) {
             var json = JSON.parse(event.data),
                 data = json.data,
-                type = json.type;
+                type = json.type,
+                done = json.done;
 
             if (!self.callbacks[type]) return;
 
             if (data === "Error") self.callbacks[type](new Error(type + " error"));
-            else self.callbacks[type](null, data);
+            else self.callbacks[type](null, data, done);
         };
     };
 

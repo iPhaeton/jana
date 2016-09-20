@@ -115,12 +115,12 @@ SearchPanel.prototype.submit = function (event) {
     }).bind(this));
 };
 
-SearchPanel.prototype.showSearchResult = function (data) {
+SearchPanel.prototype.showSearchResult = function (data, done) {
     if (!thumbnails) {
         thumbnails = new Thumbnails("#commodity-list", storedData, storedConfig);
         thumbnails.data.url = "search";
     }
-    thumbnails.add(data);
+    thumbnails.add(data, done);
 }
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------

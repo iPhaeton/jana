@@ -1,5 +1,5 @@
 function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
-    socket.callbacks.searchResult = function (err, data) {
+    socket.callbacks.searchResult = function (err, data, done) {
         if (data === "searchComplete") {
             onSearchEnd(null, null);
             return;
@@ -11,7 +11,7 @@ function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
             return;
         };
 
-        onSearchResult(data);
+        onSearchResult(data, done);
     };
 
     socket.send(JSON.stringify({
