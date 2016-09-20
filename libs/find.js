@@ -1,9 +1,9 @@
-function search (query, socket) {
+function search (query, socket, key) {
     var app = require("app");
 
     var forest = app.get("forest");
 
-    forest.find(query, socket);
+    forest.find(query, socket, key);
 };
 
 function yieldSearchResults (socket) {

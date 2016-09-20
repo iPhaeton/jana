@@ -34,7 +34,9 @@ class Forest {
         //console.log(count);
     };
     
-    find (query, socket) {
+    find (query, socket, key) {
+        this.key = key;
+
         var text = query["search-input"];
         this.result = new Set();
         
@@ -50,23 +52,29 @@ class Forest {
     };
     
     yeildFinalResults (socket) {
+        var self = this;
+        
         var count = this.result.size;
         
-        for (var id of this.result) {
-            mongoose.models["Commodity"].findById(id, (err, commodity) => {
-                if (err) {
-                    logger.logErr(err);
-                    socket.write(JSON.stringify({type: "searchResult", data: "Error"}));
-                } else {
-                    count--;
-                    if (!count) {
-                        socket.write(JSON.stringify({type: "searchResult", data: commodity, done: true}));
+        (function (key) {
+            for (var id of self.result) {
+                mongoose.models["Commodity"].findById(id, (err, commodity) => {
+                    if (key !== self.key) return;
+                    
+                    if (err) {
+                        logger.logErr(err);
+                        socket.write(JSON.stringify({type: "searchResult", data: "Error"}));
                     } else {
-                        socket.write(JSON.stringify({type: "searchResult", data: commodity, done: false}));
+                        count--;
+                        if (!count) {
+                            socket.write(JSON.stringify({type: "searchResult", data: commodity, done: true, key: key}));
+                        } else {
+                            socket.write(JSON.stringify({type: "searchResult", data: commodity, done: false, key: key}));
+                        };
                     };
-                };
-            });
-        };
+                });
+            };
+        })(this.key);
     };
     
 };

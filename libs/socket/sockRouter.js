@@ -13,11 +13,11 @@ class Router {
 
         var request = url.parse(reqData.request, true);
 
-        this[request.pathname](request.query);
+        this[request.pathname](request.query, reqData.key);
     };
     
-    ["/search"] (query) {
-        find.search(query, this.socket);
+    ["/search"] (query, key) {
+        find.search(query, this.socket, key);
     };
     
     ["/searchResults"] () {
