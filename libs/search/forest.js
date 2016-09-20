@@ -25,7 +25,7 @@ class Forest {
                         this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
                         //count++;
                     }
-                    this.trees[sha].docs.add({id: docs[i]._id, name: docs[i].specs["Название"]});
+                    this.trees[sha].docs.add(docs[i]._id);
                 };
             };
             
@@ -34,35 +34,36 @@ class Forest {
         //console.log(count);
     };
     
-    find (query) {
+    find (query, socket) {
         var text = query["search-input"];
-        var result = new searchResult();
+        this.result = new Set();
         
         for (var tree in this.trees) {
             if (this.trees[tree].search(text)) {
-                for (var doc of this.trees[tree].docs) {
-                    result.add({_id: doc.id, specs: {"Название": doc.name}});
+                for (var id of this.trees[tree].docs) {
+                    this.result.add(id);
                 };
             };
         };
-        
-        return result;
+
+        socket.write(JSON.stringify({type: "searchResult", data: "searchComplete"}));
+
+        this.yeildFinalResults(socket);
     };
     
-};
-
-class searchResult {
-    add (value) {
-        if (this[value._id]) return;
-
-        this[value._id] = value;
-        
-        if (this.previouslyAdded) this.previouslyAdded.next = this[value._id];
-        else this.first = this[value._id];
-        this.previouslyAdded = this[value._id];
-        
-        this[value._id].next = null;
+    yeildFinalResults (socket) {
+        for (var id of this.result) {
+            mongoose.models["Commodity"].findById(id, (err, commodity) => {
+                if (err) {
+                    logger.logErr(err);
+                    socket.write(JSON.stringify({type: "searchResult", data: "Error"}));
+                } else {
+                    socket.write(JSON.stringify({type: "searchResult", data: commodity}));
+                };
+            });
+        };
     };
+    
 };
 
 module.exports = function () {

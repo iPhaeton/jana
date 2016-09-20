@@ -18,18 +18,7 @@ class Router {
     };
     
     ["/search"] (query) {
-        var result = find(query);
-
-        this.socket.write(JSON.stringify({type: "searchResult", data: result}));
-
-        /*if (result.size) {
-            gatherDocsById(result, (err, commodities) => {
-                if (err) this.socket.write(JSON.stringify({type: "searchResult", data: "Error"}));
-                else this.socket.write(JSON.stringify({type: "searchResult", data: commodities}));
-            });
-        } else {
-            this.socket.write(JSON.stringify({type: "searchResult", data: null}));
-        };*/
+        var result = find(query, this.socket);
     };
 };
 

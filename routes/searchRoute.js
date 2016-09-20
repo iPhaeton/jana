@@ -18,7 +18,7 @@ router.get("*", (req, res, next) => {
         });
     } else {
         res.json(null);
-    }
+    }   
 });
 
 module.exports = router;

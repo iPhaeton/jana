@@ -74,8 +74,6 @@ function createContent (data, config) {
     } 
     if(!config) return;
 
-    if (!Array.isArray(data)) addIterator(data);
-
     if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, config);
     thumbnails.clear();
     thumbnails.build(data, config);

@@ -95,21 +95,13 @@ SearchPanel.prototype.submit = function (event) {
             makeSearchRequest(request, searchData, callback);
         }
     ], (function (err, results) {
-        if (err) {
-            alert("Ошибка поиска");
-            return;
-        };
-        
         this.toggle();
         
         if (results[0]) {
             storedConfig = config = parseConfig(results[0][0]);
         };
         
-        if (!results[1]) alert("Ничего не найдено");
-        storedData = data = results[1];
-        
-        createContent(data, config || storedConfig);
+        createContent(null, config || storedConfig);
     }).bind(this));
 };
 
