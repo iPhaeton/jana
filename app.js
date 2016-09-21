@@ -21,7 +21,6 @@ var list = require("routes/listRoute");
 var signup = require("routes/signupRoute");
 var signin = require("routes/signinRoute");
 var signout = require("routes/signoutRoute");
-var search = require("routes/searchRoute");
 
 var app = express();
 module.exports = app;
@@ -99,7 +98,6 @@ app.use("/list", list);
 app.use("/signup", signup);
 app.use("/signin", signin);
 app.use("/signout", signout);
-app.use("/search", search);
 
 // error handlers
 // catch 404 and forward to error handler
