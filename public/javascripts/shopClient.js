@@ -147,7 +147,7 @@ Thumbnails.prototype.add = function (dataToAdd, done) {
     storedData = this.data;
 
     if (done) {
-        this.clearTiles(true);
+        this.clearTiles(true)();
     };
 };
 

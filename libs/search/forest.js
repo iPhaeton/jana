@@ -52,6 +52,11 @@ class Forest {
     };
     
     yeildFinalResults (socket) {
+        if (!this.result.size) {
+            socket.write(JSON.stringify({type: "searchResult", data: null}));
+            return;
+        };
+
         var self = this;
         
         var count = this.result.size;

@@ -13,6 +13,11 @@ function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
             return;
         };
 
+        if (!data) {
+            alert("Ничего не найдено");
+            return;
+        };
+
         if (resultKey !== key) return;
 
         onSearchResult(data, done);
