@@ -5,6 +5,9 @@ var thumbnails,
     storedConfig, //data and configare not necesarily needed to be reloaded on every getData
     searchPanel;
 
+var socket = new SockConnection(window.location.origin + "/sock");
+socket.connect();
+
 $(document).ready(function () {
     var editPanel = new EditPanel();
 
@@ -35,6 +38,11 @@ $(document).ready(function () {
 });
 
 function getData(url, callback) {
+    if (url === "search") {
+        searchPanel.submit();
+        return;
+    }
+
     var config,
         data;
 
@@ -94,52 +102,59 @@ function Thumbnails (elem, config) {
     this.tiles = new Set();
     this.previousWindowWidth = 0;
     this.focusExecuted = false;
+
+    this.data = [];
+
+    this.setHandlers();
 };
 
 Thumbnails.prototype.build = function (data, config) {
+    if (!data) return;
+
     this.data = data;
     this.config = config;
 
-    for (var i = 0; i < this.data.length; i++) {
-        this.tiles.add((new Thumbnail(this, this.data[i], this.config, this.data.url)).elem);
+    for (var doc of this.data) {
+        this.tiles.add((new Thumbnail(this, doc, this.config, this.data.url)).elem);
     };
 };
 
 Thumbnails.prototype.render = function () {
-    var row = $("<div class='row'></div>");
+    this.row = $("<div class='row'></div>");
 
     for (var tile of this.tiles) {
-        row.append(tile);
+        this.row.append(tile);
     };
 
-    this.elem.append(row);
+    this.elem.append(this.row);
 
     this.clearTiles(true)();
-    $(window).on("resize", this.clearTiles(false));
+};
 
-    //Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
-    //So I listen to document.onfocus and add window.onresize again
-    $(document).on("focus", function () {
-        if (this.focusExecuted) return;
+Thumbnails.prototype.add = function (dataToAdd, done) {
+    if (!this.row) {
+        this.row = $("<div class='row'></div>");
+        this.elem.append(this.row);
+    };
 
-        this.focusExecuted = true;
+    var newThumbnail = (new Thumbnail(this, dataToAdd, this.config || storedConfig, "search"));
 
+    this.tiles.add(newThumbnail.elem);
+    this.row.append(newThumbnail.elem);
+    this.clearTiles(true);
+
+    this.data.push(dataToAdd);
+    storedData = this.data;
+
+    if (done) {
         this.clearTiles(true)();
-        $(window).off("resize", this.clearTiles(false)); //just in case
-        $(window).on("resize", this.clearTiles(false)); //when comming back from anothr page
-    }.bind(this));
-
-    //if we go away from the page by some link, when we come back we will need to add window.onresize again
-    $(document).on("click", function (event) {
-        if ($(event.target).attr("href")) this.focusExecuted = false;
-        $(window).off("resize", this.clearTiles(false)); //just in case
-        $(window).on("resize", this.clearTiles(false)); //when an element with href is pressed, but page hasn't been reloaded
-    }.bind(this));
+    };
 };
 
 Thumbnails.prototype.clear = function () {
+    this.data = [];
     this.tiles.clear();
-    this.elem.html("");
+    if (this.row) this.row.html("");
 };
 
 Thumbnails.prototype.unrender = function () {
@@ -196,6 +211,29 @@ Thumbnails.prototype.arrangeClears = function (clearThis) {
         };
         i++;
     };
+};
+
+Thumbnails.prototype.setHandlers = function () {
+    $(window).on("resize", this.clearTiles(false));
+
+    //Crazy firefox' feature that js isn't executed again, when a page is returned to, but window.onresize is lost, when a page is left
+    //So I listen to document.onfocus and add window.onresize again
+    $(document).on("focus", function () {
+        if (this.focusExecuted) return;
+
+        this.focusExecuted = true;
+
+        this.clearTiles(true)();
+        $(window).off("resize", this.clearTiles(false)); //just in case
+        $(window).on("resize", this.clearTiles(false)); //when comming back from anothr page
+    }.bind(this));
+
+    //if we go away from the page by some link, when we come back we will need to add window.onresize again
+    $(document).on("click", function (event) {
+        if ($(event.target).attr("href")) this.focusExecuted = false;
+        $(window).off("resize", this.clearTiles(false)); //just in case
+        $(window).on("resize", this.clearTiles(false)); //when an element with href is pressed, but page hasn't been reloaded
+    }.bind(this));
 };
 
 //Thumbnail--------------------------------------------------------------------------------------------------------

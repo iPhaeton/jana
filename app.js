@@ -21,7 +21,6 @@ var list = require("routes/listRoute");
 var signup = require("routes/signupRoute");
 var signin = require("routes/signinRoute");
 var signout = require("routes/signoutRoute");
-var search = require("routes/searchRoute");
 
 var app = express();
 module.exports = app;
@@ -99,7 +98,6 @@ app.use("/list", list);
 app.use("/signup", signup);
 app.use("/signin", signin);
 app.use("/signout", signout);
-app.use("/search", search);
 
 // error handlers
 // catch 404 and forward to error handler
@@ -138,3 +136,7 @@ app.use(function(err, req, res, next) {
 var server = app.listen(process.env.PORT || config.get("port"), process.env.IP || "0.0.0.0", function () {
   logger.log("Server listening on port " + (process.env.PORT || config.get("port")));
 });
+
+//WebSocket
+require("libs/socket")(server);
+require("libs/socket/onUpgradeAuth")(server);

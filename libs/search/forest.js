@@ -5,11 +5,14 @@ var logger = new require('libs/logger')(module);
 var Tree = require("libs/search/tree").Tree;
 var async = require("async");
 var app = require("app");
+var crypto = require("crypto");
 
 class Forest {
     
     constructor (docs, fieldsToSearchIn) {
         this.trees = {};
+
+        //var count = 0;
         
         for (let i = 0; i < docs.length; i++) {
 
@@ -17,27 +20,66 @@ class Forest {
                 let text = docs[i].specs[fieldsToSearchIn[j]];
 
                 if (text) {
-                    if (!this.trees[text]) this.trees[text] = new Tree (text, fieldsToSearchIn[j]);
-                    this.trees[text].docsIds.add(docs[i]._id);
+                    let sha = crypto.createHmac("sha256", text).digest("hex");
+                    if (!this.trees[sha]) {
+                        this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
+                        //count++;
+                    }
+                    this.trees[sha].docs.add(docs[i]._id);
                 };
             };
             
         };
+
+        //console.log(count);
     };
     
-    find (query) {
+    find (query, socket, key) {
+        this.key = key;
+
         var text = query["search-input"];
-        var result = new Set();
+        this.result = new Set();
         
         for (var tree in this.trees) {
             if (this.trees[tree].search(text)) {
-                for (var id of this.trees[tree].docsIds) {
-                    result.add(id);
+                for (var id of this.trees[tree].docs) {
+                    this.result.add(id);
                 };
             };
         };
+
+        socket.write(JSON.stringify({type: "searchResult", data: "searchComplete"}));
+    };
+    
+    yeildFinalResults (socket) {
+        if (!this.result.size) {
+            socket.write(JSON.stringify({type: "searchResult", data: null}));
+            return;
+        };
+
+        var self = this;
         
-        return result;
+        var count = this.result.size;
+        
+        (function (key) {
+            for (var id of self.result) {
+                mongoose.models["Commodity"].findById(id, (err, commodity) => {
+                    if (key !== self.key) return;
+                    
+                    if (err) {
+                        logger.logErr(err);
+                        socket.write(JSON.stringify({type: "searchResult", data: "Error"}));
+                    } else {
+                        count--;
+                        if (!count) {
+                            socket.write(JSON.stringify({type: "searchResult", data: commodity, done: true, key: key}));
+                        } else {
+                            socket.write(JSON.stringify({type: "searchResult", data: commodity, done: false, key: key}));
+                        };
+                    };
+                });
+            };
+        })(this.key);
     };
     
 };

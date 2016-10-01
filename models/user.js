@@ -2,7 +2,7 @@ var async = require("async");
 var crypto = require("crypto");
 var mongoose = require("libs/mongoose");
 var util = require("util");
-var HttpError = require("errors").HttpError;
+var AuthError = require("errors").AuthError;
 
 Schema = mongoose.Schema;
 
@@ -73,16 +73,4 @@ schema.statics.register = function (username, password, callback) {
     });
 };
 
-//Authorize errors
-function AuthError (message) {
-    Error.apply(this, arguments);
-    Error.captureStackTrace(this, HttpError);
-
-    this.message = message;
-};
-util.inherits(HttpError, Error);
-HttpError.prototype.name = "RequestError";
-
-
 exports.User = mongoose.model ("User", schema);
-exports.AuthError = AuthError;
