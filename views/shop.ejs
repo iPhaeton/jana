@@ -48,17 +48,21 @@
         <script src="/vendor/bower_components/jquery/dist/jquery.js"></script>
         <script src="/vendor/bower_components/bootstrap/dist/js/bootstrap.js"></script>
         <script src="/vendor/bower_components/async/dist/async.js"></script>
-
         <script src="/vendor/bower_components/sockjs/sockjs.min.js"></script>
-        <script src="/javascripts/SockConnection.js"></script>
-        <script src="/javascripts/modals.js"></script>
-        <script src="/javascripts/axillaries.js"></script>
-        <script src="/javascripts/ajaxClient.js"></script>
-        <script src="/javascripts/sockJSClient.js"></script>
-        <script src="/javascripts/headMenu.js"></script>
-        <script src="/javascripts/sideMenu.js"></script>
-        <script src="/javascripts/shopClient.js"></script>
-        <script src="/javascripts/searchPanel.js"></script>
+
+        <%if (env === "production") {%>
+            <script src="/javascripts/build/shop.min.js"></script>
+        <%} else {%>
+            <script src="/javascripts/SockConnection.js"></script>
+            <script src="/javascripts/modals.js"></script>
+            <script src="/javascripts/axillaries.js"></script>
+            <script src="/javascripts/ajaxClient.js"></script>
+            <script src="/javascripts/sockJSClient.js"></script>
+            <script src="/javascripts/headMenu.js"></script>
+            <script src="/javascripts/sideMenu.js"></script>
+            <script src="/javascripts/shopClient.js"></script>
+            <script src="/javascripts/searchPanel.js"></script>
+        <%}%>
 
     </body>
 </html>

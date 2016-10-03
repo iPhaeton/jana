@@ -1,3 +1,5 @@
+"use strict";
+
 //findTarget(initial target from event.target, class or id to define the target, element inside the target that will be returned instead of target - optional)
 function findTarget(target, criteria, tag) {
     criteria = criteria.split(" ");

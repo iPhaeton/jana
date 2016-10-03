@@ -1,5 +1,30 @@
 "use strict";
 
+//findTarget(initial target from event.target, class or id to define the target, element inside the target that will be returned instead of target - optional)
+function findTarget(target, criteria, tag) {
+    criteria = criteria.split(" ");
+
+    do {
+        for (var i = 0; i < criteria.length; i++) {
+            if ((target.hasClass(criteria[i])) || (target.attr("id") === criteria[i])) {
+                if (tag) return target.children(tag);
+                else return target;
+            };
+        };
+        target = target.parent();
+    } while (target.length);
+};
+
+//for some reason sometimes properties are read in the opposite order
+function gatherItemsInOrder(obj) {
+    var items = [];
+    for(var item in obj){
+        items.push(item);
+    };
+    return items;
+};
+"use strict";
+
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {
     if (!parent.data) return;
@@ -379,3 +404,164 @@ ModalWindow.prototype.preventScrolling = function (prevent) {
         $(".dim-background").remove();
     }
 };
+"use strict";
+
+//DB------------------------------------------------------------------------------------------------------------------------------------------------------------
+function makeDBSearchRequest (reqStr, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "GET",
+        dataType: "json"
+    })
+    .done(function (json) {
+        callback(null, json);
+    })
+    .fail(function (xhr, status, err) {
+        callback(err);
+    });
+};
+
+function makeDBSaveRequest (reqStr, data, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: data,
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            403: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    });
+};
+
+function makeDBDelRequest (reqStr, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            404: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    });
+};
+
+//Files--------------------------------------------------------------------------------------------------------------------------------------------------------
+function makeFileSaveRequest(reqStr, file, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: file,
+        headers: {
+            "x-file-name": file.name || file //file may be a file or a string with a file name
+        },
+        processData: false,
+        contentType: false,
+        statusCode:{
+            200: function () {
+                callback(null)
+            },
+            403: function (jqXHR) {
+                callback(JSON.parse(jqXHR.responseText));
+            }
+        }
+    });
+};
+
+function makeFileDeleteRequest(reqStr, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "GET"
+    })
+    .done(function () {
+        callback();
+    })
+    .fail(function (xhr, status, err) {
+        callback(err);
+    });
+}
+
+function makeListRequest(reqStr, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "GET",
+        dataType: "json"
+    })
+    .done(function (json) {
+        callback(null, json);
+    })
+    .fail(function (xhr, status, err) {
+        callback(err);
+    });
+};
+
+//Registration and authorization------------------------------------------------------------------------------------------------------------------------------------
+function makeAuthorizationRequest (reqStr, form, callback) {
+    $.ajax({
+        url: reqStr,
+        type: "POST",
+        data: form ? form.serialize() : null,
+    })
+    .done(function (json) {
+        callback(null, json);
+    })
+    .fail(function (xhr, status, err) {
+        callback(JSON.parse(xhr.responseText));
+    });;
+};
+"use strict";
+
+(function (argument) {
+    
+    $(document).ready(function () {
+        $("#signin, #signup").on("click", function (event) {
+            event.preventDefault();
+
+            var target = findTarget($(event.target), "signin signup");
+            if (!target) return;
+            
+            showAuthWindow(target.attr("id"));
+        });
+        
+        $("#signout").on("click", function (event) {
+            event.preventDefault();
+
+            var target = findTarget($(event.target), "signout");
+            if (!target) return;
+
+            makeAuthorizationRequest("/signout", null, function (err) {
+                if (err) alert (err.message);
+                else window.location.href = "/";
+            });
+        });
+
+        //Close all popups and modals, if there are any-------------------------------------------------------------------------------------------------------------------------------
+        $(document.documentElement).on("click keydown", function (event) {
+            if (event.keyCode && event.keyCode !== 27) return;
+
+            if (findTarget($(event.target), "mod")) return;
+
+            //close image preview and popups
+            if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
+                $("#image-preview").remove();
+                $(".popup-menu").detach();
+            };
+            
+            //if click is not on a details button, close all details
+            if(!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
+                ModalWindow.prototype.close();
+            };
+        });
+    });
+    
+    function showAuthWindow(id) {
+        var authWindow = new AuthWindow(id);
+        authWindow.render();
+    };
+})();

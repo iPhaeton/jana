@@ -1,3 +1,5 @@
+"use strict";
+
 var mode = "view";
 
 var thumbnails,
