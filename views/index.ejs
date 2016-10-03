@@ -28,8 +28,13 @@
       <div class="showcase__image">
         <!--<img src="/images/showcase_big.jpg">-->
         <picture>
-          <source srcset="/images/showcase_small_t.jpg" media="(max-width: 480px)">
-          <source srcset="/images/showcase_medium_t.jpg" media="(max-width: 1024px)">
+          <%if (env === "production") {%>
+            <source srcset="/images/showcase_small.jpg" media="(max-width: 480px)">
+            <source srcset="/images/showcase_medium.jpg" media="(max-width: 1024px)">
+          <%} else {%>
+            <source srcset="/images/showcase_small_t.jpg" media="(max-width: 480px)">
+            <source srcset="/images/showcase_medium_t.jpg" media="(max-width: 1024px)">
+          <%}%>
           <img srcset="/images/showcase_big.jpg">
         </picture>
       </div>
