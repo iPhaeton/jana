@@ -1,3 +1,5 @@
+"use strict";
+
 function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
     var key = Math.random();
 

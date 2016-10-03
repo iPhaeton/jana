@@ -1,3 +1,5 @@
+"use strict";
+
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
 function SearchPanel(options) {
     this.elem = $(".search-panel");
@@ -124,7 +126,7 @@ SearchPanel.prototype.showSearchResult = function (data, done) {
 }
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
-SearchPanelPopupControl = function (name, parent) {
+function SearchPanelPopupControl (name, parent) {
     this.elem = $("<div class='search-panel__popup'></div>");
     this.name = name;
     this.parent = parent;

@@ -1,3 +1,5 @@
+"use strict";
+
 (function (argument) {
     
     $(document).ready(function () {

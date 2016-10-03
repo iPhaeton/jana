@@ -15,6 +15,7 @@ router.get('/', function(req, res, next) {
         };*/
 
         res.render("shop", {
+            env: process.env.NODE_ENV,
             title: "Jana - shop",
             headMenuLeft: {
                 "Магазин": "/shop",
