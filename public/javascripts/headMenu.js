@@ -1,6 +1,7 @@
 "use strict";
 
-(function (argument) {
+//export default function headMenuListener () {
+module .exports = function headMenuListener () {
     
     $(document).ready(function () {
         $("#signin, #signup").on("click", function (event) {
@@ -47,4 +48,4 @@
         var authWindow = new AuthWindow(id);
         authWindow.render();
     };
-})();
+};
