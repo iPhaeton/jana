@@ -1,5 +1,7 @@
 "use strict";
 
+import {makeDBSaveRequest, makeAuthorizationRequest} from "./ajaxClient";
+
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {
     if (!parent.data) return;

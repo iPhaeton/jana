@@ -1,6 +1,7 @@
 "use strict";
 
 import {ModalWindow, AuthWindow} from "./modals";
+import {makeAuthorizationRequest} from "./ajaxClient";
 
 export default function headMenuListener () {
     

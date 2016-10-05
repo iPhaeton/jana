@@ -67,6 +67,8 @@
 
 	var _modals = __webpack_require__(2);
 
+	var _ajaxClient = __webpack_require__(3);
+
 	function headMenuListener() {
 
 	    $(document).ready(function () {
@@ -85,7 +87,7 @@
 	            var target = findTarget($(event.target), "signout");
 	            if (!target) return;
 
-	            makeAuthorizationRequest("/signout", null, function (err) {
+	            (0, _ajaxClient.makeAuthorizationRequest)("/signout", null, function (err) {
 	                if (err) alert(err.message);else window.location.href = "/";
 	            });
 	        });
@@ -117,15 +119,18 @@
 
 /***/ },
 /* 2 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
-	//Details---------------------------------------------------------------------------------------------------------------
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	exports.ModalWindow = exports.AuthWindow = exports.Dialog = exports.Details = undefined;
+
+	var _ajaxClient = __webpack_require__(3);
+
+	//Details---------------------------------------------------------------------------------------------------------------
 	function Details(parent) {
 	    if (!parent.data) return;
 
@@ -241,7 +246,7 @@
 	    var form = $(event.target);
 
 	    var self = this;
-	    makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parent.data._id, form.serializeArray(), function (err) {
+	    (0, _ajaxClient.makeDBSaveRequest)("/dbsave?db=Commodity&id=" + this.parent.data._id, form.serializeArray(), function (err) {
 	        if (err) alert(err.message);
 	        getData(self.parent.dataUrl, createContent);
 	    });
@@ -279,7 +284,7 @@
 	    if (this.createData) var formData = this.createData(form);else var formData = form.serializeArray();
 
 	    if (!formData.url && storedData) formData.url = storedData.url;
-	    makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
+	    (0, _ajaxClient.makeDBSaveRequest)("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
 	        if (err) {
 	            if (self.callback) self.callback(err);else alert(err.message);
 	            return;
@@ -349,7 +354,7 @@
 	};
 
 	AuthWindow.prototype.submit = function (event) {
-	    makeAuthorizationRequest("/" + this.type, this.form, function (err) {
+	    (0, _ajaxClient.makeAuthorizationRequest)("/" + this.type, this.form, function (err) {
 	        if (err) alert(err.message);else {
 	            ModalWindow.prototype.close();
 	            location.reload();
@@ -504,6 +509,126 @@
 	exports.Dialog = Dialog;
 	exports.AuthWindow = AuthWindow;
 	exports.ModalWindow = ModalWindow;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	//DB------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	function makeDBSearchRequest(reqStr, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "GET",
+	        dataType: "json"
+	    }).done(function (json) {
+	        callback(null, json);
+	    }).fail(function (xhr, status, err) {
+	        callback(err);
+	    });
+	};
+
+	function makeDBSaveRequest(reqStr, data, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "POST",
+	        data: data,
+	        statusCode: {
+	            200: function _() {
+	                callback(null);
+	            },
+	            403: function _(jqXHR) {
+	                callback(JSON.parse(jqXHR.responseText));
+	            }
+	        }
+	    });
+	};
+
+	function makeDBDelRequest(reqStr, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "POST",
+	        statusCode: {
+	            200: function _() {
+	                callback(null);
+	            },
+	            404: function _(jqXHR) {
+	                callback(JSON.parse(jqXHR.responseText));
+	            }
+	        }
+	    });
+	};
+
+	//Files--------------------------------------------------------------------------------------------------------------------------------------------------------
+	function makeFileSaveRequest(reqStr, file, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "POST",
+	        data: file,
+	        headers: {
+	            "x-file-name": file.name || file //file may be a file or a string with a file name
+	        },
+	        processData: false,
+	        contentType: false,
+	        statusCode: {
+	            200: function _() {
+	                callback(null);
+	            },
+	            403: function _(jqXHR) {
+	                callback(JSON.parse(jqXHR.responseText));
+	            }
+	        }
+	    });
+	};
+
+	function makeFileDeleteRequest(reqStr, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "GET"
+	    }).done(function () {
+	        callback();
+	    }).fail(function (xhr, status, err) {
+	        callback(err);
+	    });
+	}
+
+	function makeListRequest(reqStr, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "GET",
+	        dataType: "json"
+	    }).done(function (json) {
+	        callback(null, json);
+	    }).fail(function (xhr, status, err) {
+	        callback(err);
+	    });
+	};
+
+	//Registration and authorization------------------------------------------------------------------------------------------------------------------------------------
+	function makeAuthorizationRequest(reqStr, form, callback) {
+	    $.ajax({
+	        url: reqStr,
+	        type: "POST",
+	        data: form ? form.serialize() : null
+	    }).done(function (json) {
+	        callback(null, json);
+	    }).fail(function (xhr, status, err) {
+	        callback(JSON.parse(xhr.responseText));
+	    });;
+	};
+
+	exports.makeDBSearchRequest = makeDBSearchRequest;
+	exports.makeDBSaveRequest = makeDBSaveRequest;
+	exports.makeDBDelRequest = makeDBDelRequest;
+	exports.makeFileSaveRequest = makeFileSaveRequest;
+	exports.makeFileDeleteRequest = makeFileDeleteRequest;
+	exports.makeListRequest = makeListRequest;
+	exports.makeAuthorizationRequest = makeAuthorizationRequest;
 
 /***/ }
 /******/ ]);
