@@ -1,4 +1,3 @@
-//import headMenuListener from "./headMenu";
-var headMenuListener = require("./headMenu");
+import headMenuListener from "./headMenu";
 
 headMenuListener();

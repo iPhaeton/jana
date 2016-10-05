@@ -1,3 +1,5 @@
+var path = require("path")
+
 const webpack = require("webpack");
 const commonjs = require("babel-plugin-transform-es2015-modules-commonjs");
 
@@ -13,16 +15,12 @@ module.exports = {
         loaders: [
             {
                 test: /\.js$/,
-                include: ["public/javascripts"],
+                include: [path.resolve(__dirname, "public/javascripts")],
                 loader: "babel-loader",
                 query: {
-                    presets: ["es2015"]
+                    presets: ["es2015"],
                 }
             }
         ]
-    },
-
-    plugins: [
-        //??????????????????????????
-    ]
+    }
 };

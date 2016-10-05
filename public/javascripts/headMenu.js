@@ -1,7 +1,6 @@
 "use strict";
 
-//export default function headMenuListener () {
-module .exports = function headMenuListener () {
+export default function headMenuListener () {
     
     $(document).ready(function () {
         $("#signin, #signup").on("click", function (event) {

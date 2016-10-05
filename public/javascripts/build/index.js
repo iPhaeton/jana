@@ -44,10 +44,15 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//import headMenuListener from "./headMenu";
-	var headMenuListener = __webpack_require__(1);
+	"use strict";
 
-	headMenuListener();
+	var _headMenu = __webpack_require__(1);
+
+	var _headMenu2 = _interopRequireDefault(_headMenu);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	(0, _headMenu2.default)();
 
 /***/ },
 /* 1 */
@@ -55,19 +60,22 @@
 
 	"use strict";
 
-	//export default function headMenuListener () {
-	module .exports = function headMenuListener () {
-	    
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.default = headMenuListener;
+	function headMenuListener() {
+
 	    $(document).ready(function () {
 	        $("#signin, #signup").on("click", function (event) {
 	            event.preventDefault();
 
 	            var target = findTarget($(event.target), "signin signup");
 	            if (!target) return;
-	            
+
 	            showAuthWindow(target.attr("id"));
 	        });
-	        
+
 	        $("#signout").on("click", function (event) {
 	            event.preventDefault();
 
@@ -75,8 +83,7 @@
 	            if (!target) return;
 
 	            makeAuthorizationRequest("/signout", null, function (err) {
-	                if (err) alert (err.message);
-	                else window.location.href = "/";
+	                if (err) alert(err.message);else window.location.href = "/";
 	            });
 	        });
 
@@ -87,18 +94,18 @@
 	            if (findTarget($(event.target), "mod")) return;
 
 	            //close image preview and popups
-	            if(!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
+	            if (!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
 	                $("#image-preview").remove();
 	                $(".popup-menu").detach();
 	            };
-	            
+
 	            //if click is not on a details button, close all details
-	            if(!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
+	            if (!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
 	                ModalWindow.prototype.close();
 	            };
 	        });
 	    });
-	    
+
 	    function showAuthWindow(id) {
 	        var authWindow = new AuthWindow(id);
 	        authWindow.render();
