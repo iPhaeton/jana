@@ -379,3 +379,5 @@ ModalWindow.prototype.preventScrolling = function (prevent) {
         $(".dim-background").remove();
     }
 };
+
+export {Details, Dialog, AuthWindow, ModalWindow};

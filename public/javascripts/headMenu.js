@@ -1,5 +1,7 @@
 "use strict";
 
+import {ModalWindow, AuthWindow} from "./modals";
+
 export default function headMenuListener () {
     
     $(document).ready(function () {
