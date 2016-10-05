@@ -1,5 +1,7 @@
 "use strict";
 
+import headMenuListener from "./headMenu";
+
 var mode = "view";
 
 var thumbnails,
@@ -11,6 +13,8 @@ var socket = new SockConnection(window.location.origin + "/sock");
 socket.connect();
 
 $(document).ready(function () {
+    headMenuListener();
+
     var editPanel = new EditPanel();
 
     $(document.body).css({
