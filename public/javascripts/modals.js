@@ -1,6 +1,7 @@
 "use strict";
 
 import {makeDBSaveRequest, makeAuthorizationRequest} from "./ajaxClient";
+import {findTarget, gatherItemsInOrder} from "./axillaries";
 
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {

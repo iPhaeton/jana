@@ -2,6 +2,7 @@
 
 import {ModalWindow, AuthWindow} from "./modals";
 import {makeAuthorizationRequest} from "./ajaxClient";
+import {findTarget} from "./axillaries";
 
 export default function headMenuListener () {
     

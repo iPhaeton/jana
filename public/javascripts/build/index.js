@@ -69,13 +69,15 @@
 
 	var _ajaxClient = __webpack_require__(3);
 
+	var _axillaries = __webpack_require__(4);
+
 	function headMenuListener() {
 
 	    $(document).ready(function () {
 	        $("#signin, #signup").on("click", function (event) {
 	            event.preventDefault();
 
-	            var target = findTarget($(event.target), "signin signup");
+	            var target = (0, _axillaries.findTarget)($(event.target), "signin signup");
 	            if (!target) return;
 
 	            showAuthWindow(target.attr("id"));
@@ -84,7 +86,7 @@
 	        $("#signout").on("click", function (event) {
 	            event.preventDefault();
 
-	            var target = findTarget($(event.target), "signout");
+	            var target = (0, _axillaries.findTarget)($(event.target), "signout");
 	            if (!target) return;
 
 	            (0, _ajaxClient.makeAuthorizationRequest)("/signout", null, function (err) {
@@ -96,16 +98,16 @@
 	        $(document.documentElement).on("click keydown", function (event) {
 	            if (event.keyCode && event.keyCode !== 27) return;
 
-	            if (findTarget($(event.target), "mod")) return;
+	            if ((0, _axillaries.findTarget)($(event.target), "mod")) return;
 
 	            //close image preview and popups
-	            if (!findTarget($(event.target), "popup-button") || event.keyCode === 27) {
+	            if (!(0, _axillaries.findTarget)($(event.target), "popup-button") || event.keyCode === 27) {
 	                $("#image-preview").remove();
 	                $(".popup-menu").detach();
 	            };
 
 	            //if click is not on a details button, close all details
-	            if (!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
+	            if (!(0, _axillaries.findTarget)($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
 	                _modals.ModalWindow.prototype.close();
 	            };
 	        });
@@ -129,6 +131,8 @@
 	exports.ModalWindow = exports.AuthWindow = exports.Dialog = exports.Details = undefined;
 
 	var _ajaxClient = __webpack_require__(3);
+
+	var _axillaries = __webpack_require__(4);
 
 	//Details---------------------------------------------------------------------------------------------------------------
 	function Details(parent) {
@@ -188,7 +192,7 @@
 	    this.table = $("<table class='table'><tbody></tbody></table>");
 
 	    //for some reason properties are read in the opposite order
-	    var items = gatherItemsInOrder(this.parent.data.specs);
+	    var items = (0, _axillaries.gatherItemsInOrder)(this.parent.data.specs);
 
 	    for (var i = items.length - 1; i >= 0; i--) {
 	        this.addField(this.table.find("tbody"), { key: items[i], val: this.parent.data.specs[items[i]] });
@@ -200,7 +204,7 @@
 
 	Details.prototype.editButtonClick = function (event) {
 	    var target = $(event.target);
-	    target = findTarget(target, "btn");
+	    target = (0, _axillaries.findTarget)(target, "btn");
 	    if (!target) return;
 
 	    switch (target.attr("id")) {
@@ -629,6 +633,42 @@
 	exports.makeFileDeleteRequest = makeFileDeleteRequest;
 	exports.makeListRequest = makeListRequest;
 	exports.makeAuthorizationRequest = makeAuthorizationRequest;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	//findTarget(initial target from event.target, class or id to define the target, element inside the target that will be returned instead of target - optional)
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	function findTarget(target, criteria, tag) {
+	    criteria = criteria.split(" ");
+
+	    do {
+	        for (var i = 0; i < criteria.length; i++) {
+	            if (target.hasClass(criteria[i]) || target.attr("id") === criteria[i]) {
+	                if (tag) return target.children(tag);else return target;
+	            };
+	        };
+	        target = target.parent();
+	    } while (target.length);
+	};
+
+	//for some reason sometimes properties are read in the opposite order
+	function gatherItemsInOrder(obj) {
+	    var items = [];
+	    for (var item in obj) {
+	        items.push(item);
+	    };
+	    return items;
+	};
+
+	exports.findTarget = findTarget;
+	exports.gatherItemsInOrder = gatherItemsInOrder;
 
 /***/ }
 /******/ ]);
