@@ -4,11 +4,17 @@ const webpack = require("webpack");
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 module.exports = {
-    entry: "./public/javascripts/indexClient.js",
+    context: path.resolve(__dirname, "public/javascripts"),
+
+    entry: {
+        index: "./indexClient.js",
+        shop: "./shopClient.js"
+    },
 
     output: {
         path: "./public/javascripts/build",
-        filename: "index.js"
+        filename: "[name].js",
+        library: "[name]"
     },
 
     watch: NODE_ENV === "development",
@@ -34,7 +40,7 @@ module.exports = {
                 loader: "babel",
                 query: {
                     presets: ["es2015", "stage-0"],
-                    plugins: ["transform-runtime"]
+                    //plugins: ["transform-runtime"]
                 }
             }
         ]

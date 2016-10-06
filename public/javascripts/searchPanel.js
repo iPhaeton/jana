@@ -1,7 +1,10 @@
 "use strict";
 
+import {findTarget} from "./axillaries";
+import {makeDBSearchRequest} from "./ajaxClient";
+
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
-function SearchPanel(options) {
+export default function SearchPanel(options) {
     this.elem = $(".search-panel");
     this.toggleButton = $(".search-button");
     this.form = this.elem.find("form");
@@ -47,7 +50,7 @@ SearchPanel.prototype.toggle = function () {
             $(document.documentElement).on("click keydown", self, self.hide);
         }, 0);
     } else {
-        this.hidePopups()
+        this.hidePopups();
         this.unsetEvents();
     };
 };
@@ -92,7 +95,7 @@ SearchPanel.prototype.submit = function (event) {
 
     async.parallel([
         function (callback) {
-            if (!storedConfig) makeDBSearchRequest("/dbsearch?db=Config", callback);
+            if (!shop.storedConfig) makeDBSearchRequest("/dbsearch?db=Config", callback);
             else callback();
         },
         function (callback) {
@@ -102,28 +105,28 @@ SearchPanel.prototype.submit = function (event) {
         if (event) this.toggle();
         
         if (results[0]) {
-            storedConfig = config = parseConfig(results[0][0]);
+            shop.storedConfig = config = shop.parseConfig(results[0][0]);
         };
         
         //createContent(null, config || storedConfig);
-        if (thumbnails) {
-            thumbnails.clear();
-            thumbnails.data.url = "search";
+        if (shop.thumbnails) {
+            shop.thumbnails.clear();
+            shop.thumbnails.data.url = "search";
         };
 
-        socket.send(JSON.stringify({
+        shop.socket.send(JSON.stringify({
             request: "/searchResults"
         }));
     }).bind(this));
 };
 
 SearchPanel.prototype.showSearchResult = function (data, done) {
-    if (!thumbnails) {
-        thumbnails = new Thumbnails("#commodity-list", storedData, storedConfig);
-        thumbnails.data.url = "search";
+    if (!shop.thumbnails) {
+        shop.thumbnails = new shop.Thumbnails("#commodity-list", shop.storedData, shop.storedConfig);
+        shop.thumbnails.data.url = "search";
     }
-    thumbnails.add(data, done);
-}
+    shop.thumbnails.add(data, done);
+};
 
 //SearchPanelPopupControl-------------------------------------------------------------------------------------------------------
 function SearchPanelPopupControl (name, parent) {

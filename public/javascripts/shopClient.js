@@ -1,6 +1,14 @@
 "use strict";
 
 import headMenuListener from "./headMenu";
+import {makeDBSearchRequest,
+        makeFileSaveRequest,
+        makeListRequest,
+        makeFileDeleteRequest,
+        makeDBDelRequest} from "./ajaxClient";
+import {Details, Dialog} from "./modals";
+import SearchPanel from "./searchPanel";
+import {gatherItemsInOrder} from "./axillaries";
 
 var mode = "view";
 
@@ -599,3 +607,5 @@ PopupMenu.prototype.render = function (invokingEvent) {
 PopupMenu.prototype.close = function () {
     this.elem.detach();
 };
+
+export {storedConfig, storedData, socket, parseConfig, thumbnails, Thumbnails};
