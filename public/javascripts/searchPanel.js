@@ -2,6 +2,7 @@
 
 import {findTarget} from "./axillaries";
 import {makeDBSearchRequest} from "./ajaxClient";
+import {makeSearchRequest} from "./sockJSClient"
 
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
 export default function SearchPanel(options) {

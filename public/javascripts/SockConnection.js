@@ -1,6 +1,6 @@
 "use strict";
 
-class SockConnection {
+export default class SockConnection {
     constructor (url) {
         this.url = url;
         this.callbacks = {

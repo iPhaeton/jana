@@ -31,3 +31,5 @@ function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
         key: key
     }));
 };
+
+export {makeSearchRequest};

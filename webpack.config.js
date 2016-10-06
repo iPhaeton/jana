@@ -59,4 +59,4 @@ if (NODE_ENV === "production") {
             }
         })
     )
-}
+};

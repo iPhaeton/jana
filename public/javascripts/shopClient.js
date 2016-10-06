@@ -8,20 +8,22 @@ import {makeDBSearchRequest,
         makeDBDelRequest} from "./ajaxClient";
 import {Details, Dialog} from "./modals";
 import SearchPanel from "./searchPanel";
-import {gatherItemsInOrder} from "./axillaries";
+import {findTarget,gatherItemsInOrder} from "./axillaries";
+import SockConnection from "./SockConnection"
+import {sideMenuListener, sideMenuActive} from "./sideMenu"
 
 var mode = "view";
 
-var thumbnails,
-    storedData, //data and configare not necesarily needed to be reloaded on every getData
-    storedConfig, //data and configare not necesarily needed to be reloaded on every getData
-    searchPanel;
+var searchPanel;
 
-var socket = new SockConnection(window.location.origin + "/sock");
-socket.connect();
-
+//shop.storedData - data and configare not necesarily needed to be reloaded on every getData
+//shop.storedConfig - data and configare not necesarily needed to be reloaded on every getData
 $(document).ready(function () {
+    shop.socket = new SockConnection(window.location.origin + "/sock");
+    shop.socket.connect();
+
     headMenuListener();
+    sideMenuListener();
 
     var editPanel = new EditPanel();
 
@@ -69,8 +71,8 @@ function getData(url, callback) {
             makeDBSearchRequest(url, callback);
         }
     ], function (err, results) {
-        storedConfig = config = parseConfig(results[0][0]);
-        storedData = data = results[1];
+        shop.storedConfig = config = parseConfig(results[0][0]);
+        shop.storedData = data = results[1];
         data.url = url;
 
         if (err) {
@@ -85,18 +87,18 @@ function getData(url, callback) {
 function createContent (data, config) {
     //if called without any of the arguments, that argument is taken from the global variable
     //data and config are stored in global variables when they are taken from the database
-    var data = data || storedData,
-        config = config || storedConfig;
+    var data = data || shop.storedData,
+        config = config || shop.storedConfig;
 
-    if (!data && thumbnails) {
-        thumbnails.clear();
+    if (!data && shop.thumbnails) {
+        shop.thumbnails.clear();
     } 
     if(!config) return;
 
-    if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, config);
-    thumbnails.clear();
-    thumbnails.build(data, config);
-    thumbnails.render();
+    if (!shop.thumbnails) shop.thumbnails = new Thumbnails("#commodity-list", data, config);
+    shop.thumbnails.clear();
+    shop.thumbnails.build(data, config);
+    shop.thumbnails.render();
 };
 
 //parse the config object------------------------------------------------------------------------------------------
@@ -151,14 +153,14 @@ Thumbnails.prototype.add = function (dataToAdd, done) {
         this.elem.append(this.row);
     };
 
-    var newThumbnail = (new Thumbnail(this, dataToAdd, this.config || storedConfig, "search"));
+    var newThumbnail = (new Thumbnail(this, dataToAdd, this.config || shop.storedConfig, "search"));
 
     this.tiles.add(newThumbnail.elem);
     this.row.append(newThumbnail.elem);
     this.clearTiles(true);
 
     this.data.push(dataToAdd);
-    storedData = this.data;
+    shop.storedData = this.data;
 
     if (done) {
         this.clearTiles(true)();
@@ -497,7 +499,7 @@ EditSwitch.prototype.createUploadInput = function () {
     uploadInput.on("change", function (event) {
         makeFileSaveRequest("/savefile?id=" + callerId, this.files[0], function (err) {
             if (err) alert (err.message);
-            getData(storedData.url, createContent);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            getData(shop.storedData.url, createContent);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         });
     });
 };
@@ -608,4 +610,4 @@ PopupMenu.prototype.close = function () {
     this.elem.detach();
 };
 
-export {storedConfig, storedData, socket, parseConfig, thumbnails, Thumbnails};
+export {parseConfig, Thumbnails};
