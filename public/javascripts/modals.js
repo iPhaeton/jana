@@ -157,7 +157,10 @@ Dialog.prototype.submit = function (event) {
     var form = $(event.target);
 
     if (this.createData) var formData = this.createData(form);
-    else var formData = form.serializeArray();
+    else {
+        var formData = form.serializeArray();
+        formData.url = "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[3].value;
+    }
 
     if (!formData.url && shop.storedData) formData.url = shop.storedData.url;
     makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
