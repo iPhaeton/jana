@@ -13,6 +13,7 @@ module.exports = {
 
     output: {
         path: "./public/javascripts/build",
+        publicPath: "/javascripts/build/",
         filename: "[name].js",
         library: "[name]"
     },

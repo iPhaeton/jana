@@ -1,6 +1,5 @@
 "use strict";
 
-import {ModalWindow, AuthWindow} from "./modals";
 import {makeAuthorizationRequest} from "./ajaxClient";
 import {findTarget} from "./axillaries";
 
@@ -42,13 +41,19 @@ export default function headMenuListener () {
             
             //if click is not on a details button, close all details
             if(!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
-                ModalWindow.prototype.close();
+                require.ensure ("./modals", (require) => {
+                    var ModalWindow = require("./modals").ModalWindow;
+                    ModalWindow.prototype.close();
+                });
             };
         });
     });
     
     function showAuthWindow(id) {
-        var authWindow = new AuthWindow(id);
-        authWindow.render();
+        require.ensure ("./modals", (require) => {
+            var AuthWindow = require("./modals").AuthWindow;
+            var authWindow = new AuthWindow(id);
+            authWindow.render();
+        });
     };
 };

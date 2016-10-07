@@ -2,7 +2,6 @@
 
 import {findTarget} from "./axillaries";
 import {makeDBSearchRequest} from "./ajaxClient";
-import {makeSearchRequest} from "./sockJSClient"
 
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
 export default function SearchPanel(options) {
@@ -100,7 +99,10 @@ SearchPanel.prototype.submit = function (event) {
             else callback();
         },
         function (callback) {
-            makeSearchRequest(request, searchData, callback, self.showSearchResult);
+            require.ensure ("./sockJSClient", function (require) {
+                var makeSearchRequest = require("./sockJSClient").makeSearchRequest;
+                makeSearchRequest(request, searchData, callback, self.showSearchResult);
+            })
         }
     ], (function (err, results) {
         if (event) this.toggle();
