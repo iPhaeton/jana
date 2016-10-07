@@ -46,7 +46,9 @@ module.exports = {
         ]
     },
 
-    plugins: []
+    plugins: [
+        new webpack.NoErrorsPlugin()
+    ]
 };
 
 if (NODE_ENV === "production") {
