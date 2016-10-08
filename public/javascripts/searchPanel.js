@@ -99,10 +99,10 @@ SearchPanel.prototype.submit = function (event) {
             else callback();
         },
         function (callback) {
-            require.ensure ("./sockJSClient", function (require) {
-                var makeSearchRequest = require("./sockJSClient").makeSearchRequest;
+            require("bundle!./sockJSClient")(function (sockJSClient) {
+                var makeSearchRequest = sockJSClient.makeSearchRequest;
                 makeSearchRequest(request, searchData, callback, self.showSearchResult);
-            })
+            });
         }
     ], (function (err, results) {
         if (event) this.toggle();
