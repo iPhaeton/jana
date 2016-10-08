@@ -6,6 +6,21 @@ import {findTarget} from "./axillaries";
 export default function headMenuListener () {
     
     $(document).ready(function () {
+        //Require bootstrap.js
+        if ($(window).width() < 768) {
+            require.ensure([], () => {
+                require("imports?jQuery=../../../jquery/dist/jquery!bootstrap");
+            });
+        } else {
+            $(window).on("resize", () => {
+                if ($(window).width() < 768) {
+                    require.ensure([], () => {
+                        require("imports?jQuery=../../../jquery/dist/jquery!bootstrap");
+                    });
+                };
+            });
+        };
+
         $("#signin, #signup").on("click", function (event) {
             event.preventDefault();
 

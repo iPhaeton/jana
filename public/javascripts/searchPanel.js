@@ -93,34 +93,40 @@ SearchPanel.prototype.submit = function (event) {
     var config,
         data;
 
-    async.parallel([
-        function (callback) {
-            if (!shop.storedConfig) makeDBSearchRequest("/dbsearch?db=Config", callback);
-            else callback();
-        },
-        function (callback) {
-            require("bundle!./sockJSClient")(function (sockJSClient) {
-                var makeSearchRequest = sockJSClient.makeSearchRequest;
-                makeSearchRequest(request, searchData, callback, self.showSearchResult);
-            });
-        }
-    ], (function (err, results) {
-        if (event) this.toggle();
-        
-        if (results[0]) {
-            shop.storedConfig = config = shop.parseConfig(results[0][0]);
-        };
-        
-        //createContent(null, config || storedConfig);
-        if (shop.thumbnails) {
-            shop.thumbnails.clear();
-            shop.thumbnails.data.url = "search";
-        };
+    require.ensure(["async"], () => {
+        var async = require("async");
 
-        shop.socket.send(JSON.stringify({
-            request: "/searchResults"
-        }));
-    }).bind(this));
+        async.parallel([
+            function (callback) {
+                if (!shop.storedConfig) makeDBSearchRequest("/dbsearch?db=Config", callback);
+                else callback();
+            },
+            function (callback) {
+                require("bundle!./sockJSClient")(function (sockJSClient) {
+                    var makeSearchRequest = sockJSClient.makeSearchRequest;
+                    makeSearchRequest(request, searchData, callback, self.showSearchResult);
+                });
+            }
+        ], (function (err, results) {
+            if (event) this.toggle();
+
+            if (results[0]) {
+                shop.storedConfig = config = shop.parseConfig(results[0][0]);
+            }
+            ;
+
+            //createContent(null, config || storedConfig);
+            if (shop.thumbnails) {
+                shop.thumbnails.clear();
+                shop.thumbnails.data.url = "search";
+            }
+            ;
+
+            shop.socket.send(JSON.stringify({
+                request: "/searchResults"
+            }));
+        }).bind(this));
+    }, "async");
 };
 
 SearchPanel.prototype.showSearchResult = function (data, done) {

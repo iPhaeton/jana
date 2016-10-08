@@ -24,7 +24,12 @@ module.exports = {
 
     resolve: {
         modulesDirectories: ["node_modules"],
-        extentions: ["", ".js"]
+        extentions: ["", ".js"],
+        alias: {
+            bootstrap: "../vendor/bower_components/bootstrap/dist/js/bootstrap",
+            async: "../vendor/bower_components/async/dist/async",
+            sockjs: "../vendor/bower_components/sockjs/sockjs"
+        }
     },
 
     resolveLoader: {
@@ -51,8 +56,11 @@ module.exports = {
         new webpack.NoErrorsPlugin(),
         new webpack.optimize.CommonsChunkPlugin({
             name: "common"
+        }),
+        new webpack.ProvidePlugin({
+            $: "../vendor/bower_components/jquery/dist/jquery"
         })
-    ]
+    ],
 };
 
 if (NODE_ENV === "production") {

@@ -62,26 +62,30 @@ function getData(url, callback) {
     var config,
         data;
 
-    async.parallel([
-        //get configuration
-        function (callback) {
-            makeDBSearchRequest("/dbsearch?db=Config", callback);
-        },
-        function (callback) {
-            makeDBSearchRequest(url, callback);
-        }
-    ], function (err, results) {
-        shop.storedConfig = config = parseConfig(results[0][0]);
-        shop.storedData = data = results[1];
-        data.url = url;
+    require.ensure(["async"], () => {
+        var async = require("async");
 
-        if (err) {
-            alert("Извините, проблема с базой данных");
-            return;
-        };
+        async.parallel([
+            //get configuration
+            function (callback) {
+                makeDBSearchRequest("/dbsearch?db=Config", callback);
+            },
+            function (callback) {
+                makeDBSearchRequest(url, callback);
+            }
+        ], function (err, results) {
+            shop.storedConfig = config = parseConfig(results[0][0]);
+            shop.storedData = data = results[1];
+            data.url = url;
 
-        callback(data, config);
-    });
+            if (err) {
+                alert("Извините, проблема с базой данных");
+                return;
+            };
+
+            callback(data, config);
+        });
+    }, "async");
 };
 
 function createContent (data, config) {
@@ -241,7 +245,7 @@ Thumbnails.prototype.setHandlers = function () {
 
         this.clearTiles(true)();
         $(window).off("resize", this.clearTiles(false)); //just in case
-        $(window).on("resize", this.clearTiles(false)); //when comming back from anothr page
+        $(window).on("resize", this.clearTiles(false)); //when coming back from another page
     }.bind(this));
 
     //if we go away from the page by some link, when we come back we will need to add window.onresize again
