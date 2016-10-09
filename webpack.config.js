@@ -4,16 +4,16 @@ const webpack = require("webpack");
 const NODE_ENV = process.env.NODE_ENV || "development";
 
 module.exports = {
-    context: path.resolve(__dirname, "public/javascripts"),
+    context: path.resolve(__dirname, "public"),
 
     entry: {
-        index: "./indexClient.js",
-        shop: "./shopClient.js"
+        index: "./javascripts/indexClient.js",
+        shop: "./javascripts/shopClient.js"
     },
 
     output: {
-        path: "./public/javascripts/build",
-        publicPath: "/javascripts/build/",
+        path: "./public/build",
+        publicPath: "/build/",
         filename: "[name].js",
         library: "[name]"
     },

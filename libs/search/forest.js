@@ -11,27 +11,32 @@ class Forest {
     
     constructor (docs, fieldsToSearchIn) {
         this.trees = {};
+        this.fieldsToSearchIn = fieldsToSearchIn;
 
         //var count = 0;
         
         for (let i = 0; i < docs.length; i++) {
-
-            for (let j = 0; j < fieldsToSearchIn.length; j++) {
-                let text = docs[i].specs[fieldsToSearchIn[j]];
-
-                if (text) {
-                    let sha = crypto.createHmac("sha256", text).digest("hex");
-                    if (!this.trees[sha]) {
-                        this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
-                        //count++;
-                    }
-                    this.trees[sha].docs.add(docs[i]._id);
-                };
-            };
-            
+            this.plant(docs[i]);
         };
 
         //console.log(count);
+    };
+
+    plant (doc) {
+        let fieldsToSearchIn = this.fieldsToSearchIn;
+
+        for (let j = 0; j < fieldsToSearchIn.length; j++) {
+            let text = doc.specs[fieldsToSearchIn[j]];
+
+            if (text) {
+                let sha = crypto.createHmac("sha256", text).digest("hex");
+                if (!this.trees[sha]) {
+                    this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
+                    //count++;
+                }
+                this.trees[sha].docs.add(doc._id);
+            };
+        };
     };
     
     find (query, socket, key) {
