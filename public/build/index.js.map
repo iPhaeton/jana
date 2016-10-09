@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack:///./javascripts/indexClient.js"],"names":[],"mappings":";;;;;;;AAAA;;;;;;AAEA,2B","file":"index.js","sourcesContent":["import headMenuListener from \"./headMenu\";\n\nheadMenuListener();\n\n\n/** WEBPACK FOOTER **\n ** ./javascripts/indexClient.js\n **/"],"sourceRoot":""}
