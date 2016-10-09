@@ -8,10 +8,6 @@
 
         <link rel='stylesheet' href="/build/common.css"/>
 
-        <link rel='stylesheet' href="/stylesheets/style.css" />
-        <link rel='stylesheet' href="/stylesheets/sideMenuStyle.css" />
-        <link rel='stylesheet' href="/stylesheets/shopPageStyle.css" />
-        <link rel='stylesheet' href="/stylesheets/modals.css"/>
         <link rel='stylesheet' href="/stylesheets/searchPanel.css"/>
     </head>
 
@@ -29,7 +25,7 @@
 
         <div class="container main-content" admin-mode="<%= user ? user.admin : false %>">
             <div class="row">
-                <%- partial("./partials/sideMenu.ejs")%>
+                <%- partial("../public/components/sideMenu/sideMenu.ejs")%>
                 <div class="col-sm-10">
                     <div id="commodity-list" class="thumbnails">
 

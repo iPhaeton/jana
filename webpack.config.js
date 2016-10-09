@@ -58,11 +58,11 @@ module.exports = {
             },
             {
                 test:/\.css$/,
-                exclude: /(headMenuStyle|bootstrap)\.css$/,
+                exclude: /(headMenuStyle|bootstrap|style)\.css$/,
                 loader: "style!css!autoprefixer?browsers=last 2 versions"
             },
             {
-                test: /(headMenuStyle|bootstrap)\.css$/,
+                test: /(headMenuStyle|bootstrap|style)\.css$/,
                 loader: ExtractTextPlugin.extract("css!autoprefixer?browsers=last 2 versions")
             },
             //for bootstrap

@@ -1,6 +1,8 @@
 "use strict";
 
 import "../vendor/bower_components/bootstrap/dist/css/bootstrap.css";
+import "../stylesheets/style.css";
+import "../stylesheets/shopPageStyle.css";
 
 import headMenuListener from "./../components/headMenu/headMenu";
 import {makeDBSearchRequest,
@@ -11,7 +13,7 @@ import {makeDBSearchRequest,
 import SearchPanel from "./searchPanel";
 import {findTarget,gatherItemsInOrder} from "./axillaries";
 import SockConnection from "./SockConnection"
-import {sideMenuListener, sideMenuActive} from "./sideMenu"
+import {sideMenuListener, sideMenuActive} from "./../components/sideMenu/sideMenu"
 
 var searchPanel;
 
@@ -266,8 +268,8 @@ function Thumbnail (parent, data, config, dataUrl) {
     };
     this.dataUrl = dataUrl;
 
-    require.ensure ("./modals", (require) => {
-        var Details = require("./modals").Details;
+    require.ensure ("../components/modals/modals", (require) => {
+        var Details = require("./../components/modals/modals").Details;
 
         this.details = new Details(this);
         var self = this;
@@ -540,8 +542,8 @@ EditPanel.prototype.toggle = function () {
 };
 
 EditPanel.prototype.addCommodity = function () {
-    require.ensure ("./modals", (require) => {
-        var Dialog = require("./modals").Dialog;
+    require.ensure ("../components/modals/modals", (require) => {
+        var Dialog = require("./../components/modals/modals").Dialog;
 
         var questionnaire = new Dialog ({
             "Категория": "Лыжи",
@@ -553,8 +555,8 @@ EditPanel.prototype.addCommodity = function () {
 };
 
 EditPanel.prototype.addCategory = function () {
-    require.ensure ("./modals", (require) => {
-        var Dialog = require("./modals").Dialog;
+    require.ensure ("../components/modals/modals", (require) => {
+        var Dialog = require("./../components/modals/modals").Dialog;
 
         var dialog = new Dialog({"Категория": ""}, "Category", function (form) {
             var formData = form.serializeArray();

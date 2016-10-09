@@ -1,7 +1,9 @@
 "use strict";
 
-import {makeDBSaveRequest, makeAuthorizationRequest} from "./ajaxClient";
-import {findTarget, gatherItemsInOrder} from "./axillaries";
+import "./modals.css";
+
+import {makeDBSaveRequest, makeAuthorizationRequest} from "./../../javascripts/ajaxClient";
+import {findTarget, gatherItemsInOrder} from "./../../javascripts/axillaries";
 
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {

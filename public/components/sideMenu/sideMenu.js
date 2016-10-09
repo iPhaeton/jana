@@ -1,5 +1,7 @@
 "use strict";
 
+import "./sideMenuStyle.css";
+
 function sideMenuListener () {
 
     $(document).ready(function () {

@@ -1,11 +1,9 @@
 "use strict";
 
-import "../../vendor/bower_components/bootstrap/dist/css/bootstrap.css";
+import "./headMenuStyle.css";
 
 import {makeAuthorizationRequest} from "./../../javascripts/ajaxClient";
 import {findTarget} from "./../../javascripts/axillaries";
-
-import "./headMenuStyle.css";
 
 export default function headMenuListener () {
     
@@ -60,8 +58,8 @@ export default function headMenuListener () {
             
             //if click is not on a details button, close all details
             if(!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
-                require.ensure ("../../javascripts/modals", (require) => {
-                    var ModalWindow = require("./../../javascripts/modals").ModalWindow;
+                require.ensure ("../modals/modals", (require) => {
+                    var ModalWindow = require("./../modals/modals").ModalWindow;
                     ModalWindow.prototype.close();
                 });
             };
@@ -69,8 +67,8 @@ export default function headMenuListener () {
     });
     
     function showAuthWindow(id) {
-        require.ensure ("../../javascripts/modals", (require) => {
-            var AuthWindow = require("./../../javascripts/modals").AuthWindow;
+        require.ensure ("../modals/modals", (require) => {
+            var AuthWindow = require("./../modals/modals").AuthWindow;
             var authWindow = new AuthWindow(id);
             authWindow.render();
         });
