@@ -6,7 +6,6 @@ import {makeDBSearchRequest,
         makeListRequest,
         makeFileDeleteRequest,
         makeDBDelRequest} from "./ajaxClient";
-//import {Details, Dialog} from "./modals";
 import SearchPanel from "./searchPanel";
 import {findTarget,gatherItemsInOrder} from "./axillaries";
 import SockConnection from "./SockConnection"

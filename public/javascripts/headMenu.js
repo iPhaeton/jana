@@ -9,13 +9,13 @@ export default function headMenuListener () {
         //Require bootstrap.js
         if ($(window).width() < 768) {
             require.ensure([], () => {
-                require("imports?jQuery=../../../jquery/dist/jquery!bootstrap");
+                require("bootstrap");
             });
         } else {
             $(window).on("resize", () => {
                 if ($(window).width() < 768) {
                     require.ensure([], () => {
-                        require("imports?jQuery=../../../jquery/dist/jquery!bootstrap");
+                        require("bootstrap");
                     });
                 };
             });

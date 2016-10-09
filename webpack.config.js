@@ -48,6 +48,11 @@ module.exports = {
                     presets: ["es2015", "stage-0"],
                     //plugins: ["transform-runtime"]
                 }
+            },
+            {
+                test: /bootstrap\.js$/,
+                include: [path.resolve(__dirname, "public")],
+                loader: "imports?jQuery=../../../jquery/dist/jquery"
             }
         ]
     },
