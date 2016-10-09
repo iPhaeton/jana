@@ -1,7 +1,9 @@
-var path = require("path")
+var path = require("path");
 
 const webpack = require("webpack");
 const NODE_ENV = process.env.NODE_ENV || "development";
+
+let ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
     context: path.resolve(__dirname, "public"),
@@ -26,7 +28,7 @@ module.exports = {
         modulesDirectories: ["node_modules"],
         extentions: ["", ".js"],
         alias: {
-            bootstrap: "../vendor/bower_components/bootstrap/dist/js/bootstrap",
+            bootstrap: "../../vendor/bower_components/bootstrap/dist/js/bootstrap",
             async: "../vendor/bower_components/async/dist/async",
             sockjs: "../vendor/bower_components/sockjs/sockjs"
         }
@@ -42,7 +44,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.js$/,
-                include: [path.resolve(__dirname, "public/javascripts")],
+                include: [path.resolve(__dirname, "public/javascripts"), path.resolve(__dirname, "public/components")],
                 loader: "babel",
                 query: {
                     presets: ["es2015", "stage-0"],
@@ -53,7 +55,21 @@ module.exports = {
                 test: /bootstrap\.js$/,
                 include: [path.resolve(__dirname, "public")],
                 loader: "imports?jQuery=../../../jquery/dist/jquery"
-            }
+            },
+            {
+                test:/\.css$/,
+                exclude: /(headMenuStyle|bootstrap)\.css$/,
+                loader: "style!css!autoprefixer?browsers=last 2 versions"
+            },
+            {
+                test: /(headMenuStyle|bootstrap)\.css$/,
+                loader: ExtractTextPlugin.extract("css!autoprefixer?browsers=last 2 versions")
+            },
+            //for bootstrap
+            {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
+            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
+            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
+            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'}
         ]
     },
 
@@ -63,8 +79,9 @@ module.exports = {
             name: "common"
         }),
         new webpack.ProvidePlugin({
-            $: "../vendor/bower_components/jquery/dist/jquery"
-        })
+            $: path.resolve(__dirname, "public/vendor/bower_components/jquery/dist/jquery")
+        }),
+        new ExtractTextPlugin('[name].css', {allChunks: true})
     ],
 };
 

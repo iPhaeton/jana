@@ -5,10 +5,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="/vendor/bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel='stylesheet' href="/build/common.css"/>
+
     <link rel='stylesheet' href="/stylesheets/style.css"/>
     <link rel='stylesheet' href="/stylesheets/indexPageStyle.css"/>
-    <link rel='stylesheet' href="/stylesheets/headMenuStyle.css"/>
     <link rel='stylesheet' href="/stylesheets/modals.css"/>
 
     <!--Picturefill-->
@@ -21,7 +21,7 @@
   <body>
 
     <div class="header">
-        <%- partial("./partials/headMenu.ejs")%>
+        <%- partial("../public/components/headMenu/headMenu.ejs")%>
     </div>
 
     <div class="jumbotron showcase">
