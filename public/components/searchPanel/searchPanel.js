@@ -10,7 +10,6 @@ import {makeDBSearchRequest} from "./../../javascripts/ajaxClient";
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
 export default function SearchPanel(options) {
     this.elem = $(".search-panel");
-    this.toggleButton = $(".search-button");
     this.form = this.elem.find("form");
     this.input = this.elem.find("#search-input");
 
@@ -25,8 +24,6 @@ export default function SearchPanel(options) {
 };
 
 SearchPanel.prototype.setEvents = function () {
-
-    this.toggleButton.on("click", this.toggle.bind(this));
 
     $(document.documentElement).on("keydown", this, function (event) {
         if (event.keyCode === 70 && event.ctrlKey && event.shiftKey) event.data.toggle();

@@ -10,7 +10,6 @@ import {makeDBSearchRequest,
         makeListRequest,
         makeFileDeleteRequest,
         makeDBDelRequest} from "./ajaxClient";
-import SearchPanel from "./../components/searchPanel/searchPanel";
 import {findTarget,gatherItemsInOrder} from "./axillaries";
 import SockConnection from "./SockConnection"
 import {sideMenuListener, sideMenuActive} from "./../components/sideMenu/sideMenu"
@@ -34,12 +33,6 @@ $(document).ready(function () {
         height: $(window).height()
     });
 
-    searchPanel = new SearchPanel({
-        popups:[
-            "Производитель"
-        ]
-    });
-
     $(".side-menu").on("click", ".menu-button", function (event) {
         var target = $(event.target);
         target = findTarget(target, "menu-button", "a");
@@ -53,6 +46,27 @@ $(document).ready(function () {
         getData(target.attr("href"), createContent);
 
         event.preventDefault();
+    });
+
+    $(".search-button").on("click", () => {
+        require.ensure ([], (require) => {
+            if (searchPanel) {
+                searchPanel.toggle();
+                return;
+            }
+
+            var SearchPanel = require("./../components/searchPanel/searchPanel").default;
+
+            searchPanel = new SearchPanel({
+                popups:[
+                    "Производитель"
+                ]
+            });
+
+            setTimeout(() => {
+                searchPanel.toggle();
+            }, 50); //don't quite understand, why this timeout is necessary for smooth appearance of the search panel
+        });
     });
 });
 

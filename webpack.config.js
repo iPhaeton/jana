@@ -58,11 +58,11 @@ module.exports = {
             },
             {
                 test:/\.css$/,
-                exclude: /(headMenuStyle|bootstrap|style)\.css$/,
+                exclude: /(headMenuStyle|bootstrap|style|searchPanel)\.css$/,
                 loader: "style!css!autoprefixer?browsers=last 2 versions"
             },
             {
-                test: /(headMenuStyle|bootstrap|style)\.css$/,
+                test: /(headMenuStyle|bootstrap|style|searchPanel)\.css$/,
                 loader: ExtractTextPlugin.extract("css!autoprefixer?browsers=last 2 versions")
             },
             {
@@ -83,12 +83,10 @@ module.exports = {
             name: "common"
         }),
         new webpack.ProvidePlugin({
-            $: path.resolve(__dirname, "public/vendor/bower_components/jquery/dist/jquery")
+            $: path.resolve(__dirname, "public/vendor/bower_components/jquery/dist/jquery"),
+            _: "underscore"
         }),
         new ExtractTextPlugin('[name].css', {allChunks: true}),
-        new webpack.ProvidePlugin({
-            _: "underscore"
-        })
     ],
 };
 
