@@ -65,6 +65,10 @@ module.exports = {
                 test: /(headMenuStyle|bootstrap|style)\.css$/,
                 loader: ExtractTextPlugin.extract("css!autoprefixer?browsers=last 2 versions")
             },
+            {
+                test:/\.ejs$/,
+                loader: "ejs"
+            },
             //for bootstrap
             {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
             {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
@@ -81,7 +85,10 @@ module.exports = {
         new webpack.ProvidePlugin({
             $: path.resolve(__dirname, "public/vendor/bower_components/jquery/dist/jquery")
         }),
-        new ExtractTextPlugin('[name].css', {allChunks: true})
+        new ExtractTextPlugin('[name].css', {allChunks: true}),
+        new webpack.ProvidePlugin({
+            _: "underscore"
+        })
     ],
 };
 

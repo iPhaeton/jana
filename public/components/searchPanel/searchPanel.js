@@ -1,7 +1,11 @@
 "use strict";
 
-import {findTarget} from "./axillaries";
-import {makeDBSearchRequest} from "./ajaxClient";
+import template from "./searchPanel.ejs";
+import "./searchPanel.css";
+$(document.body).append(template({}));
+
+import {findTarget} from "./../../javascripts/axillaries";
+import {makeDBSearchRequest} from "./../../javascripts/ajaxClient";
 
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
 export default function SearchPanel(options) {
@@ -93,8 +97,8 @@ SearchPanel.prototype.submit = function (event) {
     var config,
         data;
 
-    require.ensure(["async"], () => {
-        var async = require("async");
+    require.ensure([], () => {
+        var async = require("../../vendor/bower_components/async/dist/async");
 
         async.parallel([
             function (callback) {
@@ -102,7 +106,7 @@ SearchPanel.prototype.submit = function (event) {
                 else callback();
             },
             function (callback) {
-                require("bundle!./sockJSClient")(function (sockJSClient) {
+                require("bundle!../../javascripts/sockJSClient")(function (sockJSClient) {
                     var makeSearchRequest = sockJSClient.makeSearchRequest;
                     makeSearchRequest(request, searchData, callback, self.showSearchResult);
                 });

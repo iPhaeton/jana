@@ -10,7 +10,7 @@ import {makeDBSearchRequest,
         makeListRequest,
         makeFileDeleteRequest,
         makeDBDelRequest} from "./ajaxClient";
-import SearchPanel from "./searchPanel";
+import SearchPanel from "./../components/searchPanel/searchPanel";
 import {findTarget,gatherItemsInOrder} from "./axillaries";
 import SockConnection from "./SockConnection"
 import {sideMenuListener, sideMenuActive} from "./../components/sideMenu/sideMenu"
