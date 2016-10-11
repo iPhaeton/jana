@@ -63,9 +63,7 @@ $(document).ready(function () {
                 ]
             });
 
-            setTimeout(() => {
-                searchPanel.toggle();
-            }, 50); //don't quite understand, why this timeout is necessary for smooth appearance of the search panel
+            searchPanel.toggle();
         });
     });
 });

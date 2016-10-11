@@ -10,6 +10,10 @@ import {makeDBSearchRequest} from "./../../javascripts/ajaxClient";
 //SearchPanel----------------------------------------------------------------------------------------------------------------------
 export default function SearchPanel(options) {
     this.elem = $(".search-panel");
+    this.elem.css({
+        width: "0"
+    });
+
     this.form = this.elem.find("form");
     this.input = this.elem.find("#search-input");
 
@@ -44,13 +48,17 @@ SearchPanel.prototype.unsetEvents = function () {
 SearchPanel.prototype.toggle = function () {
     var self = this;
 
-    this.elem.toggleClass("zero-width");
-
-    if (!this.elem.hasClass("zero-width")) {
+    if (this.elem.width() === 0) {
+        this.elem.css({
+            width: "250px"
+        });
         setTimeout(function () {
             $(document.documentElement).on("click keydown", self, self.hide);
         }, 0);
     } else {
+        this.elem.css({
+            width: "0"
+        });
         this.hidePopups();
         this.unsetEvents();
     };
