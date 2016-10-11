@@ -8,10 +8,10 @@
     <link rel='stylesheet' href="<%=paths.common.css%>"/>
 
     <!--Picturefill-->
-    <script>
-      document.createElement( "picture" );
+    <!--<script>
+      document.createElement( "showCase" );
     </script>
-    <script src="/vendor/bower_components/picturefill/dist/picturefill.js" async></script>
+    <script src="/vendor/bower_components/picturefill/dist/picturefill.js" async></script>-->
   </head>
 
   <body>
@@ -22,17 +22,7 @@
 
     <div class="jumbotron showcase">
       <div class="showcase__image">
-        <!--<img src="/images/showcase_big.jpg">-->
-        <picture>
-          <%if (env === "production") {%>
-            <source srcset="/images/showcase_small.jpg" media="(max-width: 480px)">
-            <source srcset="/images/showcase_medium.jpg" media="(max-width: 1024px)">
-          <%} else {%>
-            <source srcset="/images/showcase_small_t.jpg" media="(max-width: 480px)">
-            <source srcset="/images/showcase_medium_t.jpg" media="(max-width: 1024px)">
-          <%}%>
-          <img srcset="/images/showcase_big.jpg">
-        </picture>
+
       </div>
     </div>
 

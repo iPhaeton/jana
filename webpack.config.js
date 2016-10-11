@@ -77,6 +77,7 @@ module.exports = {
             {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff&name=[name].[hash:6].[ext]'},
             {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream&name=[name].[hash:6].[ext]'},
             {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file?name=[name].[hash:6].[ext]'},
+            {test: /\.jpg$/, loader: 'file?name=[name].[hash:6].[ext]'},
             {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xm&name=[name].[hash:6].[ext]'}
         ]
     },
@@ -96,6 +97,9 @@ module.exports = {
         new AssetsPlugin({
             filename: "build.json",
             path: path.resolve(__dirname, "public/build")
+        }),
+        new webpack.DefinePlugin({
+            NODE_ENV: JSON.stringify(NODE_ENV)
         })
     ],
 };
