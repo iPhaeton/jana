@@ -1,9 +1,12 @@
+"use strict";
+
 var path = require("path");
 
 const webpack = require("webpack");
 const NODE_ENV = process.env.NODE_ENV || "development";
 
-let ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const AssetsPlugin = require("assets-webpack-plugin");
 
 module.exports = {
     context: path.resolve(__dirname, "public"),
@@ -16,7 +19,8 @@ module.exports = {
     output: {
         path: "./public/build",
         publicPath: "/build/",
-        filename: "[name].js",
+        filename: "[name].[chunkhash].js",
+        chunkFilename: "[name].[chunkhash].js",
         library: "[name]"
     },
 
@@ -70,10 +74,10 @@ module.exports = {
                 loader: "ejs"
             },
             //for bootstrap
-            {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff'},
-            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream'},
-            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file'},
-            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml'}
+            {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff&name=[name].[hash:6].[ext]'},
+            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream&name=[name].[hash:6].[ext]'},
+            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file?name=[name].[hash:6].[ext]'},
+            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xm&name=[name].[hash:6].[ext]'}
         ]
     },
 
@@ -86,7 +90,13 @@ module.exports = {
             $: path.resolve(__dirname, "public/vendor/bower_components/jquery/dist/jquery"),
             _: "underscore"
         }),
-        new ExtractTextPlugin('[name].css', {allChunks: true}),
+        new ExtractTextPlugin('[name].[contenthash].css', {
+            allChunks: true
+        }),
+        new AssetsPlugin({
+            filename: "build.json",
+            path: path.resolve(__dirname, "public/build")
+        })
     ],
 };
 
