@@ -1,10 +1,5 @@
 <picture>
-    <%if (env === "production") {%>
-    <source srcset="/images/showcase_small.jpg" media="(max-width: 480px)">
-    <source srcset="/images/showcase_medium.jpg" media="(max-width: 1024px)">
-    <%} else {%>
-    <source srcset="/images/showcase_small_t.jpg" media="(max-width: 480px)">
-    <source srcset="/images/showcase_medium_t.jpg" media="(max-width: 1024px)">
-    <%}%>
-    <img srcset="/images/showcase_big.jpg">
+    <source id="small" media="(max-width: 480px)">
+    <source id="med" media="(max-width: 1024px)">
+    <img id="big">
 </picture>
