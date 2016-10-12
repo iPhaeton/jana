@@ -19,8 +19,8 @@ module.exports = {
     output: {
         path: "./public/build",
         publicPath: "/build/",
-        filename: "[name].[chunkhash].js",
-        chunkFilename: "[name].[chunkhash].js",
+        filename: addHash("[name].js", "chunkhash"),
+        chunkFilename: addHash("[name].js", "chunkhash"),
         library: "[name]"
     },
 
@@ -74,11 +74,21 @@ module.exports = {
                 loader: "ejs"
             },
             //for bootstrap
-            {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff&name=[name].[hash:6].[ext]'},
-            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/octet-stream&name=[name].[hash:6].[ext]'},
-            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file?name=[name].[hash:6].[ext]'},
-            {test: /\.jpg$/, loader: 'file?name=[name].[hash:6].[ext]'},
-            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xm&name=[name].[hash:6].[ext]'}
+            {test: /\.(woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
+                loader: addHash('url?limit=10000&mimetype=application/font-woff&name=[name].[ext]', "hash:6")
+            },
+            {test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                loader: addHash('url?limit=10000&mimetype=application/octet-stream&name=[name].[ext]', "hash:6")
+            },
+            {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                loader: addHash('file?name=[name].[ext]', "hash:6")
+            },
+            {test: /\.jpg$/,
+                loader: addHash('file?name=[name].[ext]', "hash:6")
+            },
+            {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                loader: addHash('url?limit=10000&mimetype=image/svg+xm&name=[name].[ext]', "hash:6")
+            }
         ]
     },
 
@@ -91,7 +101,7 @@ module.exports = {
             $: path.resolve(__dirname, "public/vendor/bower_components/jquery/dist/jquery"),
             _: "underscore"
         }),
-        new ExtractTextPlugin('[name].[contenthash].css', {
+        new ExtractTextPlugin(addHash('[name].css', "contenthash"), {
             allChunks: true
         }),
         new AssetsPlugin({
@@ -114,4 +124,8 @@ if (NODE_ENV === "production") {
             }
         })
     )
+};
+
+function addHash (template, hash) {
+    return NODE_ENV === "production" ? template.replace(/\.[^.]+$/, `.[${hash}]$&`) : template;
 };
