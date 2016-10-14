@@ -3,8 +3,8 @@
  * Copyright (c) 2016 https://github.com/scottjehl/picturefill/blob/master/Authors.txt; Licensed MIT
  */
 /*! Gecko-Picture - v1.0
- * https://github.com/scottjehl/picturefill/tree/3.0/src/plugins/gecko-picture
- * Firefox's early picture implementation (prior to FF41) is static and does
+ * https://github.com/scottjehl/picturefill/tree/3.0/src/plugins/gecko-showCase
+ * Firefox's early showCase implementation (prior to FF41) is static and does
  * not react to viewport changes. This tiny module fixes this.
  */
 (function(window) {
@@ -40,7 +40,7 @@
 
 			var findPictureImgs = function() {
 				var i;
-				var imgs = document.querySelectorAll("picture > img, img[srcset][sizes]");
+				var imgs = document.querySelectorAll("showCase > img, img[srcset][sizes]");
 				for (i = 0; i < imgs.length; i++) {
 					fixRespimg(imgs[i]);
 				}
@@ -82,7 +82,7 @@
 	"use strict";
 
 	// HTML shim|v it for old IE (IE9 will still need the HTML video tag workaround)
-	document.createElement( "picture" );
+	document.createElement( "showCase" );
 
 	var warn, eminpx, alwaysCheckWDescriptor, evalId;
 	// local object for method references and testing exposure
@@ -965,7 +965,7 @@
 	pf.supSizes = "sizes" in image;
 	pf.supPicture = !!window.HTMLPictureElement;
 
-	// UC browser does claim to support srcset and picture, but not sizes,
+	// UC browser does claim to support srcset and showCase, but not sizes,
 	// this extended test reveals the browser does support nothing
 	if (pf.supSrcset && pf.supPicture && !pf.supSizes) {
 		(function(image2) {
@@ -1011,7 +1011,7 @@
 
 	// using pf.qsa instead of dom traversing does scale much better,
 	// especially on sites mixing responsive and non-responsive images
-	pf.selShort = "picture>img,img[srcset]";
+	pf.selShort = "showCase>img,img[srcset]";
 	pf.sel = pf.selShort;
 	pf.cfg = cfg;
 
@@ -1374,7 +1374,7 @@
 		imageData.curCan = null;
 		imageData.curSrc = undefined;
 
-		// if img has picture or the srcset was removed or has a srcset and does not support srcset at all
+		// if img has showCase or the srcset was removed or has a srcset and does not support srcset at all
 		// or has a w descriptor (and does not support sizes) set support to false to evaluate
 		imageData.supported = !( hasPicture || ( imageSet && !pf.supSrcset ) || (isWDescripor && !pf.supSizes) );
 
@@ -1433,13 +1433,13 @@
 		}
 	};
 
-	// If picture is supported, well, that's awesome.
+	// If showCase is supported, well, that's awesome.
 	if ( pf.supPicture ) {
 		picturefill = noop;
 		pf.fillImg = noop;
 	} else {
 
-		 // Set up picture polyfill by polling the document
+		 // Set up showCase polyfill by polling the document
 		(function() {
 			var isDomReady;
 			var regReady = window.attachEvent ? /d$|^c/ : /d$|^c|^i/;

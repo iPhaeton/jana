@@ -3,7 +3,7 @@
 function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
     var key = Math.random();
 
-    socket.callbacks.searchResult = function (err, data, done, resultKey) {
+    shop.socket.callbacks.searchResult = function (err, data, done, resultKey) {
         if (data === "searchComplete") {
             onSearchEnd(null, null);
             return;
@@ -25,9 +25,11 @@ function makeSearchRequest(request, data, onSearchEnd, onSearchResult) {
         onSearchResult(data, done);
     };
 
-    socket.send(JSON.stringify({
+    shop.socket.send(JSON.stringify({
         request: "/search?" + request,
         data: data,
         key: key
     }));
 };
+
+export {makeSearchRequest};

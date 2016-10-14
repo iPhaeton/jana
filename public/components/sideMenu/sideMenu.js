@@ -1,6 +1,8 @@
 "use strict";
 
-(function () {
+import "./sideMenuStyle.css";
+
+function sideMenuListener () {
 
     $(document).ready(function () {
 
@@ -34,10 +36,12 @@
         });
     };
 
-})();
+};
 
 function sideMenuActive(target) {
     $(".side-menu > .menu-button").removeClass("active");
     target.parent().addClass("active");
     target.blur();
-}
+};
+
+export {sideMenuListener, sideMenuActive};

@@ -1,8 +1,28 @@
 "use strict";
 
-(function (argument) {
+import "./headMenuStyle.css";
+
+import {makeAuthorizationRequest} from "./../../javascripts/ajaxClient";
+import {findTarget} from "./../../javascripts/axillaries";
+
+export default function headMenuListener () {
     
     $(document).ready(function () {
+        //Require bootstrap.js
+        if ($(window).width() < 768) {
+            require.ensure([], () => {
+                require("bootstrap");
+            });
+        } else {
+            $(window).on("resize", () => {
+                if ($(window).width() < 768) {
+                    require.ensure([], () => {
+                        require("bootstrap");
+                    });
+                };
+            });
+        };
+
         $("#signin, #signup").on("click", function (event) {
             event.preventDefault();
 
@@ -38,13 +58,19 @@
             
             //if click is not on a details button, close all details
             if(!findTarget($(event.target), "details-button edit-button rm-button signin signup") || event.keyCode === 27) {
-                ModalWindow.prototype.close();
+                require.ensure ("../modals/modals", (require) => {
+                    var ModalWindow = require("./../modals/modals").ModalWindow;
+                    ModalWindow.prototype.close();
+                });
             };
         });
     });
     
     function showAuthWindow(id) {
-        var authWindow = new AuthWindow(id);
-        authWindow.render();
+        require.ensure ("../modals/modals", (require) => {
+            var AuthWindow = require("./../modals/modals").AuthWindow;
+            var authWindow = new AuthWindow(id);
+            authWindow.render();
+        });
     };
-})();
+};

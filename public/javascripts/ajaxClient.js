@@ -109,3 +109,11 @@ function makeAuthorizationRequest (reqStr, form, callback) {
         callback(JSON.parse(xhr.responseText));
     });;
 };
+
+export {makeDBSearchRequest, 
+        makeDBSaveRequest, 
+        makeDBDelRequest, 
+        makeFileSaveRequest, 
+        makeFileDeleteRequest, 
+        makeListRequest, 
+        makeAuthorizationRequest};

@@ -6,13 +6,9 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="/vendor/bower_components/bootstrap/dist/css/bootstrap.css"/>
-        <link rel='stylesheet' href="/stylesheets/style.css" />
-        <link rel='stylesheet' href="/stylesheets/headMenuStyle.css" />
-        <link rel='stylesheet' href="/stylesheets/sideMenuStyle.css" />
-        <link rel='stylesheet' href="/stylesheets/shopPageStyle.css" />
-        <link rel='stylesheet' href="/stylesheets/modals.css"/>
-        <link rel='stylesheet' href="/stylesheets/searchPanel.css"/>
+        <link rel='stylesheet' href="<%=paths.common.css%>"/>
+        <link rel='stylesheet' href="<%=paths.shop.css%>"/>
+
     </head>
 
     <body>
@@ -20,16 +16,14 @@
         <div class="header">
             
             <div class="container">
-                <%- partial("./partials/headMenu.ejs")%>
+                <%- partial("../public/components/headMenu/headMenu.ejs")%>
             </div>
             
         </div>
 
-        <%- partial("./partials/searchPanel.ejs")%>
-
         <div class="container main-content" admin-mode="<%= user ? user.admin : false %>">
             <div class="row">
-                <%- partial("./partials/sideMenu.ejs")%>
+                <%- partial("../public/components/sideMenu/sideMenu.ejs")%>
                 <div class="col-sm-10">
                     <div id="commodity-list" class="thumbnails">
 
@@ -45,24 +39,8 @@
 
         <div class="clearfix"></div>
 
-        <script src="/vendor/bower_components/jquery/dist/jquery.js"></script>
-        <script src="/vendor/bower_components/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="/vendor/bower_components/async/dist/async.js"></script>
-        <script src="/vendor/bower_components/sockjs/sockjs.min.js"></script>
-
-        <%if (env === "production") {%>
-            <script src="/javascripts/build/shop.min.js"></script>
-        <%} else {%>
-            <script src="/javascripts/SockConnection.js"></script>
-            <script src="/javascripts/modals.js"></script>
-            <script src="/javascripts/axillaries.js"></script>
-            <script src="/javascripts/ajaxClient.js"></script>
-            <script src="/javascripts/sockJSClient.js"></script>
-            <script src="/javascripts/headMenu.js"></script>
-            <script src="/javascripts/sideMenu.js"></script>
-            <script src="/javascripts/shopClient.js"></script>
-            <script src="/javascripts/searchPanel.js"></script>
-        <%}%>
+        <script src="<%=paths.common.js%>"></script>
+        <script src="<%=paths.shop.js%>"></script>
 
     </body>
 </html>

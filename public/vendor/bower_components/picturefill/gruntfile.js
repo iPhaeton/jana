@@ -24,7 +24,7 @@
               {
                 expand: true,
                 cwd: "src/plugins/",
-                src: [ "**", "!gecko-picture/*" ],
+                src: [ "**", "!gecko-showCase/*" ],
                 dest: "dist/plugins/",
                 filter: "isFile"
               }
@@ -38,7 +38,7 @@
             banner: "<%= banner %>",
             stripBanners: true
           },
-          src: [ "src/plugins/gecko-picture/pf.gecko-picture.js", "src/picturefill.js" ],
+          src: [ "src/plugins/gecko-showCase/pf.gecko-showCase.js", "src/picturefill.js" ],
           dest: "dist/picturefill.js"
         }
       },

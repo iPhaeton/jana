@@ -1,5 +1,10 @@
 "use strict";
 
+import "./modals.css";
+
+import {makeDBSaveRequest, makeAuthorizationRequest} from "./../../javascripts/ajaxClient";
+import {findTarget, gatherItemsInOrder} from "./../../javascripts/axillaries";
+
 //Details---------------------------------------------------------------------------------------------------------------
 function Details (parent) {
     if (!parent.data) return;
@@ -26,7 +31,7 @@ Details.prototype.render = function () {
         
         this.createContent();
         
-        if (mode === "edit") {
+        if (shop.mode === "edit") {
             var saveButton = $("<button type='submit' class='btn btn-default' id='save-button'>Сохранить</button>");
             saveButton.css({
                 float: "right"
@@ -90,7 +95,7 @@ Details.prototype.editButtonClick = function (event) {
 };
 
 Details.prototype.addField = function (container, value) {
-    if (mode === "edit") {
+    if (shop.mode === "edit") {
         container.append(
             "<tr>\
                 <td><input name='key' value='" + (value ? value.key : "") + "'></td>\
@@ -120,7 +125,7 @@ Details.prototype.submit = function (event) {
     var self = this;
     makeDBSaveRequest("/dbsave?db=Commodity&id=" + this.parent.data._id, form.serializeArray(), function (err) {
         if (err) alert (err.message);
-        getData(self.parent.dataUrl, createContent);
+        shop.getData(self.parent.dataUrl, shop.createContent);
     });
 
     this.close();
@@ -159,7 +164,7 @@ Dialog.prototype.submit = function (event) {
         formData.url = "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[3].value;
     }
 
-    if (!formData.url && storedData) formData.url = storedData.url;
+    if (!formData.url && shop.storedData) formData.url = shop.storedData.url;
     makeDBSaveRequest("/dbsave?db=" + this.db + "&id=" + this.parent.data._id, formData, function (err) {
         if (err) {
             if (self.callback) self.callback(err);
@@ -168,12 +173,12 @@ Dialog.prototype.submit = function (event) {
         }
 
         if (formData) {
-            getData(formData.url, function () {
-                createContent();
+            shop.getData(formData.url, function () {
+                shop.createContent();
                 if (self.callback) self.callback(null, formData);
 
                 if (self.db === "Category") {
-                    sideMenuActive($(".side-menu a[href='" + formData.url + "']"));
+                    shop.sideMenuActive($(".side-menu a[href='" + formData.url + "']"));
                 };
             });
         };
@@ -382,3 +387,5 @@ ModalWindow.prototype.preventScrolling = function (prevent) {
         $(".dim-background").remove();
     }
 };
+
+export {Details, Dialog, AuthWindow, ModalWindow};

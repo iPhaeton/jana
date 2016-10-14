@@ -19,6 +19,11 @@ module.exports = function (model, id, data, next, callback) {
         var commodity = new mongoose.models[model](data);
         commodity.save((err) => {
             if (err) return callback(err);
+
+            var app = require("app");
+            var forest = app.get("forest");
+            forest.plant(commodity);
+
             callback();
         });
     };

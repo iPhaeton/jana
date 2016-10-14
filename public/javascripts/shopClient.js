@@ -1,26 +1,36 @@
 "use strict";
 
-var mode = "view";
+import "../vendor/bower_components/bootstrap/dist/css/bootstrap.css";
+import "../stylesheets/style.css";
+import "../stylesheets/shopPageStyle.css";
 
-var thumbnails,
-    storedData, //data and configare not necesarily needed to be reloaded on every getData
-    storedConfig, //data and configare not necesarily needed to be reloaded on every getData
-    searchPanel;
+import headMenuListener from "./../components/headMenu/headMenu";
+import {makeDBSearchRequest,
+        makeFileSaveRequest,
+        makeListRequest,
+        makeFileDeleteRequest,
+        makeDBDelRequest} from "./ajaxClient";
+import {findTarget,gatherItemsInOrder} from "./axillaries";
+import SockConnection from "./SockConnection"
+import {sideMenuListener, sideMenuActive} from "./../components/sideMenu/sideMenu"
 
-var socket = new SockConnection(window.location.origin + "/sock");
-socket.connect();
+var searchPanel;
 
+//shop.storedData - data and configare not necesarily needed to be reloaded on every getData
+//shop.storedConfig - data and configare not necesarily needed to be reloaded on every getData
 $(document).ready(function () {
+    shop.mode = "view";
+
+    shop.socket = new SockConnection(window.location.origin + "/sock");
+    shop.socket.connect();
+
+    headMenuListener();
+    sideMenuListener();
+
     var editPanel = new EditPanel();
 
     $(document.body).css({
         height: $(window).height()
-    });
-
-    searchPanel = new SearchPanel({
-        popups:[
-            "Производитель"
-        ]
     });
 
     $(".side-menu").on("click", ".menu-button", function (event) {
@@ -37,6 +47,25 @@ $(document).ready(function () {
 
         event.preventDefault();
     });
+
+    $(".search-button").on("click", () => {
+        require.ensure ([], (require) => {
+            if (searchPanel) {
+                searchPanel.toggle();
+                return;
+            }
+
+            var SearchPanel = require("./../components/searchPanel/searchPanel").default;
+
+            searchPanel = new SearchPanel({
+                popups:[
+                    "Производитель"
+                ]
+            });
+
+            searchPanel.toggle();
+        });
+    });
 });
 
 function getData(url, callback) {
@@ -48,43 +77,47 @@ function getData(url, callback) {
     var config,
         data;
 
-    async.parallel([
-        //get configuration
-        function (callback) {
-            makeDBSearchRequest("/dbsearch?db=Config", callback);
-        },
-        function (callback) {
-            makeDBSearchRequest(url, callback);
-        }
-    ], function (err, results) {
-        storedConfig = config = parseConfig(results[0][0]);
-        storedData = data = results[1];
-        data.url = url;
+    require.ensure(["async"], () => {
+        var async = require("async");
 
-        if (err) {
-            alert("Извините, проблема с базой данных");
-            return;
-        };
+        async.parallel([
+            //get configuration
+            function (callback) {
+                makeDBSearchRequest("/dbsearch?db=Config", callback);
+            },
+            function (callback) {
+                makeDBSearchRequest(url, callback);
+            }
+        ], function (err, results) {
+            shop.storedConfig = config = parseConfig(results[0][0]);
+            shop.storedData = data = results[1];
+            data.url = url;
 
-        callback(data, config);
-    });
+            if (err) {
+                alert("Извините, проблема с базой данных");
+                return;
+            };
+
+            callback(data, config);
+        });
+    }, "async");
 };
 
 function createContent (data, config) {
     //if called without any of the arguments, that argument is taken from the global variable
     //data and config are stored in global variables when they are taken from the database
-    var data = data || storedData,
-        config = config || storedConfig;
+    var data = data || shop.storedData,
+        config = config || shop.storedConfig;
 
-    if (!data && thumbnails) {
-        thumbnails.clear();
+    if (!data && shop.thumbnails) {
+        shop.thumbnails.clear();
     } 
     if(!config) return;
 
-    if (!thumbnails) thumbnails = new Thumbnails("#commodity-list", data, config);
-    thumbnails.clear();
-    thumbnails.build(data, config);
-    thumbnails.render();
+    if (!shop.thumbnails) shop.thumbnails = new Thumbnails("#commodity-list", data, config);
+    shop.thumbnails.clear();
+    shop.thumbnails.build(data, config);
+    shop.thumbnails.render();
 };
 
 //parse the config object------------------------------------------------------------------------------------------
@@ -139,14 +172,14 @@ Thumbnails.prototype.add = function (dataToAdd, done) {
         this.elem.append(this.row);
     };
 
-    var newThumbnail = (new Thumbnail(this, dataToAdd, this.config || storedConfig, "search"));
+    var newThumbnail = (new Thumbnail(this, dataToAdd, this.config || shop.storedConfig, "search"));
 
     this.tiles.add(newThumbnail.elem);
     this.row.append(newThumbnail.elem);
     this.clearTiles(true);
 
     this.data.push(dataToAdd);
-    storedData = this.data;
+    shop.storedData = this.data;
 
     if (done) {
         this.clearTiles(true)();
@@ -227,7 +260,7 @@ Thumbnails.prototype.setHandlers = function () {
 
         this.clearTiles(true)();
         $(window).off("resize", this.clearTiles(false)); //just in case
-        $(window).on("resize", this.clearTiles(false)); //when comming back from anothr page
+        $(window).on("resize", this.clearTiles(false)); //when coming back from another page
     }.bind(this));
 
     //if we go away from the page by some link, when we come back we will need to add window.onresize again
@@ -246,76 +279,81 @@ function Thumbnail (parent, data, config, dataUrl) {
         specs:{}
     };
     this.dataUrl = dataUrl;
-    this.details = new Details(this);
-    var self = this;
 
-    //config = undefined;
-    if (!config) {
-        config = {
-            showcase: {
-                "Название": {
-                    withTitle: false
-                },
-                "Цена": {
-                    withTitle: false,
-                    css: {
-                        color: "#c00"
+    require.ensure ("../components/modals/modals", (require) => {
+        var Details = require("./../components/modals/modals").Details;
+
+        this.details = new Details(this);
+        var self = this;
+
+        //config = undefined;
+        if (!config) {
+            config = {
+                showcase: {
+                    "Название": {
+                        withTitle: false
+                    },
+                    "Цена": {
+                        withTitle: false,
+                        css: {
+                            color: "#c00"
+                        }
+                    },
+                    "В наличии": {
+                        withTitle: true,
+                        css: (+(data.specs["В наличии"].split(" ")[0]) ? {
+                            color: "#0f0"
+                        } : {
+                            color: "#f00"
+                        })
                     }
-                },
-                "В наличии": {
-                    withTitle: true,
-                    css: (+(data.specs["В наличии"].split(" ")[0]) ? {
-                        color: "#0f0"
-                    } : {
-                        color: "#f00"
-                    })
                 }
             }
-        }
-    };
-
-    var col = $("<div class='col-sm-6 col-md-4 col-lg-3'></div>");
-
-    var div = $("<div class='thumbnail'></div>");
-    div.css({
-        textAlign: "right",
-    });
-
-    var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
-    //make the image clickable
-    if (mode === "edit") {
-        img.hover(function () {
-            $(this).css({
-                cursor: "pointer"
-            })
-        });
-        img.on("click", this.chooseImage.bind(this));
-    };
-
-    var button = $("<button type='button' class='btn btn-default details-button' data-toggle='modal' data-target='details'>" + (mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
-    button.on("click", function (event) {
-        self.details.render();
-    });
-    
-    div.append(img);
-
-    var fields = gatherItemsInOrder(config.showcase);
-    for (var i = fields.length-1; i >= 0; i--) {
-        if (this.data.specs[fields[i]]) {
-            var p = $("<p>" + ((config.showcase[fields[i]].withTitle) ? (fields[i] + ": " + this.data.specs[fields[i]]) : (this.data.specs[fields[i]])) + "</p>");
-            if (config.showcase[fields[i]].css) p.css(config.showcase[fields[i]].css(this.data));
-            div.append(p);
         };
-    };
 
-    div.append(button);
+        var col = $("<div class='col-sm-6 col-md-4 col-lg-3'></div>");
 
-    if (mode === "edit") col.on("contextmenu", this.showPopupMenu.bind(this));
+        var div = $("<div class='thumbnail'></div>");
+        div.css({
+            textAlign: "right",
+        });
 
-    col.append(div);
+        var img = $("<img src=" + (this.data.img || "'images/defaultPic.gif'") + " class='thumbnail-img'>");
+        //make the image clickable
+        if (shop.mode === "edit") {
+            img.hover(function () {
+                $(this).css({
+                    cursor: "pointer"
+                })
+            });
+            img.on("click", this.chooseImage.bind(this));
+        };
 
-    //return col;
-    this.elem = col;
+        var button = $("<button type='button' class='btn btn-default details-button' data-toggle='modal' data-target='details'>" + (shop.mode === "view"? "Подробнее>>" : "Редактировать>>") + "</button>");
+        button.on("click", function (event) {
+            self.details.render();
+        });
+
+        div.append(img);
+
+        var fields = gatherItemsInOrder(config.showcase);
+        for (var i = fields.length-1; i >= 0; i--) {
+            if (this.data.specs[fields[i]]) {
+                var p = $("<p>" + ((config.showcase[fields[i]].withTitle) ? (fields[i] + ": " + this.data.specs[fields[i]]) : (this.data.specs[fields[i]])) + "</p>");
+                if (config.showcase[fields[i]].css) p.css(config.showcase[fields[i]].css(this.data));
+                div.append(p);
+            };
+        };
+
+        div.append(button);
+
+        if (shop.mode === "edit") col.on("contextmenu", this.showPopupMenu.bind(this));
+
+        col.append(div);
+
+        //return col;
+        this.elem = col;
+    });
 };
 
 Thumbnail.prototype.chooseImage = function (event) {
@@ -450,13 +488,13 @@ function EditSwitch(parent) {
 };
 
 EditSwitch.prototype.switchMode = function () {
-    if (mode !== "edit") {
-        mode = "edit";
+    if (shop.mode !== "edit") {
+        shop.mode = "edit";
         this.elem.text("Просмотр");
         //create an input for uploading an image for a thumbnail
         if (!$("#uploadInput").length) this.createUploadInput();
     } else {
-        mode = "view";
+        shop.mode = "view";
         this.elem.text("Редактировать");
     };
 
@@ -485,7 +523,7 @@ EditSwitch.prototype.createUploadInput = function () {
     uploadInput.on("change", function (event) {
         makeFileSaveRequest("/savefile?id=" + callerId, this.files[0], function (err) {
             if (err) alert (err.message);
-            getData(storedData.url, createContent);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            getData(shop.storedData.url, createContent);//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         });
     });
 };
@@ -516,36 +554,44 @@ EditPanel.prototype.toggle = function () {
 };
 
 EditPanel.prototype.addCommodity = function () {
-    var questionnaire = new Dialog ({
-        "Категория": "Лыжи",
-        "Название": ""
-    }, "Commodity");
+    require.ensure ("../components/modals/modals", (require) => {
+        var Dialog = require("./../components/modals/modals").Dialog;
 
-    questionnaire.render();
+        var questionnaire = new Dialog ({
+            "Категория": "Лыжи",
+            "Название": ""
+        }, "Commodity");
+
+        questionnaire.render();
+    });
 };
 
 EditPanel.prototype.addCategory = function () {
-    var dialog = new Dialog({"Категория": ""}, "Category", function (form) {
-        var formData = form.serializeArray();
-        return {
-            name: formData[1].value,
-            url: "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[1].value,
-            position: $(".menu-button").length
-        };
-    }, function (err, data) {
-        if (err) {
-            if (err.message === "Документ уже существует") alert("Яна, категория с таким имененм у тебя уже есть");
-            else alert(err.message);
-            return;
-        }
+    require.ensure ("../components/modals/modals", (require) => {
+        var Dialog = require("./../components/modals/modals").Dialog;
 
-        $(".side-menu").append("\
+        var dialog = new Dialog({"Категория": ""}, "Category", function (form) {
+            var formData = form.serializeArray();
+            return {
+                name: formData[1].value,
+                url: "/dbsearch?db=Commodity&specs=specs.Категория:" + formData[1].value,
+                position: $(".menu-button").length
+            };
+        }, function (err, data) {
+            if (err) {
+                if (err.message === "Документ уже существует") alert("Яна, категория с таким имененм у тебя уже есть");
+                else alert(err.message);
+                return;
+            }
+
+            $(".side-menu").append("\
             <li class='menu-button'>\
                 <a role='presentation' href='" + data.url + "'>" + data.name + "</a>\
             </li>\
         ");
+        });
+        dialog.render();
     });
-    dialog.render();
 };
 
 //Popup menu-----------------------------------------------------------------------------------------------------------
@@ -595,3 +641,5 @@ PopupMenu.prototype.render = function (invokingEvent) {
 PopupMenu.prototype.close = function () {
     this.elem.detach();
 };
+
+export {parseConfig, Thumbnails, getData, createContent, sideMenuActive};
