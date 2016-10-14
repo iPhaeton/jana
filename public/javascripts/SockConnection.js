@@ -1,6 +1,6 @@
 "use strict";
 
-class SockConnection {
+export default class SockConnection {
     constructor (url) {
         this.url = url;
         this.callbacks = {
@@ -9,27 +9,31 @@ class SockConnection {
     };
     
     connect () {
-        this.connection = new SockJS(this.url);
-        //this.connection.addEventListener("connection", this.setHandlers);
+        require.ensure([], () => {
+            var SockJS = require("sockjs");
 
-        var self = this;
-        this.connection.onopen = function() {
-            //console.log(self.connection.readyState);
-            //self.connection.send("test");
-        };
+            this.connection = new SockJS(this.url);
+            //this.connection.addEventListener("connection", this.setHandlers);
 
-        this.connection.onmessage = function (event) {
-            var json = JSON.parse(event.data),
-                data = json.data,
-                type = json.type,
-                done = json.done,
-                key = json.key;
+            var self = this;
+            this.connection.onopen = function() {
+                //console.log(self.connection.readyState);
+                //self.connection.send("test");
+            };
 
-            if (!self.callbacks[type]) return;
+            this.connection.onmessage = function (event) {
+                var json = JSON.parse(event.data),
+                    data = json.data,
+                    type = json.type,
+                    done = json.done,
+                    key = json.key;
 
-            if (data === "Error") self.callbacks[type](new Error(type + " error"));
-            else self.callbacks[type](null, data, done, key);
-        };
+                if (!self.callbacks[type]) return;
+
+                if (data === "Error") self.callbacks[type](new Error(type + " error"));
+                else self.callbacks[type](null, data, done, key);
+            };
+        });
     };
 
     send (data) {

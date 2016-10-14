@@ -23,3 +23,5 @@ function gatherItemsInOrder(obj) {
     };
     return items;
 };
+
+export {findTarget, gatherItemsInOrder};

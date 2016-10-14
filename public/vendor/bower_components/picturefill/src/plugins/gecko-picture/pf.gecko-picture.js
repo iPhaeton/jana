@@ -36,7 +36,7 @@
 
 			var findPictureImgs = function() {
 				var i;
-				var imgs = document.querySelectorAll("picture > img, img[srcset][sizes]");
+				var imgs = document.querySelectorAll("showCase > img, img[srcset][sizes]");
 				for (i = 0; i < imgs.length; i++) {
 					fixRespimg(imgs[i]);
 				}
