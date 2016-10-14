@@ -20,9 +20,11 @@ module.exports = function (model, id, data, next, callback) {
         commodity.save((err) => {
             if (err) return callback(err);
 
-            var app = require("app");
-            var forest = app.get("forest");
-            forest.plant(commodity);
+            if (model === "Commodity") {
+                var app = require("app");
+                var forest = app.get("forest");
+                forest.plant(commodity);
+            };
 
             callback();
         });
