@@ -29,9 +29,6 @@
     "util": "^0.10.3",
     "winston": "^2.2.0",
     "extract-text-webpack-plugin": "^1.0.1",
-    "webpack": "^1.13.2"
-  },
-  "devDependencies": {
     "assets-webpack-plugin": "^3.4.0",
     "autoprefixer-loader": "^3.2.0",
     "babel-core": "^6.17.0",
@@ -51,7 +48,8 @@
     "grunt-contrib-uglify": "^2.0.0",
     "imports-loader": "^0.6.5",
     "style-loader": "^0.13.1",
-    "url-loader": "^0.5.7"
+    "url-loader": "^0.5.7",
+    "webpack": "^1.13.2"
   },
   "scripts": {
     "postinstall": "NODE_ENV=production webpack",
