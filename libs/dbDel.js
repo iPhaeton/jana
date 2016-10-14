@@ -10,7 +10,23 @@ module.exports = function (query, next, callback) {
         if (!commodity) {
             callback(new HttpError(404, "Документ не найден"));
         } else {
-            commodity.remove(callback);
+            var id = commodity.id;
+            commodity.remove(() => {
+                if (err) {
+                    callback(err);
+                    return;
+                };
+
+                var app = require("app");
+                var forest = app.get("forest");
+                for (var tree in forest.trees) {
+                    if (forest.trees[tree].docs.has(id)) {
+                        forest.trees[tree].docs.delete(id);
+                    }
+                }
+
+                callback();
+            });
         };
     };
 };

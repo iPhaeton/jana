@@ -34,7 +34,7 @@ class Forest {
                     this.trees[sha] = new Tree (text, fieldsToSearchIn[j]);
                     //count++;
                 }
-                this.trees[sha].docs.add(doc._id);
+                this.trees[sha].docs.add(doc.id);
             };
         };
     };
